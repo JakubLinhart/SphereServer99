@@ -1,0 +1,12 @@
+2019/12/11 08:57:0808:57:WARNING:'sphere.ini' not found
+08:57:Sphere V0.56d-Private (32 bits) by www.spherecommunity.net
+Compiled at Dec 11 2019 (build 959 / Git hash 75111e5b)
+
+08:57:WARNING:
+This is a CUSTOM build of SphereServer. Custom builds are non-official builds, which
+have custom changes on source code not verified by official Sphere development team.
+Use it at your own risk.
+
+08:57:WARNING:File sphereCrypt.ini is corrupt or missing
+08:57:WARNING:'sphere.ini' not found
+08:57:FATAL:Server terminated: Failed to load server settings (code -3)

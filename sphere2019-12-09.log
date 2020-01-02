@@ -1,0 +1,12 @@
+2019/12/09 22:49:4122:49:WARNING:'sphere.ini' not found
+22:49:Sphere V0.56d-Debug (32 bits) by www.spherecommunity.net
+Compiled at Nov 23 2019 (build 958 / Git hash 2bc9efb2)
+
+22:49:WARNING:
+This is a DEBUG build of SphereServer. Debug builds are compiled manually by developers
+for testing purposes. It have extra debug behaviors that are useful for development but
+will decrease server performance. Do not use it on live servers.
+
+22:49:WARNING:File sphereCrypt.ini is corrupt or missing
+22:49:WARNING:'sphere.ini' not found
+22:49:FATAL:Server terminated: Failed to load server settings (code -3)

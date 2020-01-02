@@ -1,0 +1,25 @@
+2019/11/23 21:28:5921:28:WARNING:'sphere.ini' not found
+2019/11/23 21:29:1121:29:WARNING:'sphere.ini' not found
+21:29:Sphere V0.56d-Debug (32 bits) by www.spherecommunity.net
+Compiled at Nov 23 2019 (build 958 / Git hash 2bc9efb2)
+
+21:29:WARNING:
+This is a DEBUG build of SphereServer. Debug builds are compiled manually by developers
+for testing purposes. It have extra debug behaviors that are useful for development but
+will decrease server performance. Do not use it on live servers.
+
+21:29:WARNING:File sphereCrypt.ini is corrupt or missing
+21:29:WARNING:'sphere.ini' not found
+21:29:FATAL:Server terminated: Failed to load server settings (code -3)
+2019/11/23 21:32:2821:32:WARNING:'sphere.ini' not found
+21:32:Sphere V0.56d-Debug (32 bits) by www.spherecommunity.net
+Compiled at Nov 23 2019 (build 958 / Git hash 2bc9efb2)
+
+21:32:WARNING:
+This is a DEBUG build of SphereServer. Debug builds are compiled manually by developers
+for testing purposes. It have extra debug behaviors that are useful for development but
+will decrease server performance. Do not use it on live servers.
+
+21:32:WARNING:File sphereCrypt.ini is corrupt or missing
+21:32:WARNING:'sphere.ini' not found
+21:32:FATAL:Server terminated: Failed to load server settings (code -3)

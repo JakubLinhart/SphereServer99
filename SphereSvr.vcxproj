@@ -1,0 +1,412 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Local|Win32">
+      <Configuration>Local</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Nightly|Win32">
+      <Configuration>Nightly</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <TargetName>SphereSvr</TargetName>
+    <ProjectName>0.56d</ProjectName>
+    <ProjectGuid>{40CA07B5-BCC7-A9C8-A6E6-DEFC536EE8CB}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Local|Win32'">
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Nightly|Win32'">
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Local|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Nightly|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <CallingConvention>StdCall</CallingConvention>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MinimalRebuild>true</MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level2</WarningLevel>
+      <ExceptionHandling>Async</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>src\common\mysql\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PreBuildEvent>
+      <Command>for /f %%r in ('git rev-list --count HEAD') do set /a GitRev=%%r-2406
+for /f %%h in ('git rev-parse --short HEAD') do set GitHash=%%h
+if defined GitRev (
+	echo Current build revision: %GitRev% ^(Git hash: %GitHash%^)
+	echo #define __GITREVISION__ %GitRev% &gt; src/common/version/GitRevision.h
+	echo #define __GITHASH__ "%GitHash%" &gt;&gt; src/common/version/GitRevision.h
+)</Command>
+      <Message>Getting revision number from Git repository</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Local|Win32'">
+    <ClCompile>
+      <CallingConvention>FastCall</CallingConvention>
+      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>_PRIVATEBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level2</WarningLevel>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_PRIVATEBUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>src\common\mysql\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PreBuildEvent>
+      <Command>for /f %%r in ('git rev-list --count HEAD') do set /a GitRev=%%r-2406
+for /f %%h in ('git rev-parse --short HEAD') do set GitHash=%%h
+if defined GitRev (
+	echo Current build revision: %GitRev% ^(Git hash: %GitHash%^)
+	echo #define __GITREVISION__ %GitRev% &gt; src/common/version/GitRevision.h
+	echo #define __GITHASH__ "%GitHash%" &gt;&gt; src/common/version/GitRevision.h
+)</Command>
+      <Message>Getting revision number from Git repository</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Nightly|Win32'">
+    <ClCompile>
+      <CallingConvention>FastCall</CallingConvention>
+      <PreprocessorDefinitions>_NIGHTLYBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level2</WarningLevel>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_NIGHTLYBUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>src\common\mysql\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PreBuildEvent>
+      <Command>for /f %%r in ('git rev-list --count HEAD') do set /a GitRev=%%r-2406
+for /f %%h in ('git rev-parse --short HEAD') do set GitHash=%%h
+if defined GitRev (
+	echo Current build revision: %GitRev% ^(Git hash: %GitHash%^)
+	echo #define __GITREVISION__ %GitRev% &gt; src/common/version/GitRevision.h
+	echo #define __GITHASH__ "%GitHash%" &gt;&gt; src/common/version/GitRevision.h
+)</Command>
+      <Message>Getting revision number from Git repository</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <CallingConvention>FastCall</CallingConvention>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level2</WarningLevel>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>src\common\mysql\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PreBuildEvent>
+      <Command>for /f %%r in ('git rev-list --count HEAD') do set /a GitRev=%%r-2406
+for /f %%h in ('git rev-parse --short HEAD') do set GitHash=%%h
+if defined GitRev (
+	echo Current build revision: %GitRev% ^(Git hash: %GitHash%^)
+	echo #define __GITREVISION__ %GitRev% &gt; src/common/version/GitRevision.h
+	echo #define __GITHASH__ "%GitHash%" &gt;&gt; src/common/version/GitRevision.h
+)</Command>
+      <Message>Getting revision number from Git repository</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\common\CCacheableScriptFile.cpp" />
+    <ClCompile Include="src\common\CCSVFile.cpp" />
+    <ClCompile Include="src\common\CEncrypt.cpp" />
+    <ClCompile Include="src\common\crashdump\crashdump.cpp" />
+    <ClCompile Include="src\common\CVarFloat.cpp" />
+    <ClCompile Include="src\common\sqlite\SQLite.cpp" />
+    <ClCompile Include="src\common\sqlite\sqlite3.c" />
+    <ClCompile Include="src\network\network.cpp" />
+    <ClCompile Include="src\network\packet.cpp" />
+    <ClCompile Include="src\network\receive.cpp" />
+    <ClCompile Include="src\network\send.cpp" />
+    <ClCompile Include="src\sphere\asyncdb.cpp" />
+    <ClCompile Include="src\sphere\linuxev.cpp" />
+    <ClCompile Include="src\sphere\mutex.cpp" />
+    <ClCompile Include="src\sphere\ProfileData.cpp" />
+    <ClCompile Include="src\sphere\strings.cpp" />
+    <ClCompile Include="src\sphere\threads.cpp" />
+    <ClCompile Include="src\graysvr\CAccount.cpp" />
+    <ClCompile Include="src\graysvr\CBase.cpp" />
+    <ClCompile Include="src\graysvr\CChar.cpp" />
+    <ClCompile Include="src\graysvr\CCharAct.cpp" />
+    <ClCompile Include="src\graysvr\CCharBase.cpp" />
+    <ClCompile Include="src\graysvr\CCharFight.cpp" />
+    <ClCompile Include="src\graysvr\CCharNPC.cpp" />
+    <ClCompile Include="src\graysvr\CCharNPCAct.cpp" />
+    <ClCompile Include="src\graysvr\CCharNPCPet.cpp" />
+    <ClCompile Include="src\graysvr\CCharNPCStatus.cpp" />
+    <ClCompile Include="src\graysvr\CCharSkill.cpp" />
+    <ClCompile Include="src\graysvr\CCharSpell.cpp" />
+    <ClCompile Include="src\graysvr\CCharStatus.cpp" />
+    <ClCompile Include="src\graysvr\CCharUse.cpp" />
+    <ClCompile Include="src\graysvr\CChat.cpp" />
+    <ClCompile Include="src\graysvr\CClient.cpp" />
+    <ClCompile Include="src\graysvr\CClientDialog.cpp" />
+    <ClCompile Include="src\graysvr\CClientEvent.cpp" />
+    <ClCompile Include="src\graysvr\CClientLog.cpp" />
+    <ClCompile Include="src\graysvr\CClientMsg.cpp" />
+    <ClCompile Include="src\graysvr\CClientTarg.cpp" />
+    <ClCompile Include="src\graysvr\CClientUse.cpp" />
+    <ClCompile Include="src\graysvr\CContain.cpp" />
+    <ClCompile Include="src\graysvr\CGMPage.cpp" />
+    <ClCompile Include="src\graysvr\CItem.cpp" />
+    <ClCompile Include="src\graysvr\CItemBase.cpp" />
+    <ClCompile Include="src\graysvr\CItemMulti.cpp" />
+    <ClCompile Include="src\graysvr\CItemMultiCustom.cpp" />
+    <ClCompile Include="src\graysvr\CItemShip.cpp" />
+    <ClCompile Include="src\common\zlib\adler32.c" />
+    <ClCompile Include="src\common\zlib\compress.c" />
+    <ClCompile Include="src\common\zlib\crc32.c" />
+    <ClCompile Include="src\common\zlib\deflate.c" />
+    <ClCompile Include="src\common\zlib\gzclose.c" />
+    <ClCompile Include="src\common\zlib\gzlib.c" />
+    <ClCompile Include="src\common\zlib\gzread.c" />
+    <ClCompile Include="src\common\zlib\gzwrite.c" />
+    <ClCompile Include="src\common\zlib\infback.c" />
+    <ClCompile Include="src\common\zlib\inffast.c" />
+    <ClCompile Include="src\common\zlib\inflate.c" />
+    <ClCompile Include="src\common\zlib\inftrees.c" />
+    <ClCompile Include="src\common\zlib\trees.c" />
+    <ClCompile Include="src\common\zlib\uncompr.c" />
+    <ClCompile Include="src\common\zlib\zutil.c" />
+    <ClCompile Include="src\common\twofish\twofish2.cpp" />
+    <ClCompile Include="src\common\CArray.cpp" />
+    <ClCompile Include="src\common\CAssoc.cpp" />
+    <ClCompile Include="src\common\CDataBase.cpp" />
+    <ClCompile Include="src\common\CException.cpp" />
+    <ClCompile Include="src\common\CExpression.cpp" />
+    <ClCompile Include="src\common\CFile.cpp" />
+    <ClCompile Include="src\common\CFileList.cpp" />
+    <ClCompile Include="src\common\CGrayData.cpp" />
+    <ClCompile Include="src\common\CGrayInst.cpp" />
+    <ClCompile Include="src\common\CGrayMap.cpp" />
+    <ClCompile Include="src\common\CListDefMap.cpp" />
+    <ClCompile Include="src\common\CMD5.cpp" />
+    <ClCompile Include="src\common\CQueue.cpp" />
+    <ClCompile Include="src\common\CRect.cpp" />
+    <ClCompile Include="src\common\CRegion.cpp" />
+    <ClCompile Include="src\common\CResourceBase.cpp" />
+    <ClCompile Include="src\common\CScript.cpp" />
+    <ClCompile Include="src\common\CScriptObj.cpp" />
+    <ClCompile Include="src\common\CSectorTemplate.cpp" />
+    <ClCompile Include="src\common\CSocket.cpp" />
+    <ClCompile Include="src\common\CString.cpp" />
+    <ClCompile Include="src\common\CTime.cpp" />
+    <ClCompile Include="src\common\CVarDefMap.cpp" />
+    <ClCompile Include="src\common\CWindow.cpp" />
+    <ClCompile Include="src\common\graycom.cpp" />
+    <ClCompile Include="src\graysvr\CItemSpawn.cpp" />
+    <ClCompile Include="src\graysvr\CItemStone.cpp" />
+    <ClCompile Include="src\graysvr\CItemVend.cpp" />
+    <ClCompile Include="src\graysvr\CLog.cpp" />
+    <ClCompile Include="src\graysvr\CNTService.cpp" />
+    <ClCompile Include="src\graysvr\CNTWindow.cpp" />
+    <ClCompile Include="src\graysvr\CObjBase.cpp" />
+    <ClCompile Include="src\graysvr\CParty.cpp" />
+    <ClCompile Include="src\graysvr\CPathFinder.cpp" />
+    <ClCompile Include="src\graysvr\CPingServer.cpp" />
+    <ClCompile Include="src\graysvr\CResource.cpp" />
+    <ClCompile Include="src\graysvr\CResourceCalc.cpp" />
+    <ClCompile Include="src\graysvr\CResourceDef.cpp" />
+    <ClCompile Include="src\graysvr\CSector.cpp" />
+    <ClCompile Include="src\graysvr\CServer.cpp" />
+    <ClCompile Include="src\graysvr\CServRef.cpp" />
+    <ClCompile Include="src\graysvr\CUnixTerminal.cpp" />
+    <ClCompile Include="src\graysvr\CWebPage.cpp" />
+    <ClCompile Include="src\graysvr\CWorld.cpp" />
+    <ClCompile Include="src\graysvr\CWorldImport.cpp" />
+    <ClCompile Include="src\graysvr\CWorldMap.cpp" />
+    <ClCompile Include="src\graysvr\graysvr.cpp" />
+    <ClInclude Include="src\common\CCacheableScriptFile.h" />
+    <ClInclude Include="src\common\CCSVFile.h" />
+    <ClInclude Include="src\common\CEncrypt.h" />
+    <ClInclude Include="src\common\CMD5.h" />
+    <ClInclude Include="src\common\crashdump\crashdump.h" />
+    <ClInclude Include="src\common\CVarFloat.h" />
+    <ClInclude Include="src\common\CWindow.h" />
+    <ClInclude Include="src\common\sqlite\SQLite.h" />
+    <ClInclude Include="src\common\sqlite\sqlite3.h" />
+    <ClInclude Include="src\common\zlib\gzguts.h" />
+    <ClInclude Include="src\network\network.h" />
+    <ClInclude Include="src\network\packet.h" />
+    <ClInclude Include="src\network\receive.h" />
+    <ClInclude Include="src\network\send.h" />
+    <ClInclude Include="src\sphere\asyncdb.h" />
+    <ClInclude Include="src\sphere\containers.h" />
+    <ClInclude Include="src\sphere\linuxev.h" />
+    <ClInclude Include="src\sphere\mutex.h" />
+    <ClInclude Include="src\sphere\ProfileData.h" />
+    <ClInclude Include="src\sphere\strings.h" />
+    <ClInclude Include="src\sphere\threads.h" />
+    <ClInclude Include="src\graysvr\CAccount.h" />
+    <ClInclude Include="src\graysvr\CBase.h" />
+    <ClInclude Include="src\graysvr\CChar.h" />
+    <ClInclude Include="src\graysvr\CCharBase.h" />
+    <ClInclude Include="src\graysvr\CChat.h" />
+    <ClInclude Include="src\graysvr\CClient.h" />
+    <ClInclude Include="src\graysvr\CGMPage.h" />
+    <ClInclude Include="src\graysvr\CItem.h" />
+    <ClInclude Include="src\graysvr\CItemBase.h" />
+    <ClInclude Include="src\graysvr\CItemMulti.h" />
+    <ClInclude Include="src\graysvr\CItemMultiCustom.h" />
+    <ClInclude Include="src\graysvr\CItemShip.h" />
+    <ClInclude Include="src\graysvr\CItemStone.h" />
+    <ClInclude Include="src\graysvr\CLog.h" />
+    <ClInclude Include="src\graysvr\CNTService.h" />
+    <ClInclude Include="src\graysvr\CNTWindow.h" />
+    <ClInclude Include="src\graysvr\CObjBase.h" />
+    <ClInclude Include="src\graysvr\CParty.h" />
+    <ClInclude Include="src\graysvr\CPathFinder.h" />
+    <ClInclude Include="src\graysvr\CPingServer.h" />
+    <ClInclude Include="src\graysvr\CResource.h" />
+    <ClInclude Include="src\graysvr\CSector.h" />
+    <ClInclude Include="src\graysvr\CServer.h" />
+    <ClInclude Include="src\graysvr\CServRef.h" />
+    <ClInclude Include="src\graysvr\CUnixTerminal.h" />
+    <ClInclude Include="src\graysvr\CWebPage.h" />
+    <ClInclude Include="src\graysvr\CWorld.h" />
+    <ClInclude Include="src\graysvr\graysvr.h" />
+    <ClInclude Include="src\common\zlib\crc32.h" />
+    <ClInclude Include="src\common\zlib\deflate.h" />
+    <ClInclude Include="src\common\zlib\inffast.h" />
+    <ClInclude Include="src\common\zlib\inffixed.h" />
+    <ClInclude Include="src\common\zlib\inflate.h" />
+    <ClInclude Include="src\common\zlib\inftrees.h" />
+    <ClInclude Include="src\common\zlib\trees.h" />
+    <ClInclude Include="src\common\zlib\zconf.h" />
+    <ClInclude Include="src\common\zlib\zlib.h" />
+    <ClInclude Include="src\common\zlib\zutil.h" />
+    <ClInclude Include="src\common\twofish\aes.h" />
+    <ClInclude Include="src\common\twofish\debug.h" />
+    <ClInclude Include="src\common\twofish\platform.h" />
+    <ClInclude Include="src\common\twofish\table.h" />
+    <ClInclude Include="src\common\CArray.h" />
+    <ClInclude Include="src\common\CAssoc.h" />
+    <ClInclude Include="src\common\CDataBase.h" />
+    <ClInclude Include="src\common\CException.h" />
+    <ClInclude Include="src\common\CExpression.h" />
+    <ClInclude Include="src\common\CFile.h" />
+    <ClInclude Include="src\common\CFileList.h" />
+    <ClInclude Include="src\common\CGrayInst.h" />
+    <ClInclude Include="src\common\CGrayMap.h" />
+    <ClInclude Include="src\common\CListDefMap.h" />
+    <ClInclude Include="src\common\CMemBlock.h" />
+    <ClInclude Include="src\common\CQueue.h" />
+    <ClInclude Include="src\common\CRect.h" />
+    <ClInclude Include="src\common\CRegion.h" />
+    <ClInclude Include="src\common\CResourceBase.h" />
+    <ClInclude Include="src\common\CScript.h" />
+    <ClInclude Include="src\common\CScriptObj.h" />
+    <ClInclude Include="src\common\CSectorTemplate.h" />
+    <ClInclude Include="src\common\CSocket.h" />
+    <ClInclude Include="src\common\CString.h" />
+    <ClInclude Include="src\common\CTime.h" />
+    <ClInclude Include="src\common\CVarDefMap.h" />
+    <ClInclude Include="src\common\graycom.h" />
+    <ClInclude Include="src\common\graymul.h" />
+    <ClInclude Include="src\common\grayproto.h" />
+    <ClInclude Include="src\common\grayver.h" />
+    <ClInclude Include="src\common\os_common.h" />
+    <ClInclude Include="src\common\os_unix.h" />
+    <ClInclude Include="src\common\os_windows.h" />
+    <ClInclude Include="src\graysvr\resource.h" />
+    <None Include="src\tables\CBaseBaseDef_props.tbl" />
+    <None Include="src\tables\CCharBase_props.tbl" />
+    <None Include="src\tables\CCharNpc_props.tbl" />
+    <None Include="src\tables\CCharPlayer_functions.tbl" />
+    <None Include="src\tables\CCharPlayer_props.tbl" />
+    <None Include="src\tables\CChar_functions.tbl" />
+    <None Include="src\tables\CChar_props.tbl" />
+    <None Include="src\tables\CClient_functions.tbl" />
+    <None Include="src\tables\CClient_props.tbl" />
+    <None Include="src\tables\CFileObjContainer_functions.tbl" />
+    <None Include="src\tables\CFileObjContainer_props.tbl" />
+    <None Include="src\tables\CFile_functions.tbl" />
+    <None Include="src\tables\CFile_props.tbl" />
+    <None Include="src\tables\CItemBase_props.tbl" />
+    <None Include="src\tables\CItemStone_functions.tbl" />
+    <None Include="src\tables\CItemStone_props.tbl" />
+    <None Include="src\tables\CItem_functions.tbl" />
+    <None Include="src\tables\CItem_props.tbl" />
+    <None Include="src\tables\classnames.tbl" />
+    <None Include="src\tables\CObjBase_functions.tbl" />
+    <None Include="src\tables\CObjBase_props.tbl" />
+    <None Include="src\tables\CParty_functions.tbl" />
+    <None Include="src\tables\CParty_props.tbl" />
+    <None Include="src\tables\CScriptObj_functions.tbl" />
+    <None Include="src\tables\CSector_functions.tbl" />
+    <None Include="src\tables\CStoneMember_functions.tbl" />
+    <None Include="src\tables\CStoneMember_props.tbl" />
+    <None Include="src\tables\defmessages.tbl" />
+    <None Include="src\tables\triggers.tbl" />
+    <Text Include="changelog.txt" />
+    <Text Include="src\sphere.ini" />
+    <Text Include="src\sphereCrypt.ini" />
+    <ResourceCompile Include="src\graysvr\SphereSvr.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
