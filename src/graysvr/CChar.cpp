@@ -1322,7 +1322,7 @@ const LPCTSTR CChar::sm_szLoadKeys[CHC_QTY + 1] =
 	NULL
 };
 
-bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CChar::r_WriteVal");
 

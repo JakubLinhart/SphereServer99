@@ -1172,7 +1172,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 			EXC_SET("writeval");
 			pszKey = static_cast<LPCTSTR>(pszResponse) + iBegin + 1;
 			CGString sVal;
-			fRes = r_WriteVal(pszKey, sVal, pSrc);
+			fRes = r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			if ( !fRes )
 			{
 				EXC_SET("writeval");
@@ -1497,7 +1497,7 @@ bool CScriptObj::r_Load(CScript &s)
 	return true;
 }
 
-bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs *pArgs)
 {
 	ADDTOCALLSTACK("CScriptObj::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -1570,16 +1570,41 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 			sVal.FormatHex(pObj ? static_cast<DWORD>(pObj->GetUID()) : 1);
 			return true;
 		}
-		return pRef->r_WriteVal(pszKey, sVal, pSrc);
+		return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 
 	int index = FindTableHeadSorted(pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( index < 0 )
 	{
-		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(pszKey);
+		TCHAR* varKey = const_cast<TCHAR*>(pszKey);
+		//TCHAR* bracketStart = const_cast<TCHAR*>(strchr(pszKey, '['));
+		//if (bracketStart)
+		//{
+		//	int prefixLen = bracketStart - pszKey;
+		//	bracketStart++;
+		//	CExpression* expr = new CExpression(this, pSrc);
+		//	INT64 index = expr->GetSingle(bracketStart);
+		//	TemporaryString pszIndexBuffer;
+		//	sprintf(pszIndexBuffer, "%d", index);
+		//	TemporaryString pszBuffer;
+		//	strncpy(pszBuffer, pszKey, prefixLen);
+		//	strcat(pszBuffer, "[");
+		//	strcat(pszBuffer, pszIndexBuffer);
+		//	strcat(pszBuffer, "]");
+		//	varKey = pszBuffer;
+		//	delete expr;
+		//}
+
+		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varKey);
 		if (pVar)
 		{
 			sVal = pVar->GetValStr();
+			return true;
+		}
+		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varKey);
+		if (pDef)
+		{
+			sVal = pDef->GetValStr();
 			return true;
 		}
 
@@ -1729,8 +1754,12 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 			sVal = g_Cfg.GetDefaultMsg(pszKey);
 			return true;
 		case SSC_EVAL:
-			sVal.FormatLLVal(Exp_GetLLVal(pszKey));
+		{
+			CExpression* pExpr = new CExpression(pArgs, pSrc);
+			sVal.FormatLLVal(pExpr->GetVal(pszKey));
+			delete pExpr;
 			return true;
+		}
 		case SSC_UVAL:
 			sVal.FormatULLVal(static_cast<unsigned long long>(Exp_GetLLVal(pszKey)));
 			return true;
@@ -3050,7 +3079,7 @@ bool CFileObj::r_LoadVal(CScript &s)
 	return false;
 }
 
-bool CFileObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CFileObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CFileObj::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -3494,7 +3523,7 @@ bool CFileObjContainer::r_LoadVal(CScript &s)
 	return false;
 }
 
-bool CFileObjContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CFileObjContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CFileObjContainer::r_WriteVal");
 	EXC_TRY("WriteVal");

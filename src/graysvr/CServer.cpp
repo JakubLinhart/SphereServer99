@@ -1028,7 +1028,7 @@ bool CServer::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return CScriptObj::r_GetRef(pszKey, pRef);
 }
 
-bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CServer::r_WriteVal");
 	if ( !strnicmp(pszKey, "ACCOUNT.", 8) )
@@ -1091,7 +1091,7 @@ bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 		return true;
 	if ( g_World.r_WriteVal(pszKey, sVal, pSrc) )
 		return true;
-	return CServerDef::r_WriteVal(pszKey, sVal, pSrc);
+	return CServerDef::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
 bool CServer::r_LoadVal(CScript &s)

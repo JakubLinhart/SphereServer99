@@ -159,7 +159,7 @@ LPCTSTR const CCharBase::sm_szLoadKeys[CBC_QTY + 1] =
 	NULL
 };
 
-bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CCharBase::r_WriteVal");
 	EXC_TRY("WriteVal");

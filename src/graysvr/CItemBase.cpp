@@ -810,7 +810,7 @@ LPCTSTR const CItemBase::sm_szLoadKeys[IBC_QTY + 1] =
 	NULL
 };
 
-bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemBase::r_WriteVal");
 	EXC_TRY("WriteVal");

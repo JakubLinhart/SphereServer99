@@ -394,7 +394,7 @@ LPCTSTR const CItemSpawn::sm_szLoadKeys[ISPW_QTY + 1] =
 	NULL
 };
 
-bool CItemSpawn::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemSpawn::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemSpawn::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -675,7 +675,7 @@ bool CItemMap::r_LoadVal(CScript &s)	// load an item script
 	return false;
 }
 
-bool CItemMap::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemMap::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemMap::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -784,7 +784,7 @@ bool CItemMessage::r_LoadVal(CScript &s)
 	return false;
 }
 
-bool CItemMessage::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemMessage::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemMessage::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -1045,7 +1045,7 @@ void CItemCommCrystal::r_Write(CScript &s)
 	m_Speech.r_Write(s, "SPEECH");
 }
 
-bool CItemCommCrystal::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemCommCrystal::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemCommCrystal::r_WriteVal");
 	switch ( FindTableSorted(pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1) )
@@ -1102,7 +1102,7 @@ void CItemScript::r_Write(CScript &s)
 	CItemVendable::r_Write(s);
 }
 
-bool CItemScript::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemScript::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemScript::r_WriteVal");
 	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc);

@@ -44,7 +44,7 @@ public:
 	bool v_AllItems(CScript &s, CTextConsole *pSrc);
 
 	virtual bool r_LoadVal(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual void r_Write();
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);
 

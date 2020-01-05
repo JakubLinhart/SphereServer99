@@ -1638,7 +1638,7 @@ LPCTSTR const CWorld::sm_szLoadKeys[WC_QTY + 1] =	// static
 	NULL
 };
 
-bool CWorld::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CWorld::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CWorld::r_WriteVal");
 	EXC_TRY("WriteVal");

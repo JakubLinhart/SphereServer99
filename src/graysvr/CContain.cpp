@@ -582,7 +582,7 @@ bool CItemContainer::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return CItemVendable::r_GetRef(pszKey, pRef);
 }
 
-bool CItemContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemContainer::r_WriteVal");
 	if ( r_WriteValContainer(pszKey, sVal, pSrc) )

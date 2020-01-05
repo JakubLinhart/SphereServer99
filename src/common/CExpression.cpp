@@ -342,8 +342,10 @@ int Calc_GetSCurve(int iMean, int iVariance)
 ///////////////////////////////////////////////////////////
 // CExpression
 
-CExpression::CExpression()
+CExpression::CExpression(CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
+	m_pArgs = pArgs;
+	m_pSrc = pSrc;
 }
 
 CExpression::~CExpression()
@@ -782,6 +784,22 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 					return 0;
 				}
 				return iResult;
+			}
+		}
+
+		if (m_pArgs != NULL)
+		{
+			TCHAR* ppArgs[5];
+			TemporaryString tmpArgs;
+			strcpy(tmpArgs, pszArgs);
+
+			Str_ParseCmds(tmpArgs, ppArgs, COUNTOF(ppArgs), "+-*/^!%");
+			int argsLen = strlen(tmpArgs);
+			CGString sVal;
+			if (m_pArgs->r_WriteVal(tmpArgs, sVal, m_pSrc))
+			{
+				pszArgs += argsLen;
+				return atol(sVal);
 			}
 		}
 

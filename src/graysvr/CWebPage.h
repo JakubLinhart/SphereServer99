@@ -66,7 +66,7 @@ public:
 		return m_sDstFilePath;
 	}
 
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// some command on this object as a target
 

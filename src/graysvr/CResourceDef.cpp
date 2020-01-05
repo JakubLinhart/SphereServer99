@@ -929,7 +929,7 @@ bool CRandGroupDef::r_LoadVal( CScript &s )
 	return false;
 }
 
-bool CRandGroupDef::r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * pSrc )
+bool CRandGroupDef::r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs )
 {
 	ADDTOCALLSTACK("CRandGroupDef::r_WriteVal");
 	EXC_TRY("WriteVal");

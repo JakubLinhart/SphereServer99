@@ -432,7 +432,7 @@ LPCTSTR const CRegionBase::sm_szLoadKeys[RC_QTY+1] =	// static (Sorted)
 	NULL
 };
 
-bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc )
+bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs )
 {
 	ADDTOCALLSTACK("CRegionBase::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -1061,7 +1061,7 @@ bool CRegionWorld::r_GetRef( LPCTSTR & pszKey, CScriptObj * & pRef )
 	return( CRegionBase::r_GetRef( pszKey, pRef ));
 }
 
-bool CRegionWorld::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc )
+bool CRegionWorld::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs )
 {
 	ADDTOCALLSTACK("CRegionWorld::r_WriteVal");
 	EXC_TRY("WriteVal");

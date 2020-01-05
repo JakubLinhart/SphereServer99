@@ -63,7 +63,7 @@ LPCTSTR const CWebPageDef::sm_szLoadKeys[WC_QTY + 1] =
 	NULL
 };
 
-bool CWebPageDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CWebPageDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CWebPageDef::r_WriteVal");
 	EXC_TRY("WriteVal");

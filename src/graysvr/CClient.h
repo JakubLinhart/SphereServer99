@@ -628,7 +628,7 @@ public:
 	}
 
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// execute script type command on me
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 
 	// Low level message traffic

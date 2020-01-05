@@ -378,7 +378,7 @@ void CItemMulti::r_Write(CScript &s)
 		m_pRegion->r_WriteBody(s, "REGION.");
 }
 
-bool CItemMulti::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CItemMulti::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemMulti::r_WriteVal");
 	if ( !strnicmp(pszKey, "COMP", 4) )

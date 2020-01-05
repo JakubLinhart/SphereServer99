@@ -101,6 +101,8 @@ public:
 	CListDefMap m_ListGlobals;		// Global lists
 	CListDefMap m_ListInternals;	// Internal lists
 	CGString m_sTmp;
+	CScriptTriggerArgs* m_pArgs;
+	CTextConsole* m_pSrc;
 
 	// Defined default messages
 	static TCHAR sm_szMessages[DEFMSG_QTY][EXPRESSION_MAX_KEY_LEN];		// like: "You put %s to %s"
@@ -136,7 +138,7 @@ public:
 	INT64 GetRange(LPCTSTR &pszArgs);
 
 public:
-	CExpression();
+	CExpression(CScriptTriggerArgs *pArgs = NULL, CTextConsole* pSrc = NULL);
 	~CExpression();
 
 private:

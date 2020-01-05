@@ -587,7 +587,7 @@ public:
 	void r_WriteBase( CScript & s );
 
 	virtual bool r_LoadVal( CScript & s );
-	virtual bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc );
+	virtual bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual void r_WriteBody( CScript & s, LPCTSTR pszPrefix );
 	virtual void r_WriteModified( CScript & s );
 	virtual bool r_Verb( CScript & s, CTextConsole * pSrc ); // Execute command from script
@@ -655,7 +655,7 @@ public:
 public:
 	virtual bool r_GetRef( LPCTSTR & pszKey, CScriptObj * & pRef );
 	virtual bool r_LoadVal( CScript & s );
-	virtual bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc );
+	virtual bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual void r_WriteBody( CScript &s, LPCTSTR pszPrefix );
 	virtual void r_WriteModified( CScript &s );
 	virtual void r_Write( CScript & s );

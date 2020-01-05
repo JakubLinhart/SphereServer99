@@ -315,7 +315,7 @@ bool CDataBase::r_LoadVal(CScript &s)
 	return false;
 }
 
-bool CDataBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CDataBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CDataBase::r_WriteVal");
 	UNREFERENCED_PARAMETER(pSrc);

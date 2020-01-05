@@ -141,7 +141,7 @@ public:
 	void CopyBasic(const CBaseBaseDef *pBaseDef);
 	void CopyTransfer(CBaseBaseDef *pBaseDef);
 
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 
 public:

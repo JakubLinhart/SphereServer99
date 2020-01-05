@@ -733,7 +733,7 @@ public:
 
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	virtual void r_Write(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Load(CScript &s);	// Load an item from script
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// Execute command from script
@@ -981,7 +981,7 @@ public:
 
 	CCharBase *SetTrackID();
 
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual void r_Write(CScript &s);
 };
@@ -1026,7 +1026,7 @@ public:
 
 	virtual void DupeCopy(const CItem *pItem);
 	virtual void r_Write(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 
 private:
@@ -1152,7 +1152,7 @@ public:
 
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);
 	virtual void r_Write(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 
 	virtual int GetWeight(WORD wAmount = 0) const
@@ -1211,7 +1211,7 @@ private:
 public:
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// some command on this object as a target
 	virtual void r_Write(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual void DupeCopy(const CItem *pItem);
 };
@@ -1360,7 +1360,7 @@ public:
 	virtual bool IsSameType(const CObjBase *pObj) const;
 
 	virtual bool r_LoadVal(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
 	virtual void r_Write(CScript &s);
 	virtual void DupeCopy(const CItem *pItem);
 };
@@ -1393,7 +1393,7 @@ public:
 	virtual void OnHear(LPCTSTR pszCmd, CChar *pSrc);
 
 	virtual void r_Write(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual void DupeCopy(const CItem *pItem);
 };
@@ -1438,7 +1438,7 @@ public:
 	CGString m_sAuthor;
 
 	virtual void r_Write(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// execute command from script
 

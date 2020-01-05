@@ -242,7 +242,7 @@ bool CServerDef::r_LoadVal(CScript &s)
 	return false;
 }
 
-bool CServerDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CServerDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CServerDef::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -332,7 +332,7 @@ bool CServerDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 			if (r_Call(pszKey, pSrc, &Args, &sVal))
 				return true;
 
-			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 	}
 	return true;
