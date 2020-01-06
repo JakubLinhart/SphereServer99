@@ -4,6 +4,8 @@
 
 #include <set>
 
+class CScriptTriggerArgs;
+
 class CVarDefCont
 {
 private:
@@ -152,7 +154,7 @@ public:
 	int SetStr( LPCTSTR pszKey, bool fQuoted, LPCTSTR pszVal, bool fZero = false );
 
 	CVarDefCont * GetAt( size_t at ) const;
-	CVarDefCont * GetKey( LPCTSTR pszKey ) const;
+	CVarDefCont * GetKey( LPCTSTR pszKey, CScriptTriggerArgs *pArgs = NULL, CTextConsole *pSrc = NULL ) const;
 	INT64 GetKeyNum( LPCTSTR pszKey ) const;
 	LPCTSTR GetKeyStr( LPCTSTR pszKey, bool fZero = false ) const;
 	CVarDefCont * GetParseKey( LPCTSTR & pArgs ) const;

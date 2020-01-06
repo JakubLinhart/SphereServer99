@@ -1585,45 +1585,13 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	int index = FindTableHeadSorted(pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( index < 0 )
 	{
-		TCHAR* varKey = const_cast<TCHAR*>(pszKey);
-		TCHAR* bracketStart = const_cast<TCHAR*>(strchr(pszKey, '['));
-		if (bracketStart)
-		{
-			TCHAR* bracketEnd = const_cast<TCHAR*>(strchr(bracketStart, ']'));
-			int prefixLen = bracketStart - pszKey;
-			bracketStart++;
-
-			INT64 index = 0;
-			CExpression* expr = new CExpression(pArgs, pSrc);
-
-			if (bracketEnd)
-			{
-				TemporaryString strIndex;
-				strncpy(strIndex, bracketStart, bracketEnd - bracketStart);
-				index = expr->GetVal(strIndex);
-			}
-			else
-				index = expr->GetVal(bracketStart);
-
-			delete expr;
-
-			TemporaryString pszIndexBuffer;
-			sprintf(pszIndexBuffer, "%d", index);
-			TemporaryString pszBuffer;
-			strncpy(pszBuffer, pszKey, prefixLen);
-			strcat(pszBuffer, "[");
-			strcat(pszBuffer, pszIndexBuffer);
-			strcat(pszBuffer, "]");
-			varKey = pszBuffer;
-		}
-
-		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varKey);
+		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(pszKey, pArgs, pSrc);
 		if (pVar)
 		{
 			sVal = pVar->GetValStr();
 			return true;
 		}
-		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varKey);
+		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(pszKey, pArgs, pSrc);
 		if (pDef)
 		{
 			sVal = pDef->GetValStr();
@@ -1748,7 +1716,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		{
 			GETNONWHITESPACE(pszKey);
 			pszKey = Str_TrimEnd((TCHAR*)pszKey, ") \t");
-			CVarDefCont *pVar = g_Exp.m_VarGlobals.GetKey(pszKey);
+			CVarDefCont *pVar = g_Exp.m_VarGlobals.GetKey(pszKey, pArgs, pSrc);
 			if ( pVar )
 				sVal = pVar->GetValStr();
 			else if ( fZero )
@@ -1765,7 +1733,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			fZero = true;
 		case SSC_DEF:
 		{
-			CVarDefCont *pVar = g_Exp.m_VarDefs.GetKey(pszKey);
+			CVarDefCont *pVar = g_Exp.m_VarDefs.GetKey(pszKey, pArgs, pSrc);
 			if ( pVar )
 				sVal = pVar->GetValStr();
 			else if ( fZero )
@@ -2605,7 +2573,7 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 	if ( IsSetEF(EF_Intrinsic_Locals) )
 	{
 		EXC_SET("intrinsic");
-		CVarDefCont *pVar = m_VarsLocal.GetKey(pszKey);
+		CVarDefCont *pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
 		if ( pVar )
 		{
 			sVal = pVar->GetValStr();
@@ -2702,7 +2670,7 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 			sVal = m_s1;
 			break;
 		default:
-			CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey);
+			CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
 			if (pVar)
 			{
 				EXC_SET("nonspecificvar");

@@ -13,7 +13,6 @@
 
 #include "../common/graycom.h"
 
-
 class CServTime
 {
 #undef GetCurrentTime

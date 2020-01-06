@@ -682,7 +682,7 @@ bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 		if ( pszKey[4] != '.' )
 			return false;
 		pszKey += 5;
-		CVarDefCont *pVar = m_TagDefs.GetKey(pszKey);
+		CVarDefCont *pVar = m_TagDefs.GetKey(pszKey, pArgs, pSrc);
 		sVal = pVar ? pVar->GetValStr() : "";
 		return true;
 	}
@@ -692,7 +692,7 @@ bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 		if ( pszKey[5] != '.' )
 			return false;
 		pszKey += 6;
-		CVarDefCont *pVar = m_TagDefs.GetKey(pszKey);
+		CVarDefCont *pVar = m_TagDefs.GetKey(pszKey, pArgs, pSrc);
 		sVal = pVar ? pVar->GetValStr() : "0";
 		return true;
 	}

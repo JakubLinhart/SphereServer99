@@ -594,14 +594,46 @@ int CVarDefMap::SetStr( LPCTSTR pszName, bool fQuoted, LPCTSTR pszVal, bool fZer
 	return static_cast<int>(std::distance(m_Container.begin(), iResult) );
 }
 
-CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey ) const
+CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTextConsole* pSrc ) const
 {
 	ADDTOCALLSTACK("CVarDefMap::GetKey");
 	CVarDefCont * pReturn = NULL;
 
 	if ( pszKey )
 	{
-		CVarDefContTest * pVarBase = new CVarDefContTest(pszKey);
+		TCHAR* varKey = const_cast<TCHAR*>(pszKey);
+		TCHAR* bracketStart = const_cast<TCHAR*>(strchr(pszKey, '['));
+		if (bracketStart)
+		{
+			TCHAR* bracketEnd = const_cast<TCHAR*>(strchr(bracketStart, ']'));
+			int prefixLen = bracketStart - pszKey;
+			bracketStart++;
+
+			INT64 index = 0;
+			CExpression* expr = new CExpression(pArgs, pSrc);
+
+			if (bracketEnd)
+			{
+				TemporaryString strIndex;
+				strncpy(strIndex, bracketStart, bracketEnd - bracketStart);
+				index = expr->GetVal(strIndex);
+			}
+			else
+				index = expr->GetVal(bracketStart);
+
+			delete expr;
+
+			TemporaryString pszIndexBuffer;
+			sprintf(pszIndexBuffer, "%d", index);
+			TemporaryString pszBuffer;
+			strncpy(pszBuffer, pszKey, prefixLen);
+			strcat(pszBuffer, "[");
+			strcat(pszBuffer, pszIndexBuffer);
+			strcat(pszBuffer, "]");
+			varKey = pszBuffer;
+		}
+
+		CVarDefContTest * pVarBase = new CVarDefContTest(varKey);
 		DefSet::const_iterator i = m_Container.find(pVarBase);
 		delete pVarBase;
 		
