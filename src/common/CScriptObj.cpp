@@ -1280,7 +1280,7 @@ static void StringFunction(int iFunc, LPCTSTR pszKey, CGString &sVal)
 	}
 }
 
-bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs)
+bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CScriptObj::r_GetRefNew");
 	
@@ -1297,9 +1297,37 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 			pszKey = pszRawArgs;
 		}
 
-		pRef = static_cast<CGrayUID>(Exp_GetLLVal(pszKey)).ObjFind();
+		CExpression expr(pArgs, pSrc);
+		pRef = static_cast<CGrayUID>(expr.GetVal(pszKey)).ObjFind();
 		SKIP_SEPARATORS(pszKey);
 		return true;
+	}
+	else if (!strnicmp(pszKey, "FINDRES(", 8)) {
+		pszKey += 8;
+		TCHAR* ppArgs[3];
+		ppArgs[0] = const_cast<TCHAR*>(pszKey);
+		Str_Parse(ppArgs[0], &(ppArgs[1]), ",");
+		Str_Parse(ppArgs[1], &(ppArgs[2]), ")");
+
+		pszKey = ppArgs[2];
+		if (*pszKey == '.')
+			pszKey++;
+
+		if (g_Cfg.r_GetRef(ppArgs[0], ppArgs[1], pRef))
+		{
+			return true;
+		}
+		CGString resName;
+		if (pArgs)
+		{
+			pArgs->r_WriteVal(ppArgs[1], resName, pSrc);
+			if (g_Cfg.r_GetRef(ppArgs[0], resName, pRef))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	return false;
@@ -1314,25 +1342,6 @@ bool CScriptObj::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	{
 		pszKey += 5;
 		pRef = &g_Serv;
-		return true;
-	}
-	if (!strnicmp(pszKey, "FINDRES(", 8)) {
-		pszKey += 8;
-		TCHAR* ppArgs[3];
-		ppArgs[0] = const_cast<TCHAR*>(pszKey);
-		Str_Parse(ppArgs[0], &(ppArgs[1]), ",");
-		Str_Parse(ppArgs[1], &(ppArgs[2]), ")");
-
-		pszKey = ppArgs[2];
-		if (*pszKey != '.')
-			return false;
-		pszKey++;
-		if (g_Cfg.r_GetRef(ppArgs[0], ppArgs[1], pRef))
-		{
-			return true;
-		}
-		if (g_World.r_GetRef(pszKey, pRef))
-			return true;
 		return true;
 	}
 	else if ( !strnicmp(pszKey, "UID.", 4) )
@@ -1555,7 +1564,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	}
 
 	if ( !fGetRef )
-		fGetRef = r_GetRefNew(pszKey, pRef);
+		fGetRef = r_GetRefNew(pszKey, pRef, NULL, pArgs, pSrc);
 
 	if ( fGetRef )
 	{
@@ -1577,23 +1586,36 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	if ( index < 0 )
 	{
 		TCHAR* varKey = const_cast<TCHAR*>(pszKey);
-		//TCHAR* bracketStart = const_cast<TCHAR*>(strchr(pszKey, '['));
-		//if (bracketStart)
-		//{
-		//	int prefixLen = bracketStart - pszKey;
-		//	bracketStart++;
-		//	CExpression* expr = new CExpression(this, pSrc);
-		//	INT64 index = expr->GetSingle(bracketStart);
-		//	TemporaryString pszIndexBuffer;
-		//	sprintf(pszIndexBuffer, "%d", index);
-		//	TemporaryString pszBuffer;
-		//	strncpy(pszBuffer, pszKey, prefixLen);
-		//	strcat(pszBuffer, "[");
-		//	strcat(pszBuffer, pszIndexBuffer);
-		//	strcat(pszBuffer, "]");
-		//	varKey = pszBuffer;
-		//	delete expr;
-		//}
+		TCHAR* bracketStart = const_cast<TCHAR*>(strchr(pszKey, '['));
+		if (bracketStart)
+		{
+			TCHAR* bracketEnd = const_cast<TCHAR*>(strchr(bracketStart, ']'));
+			int prefixLen = bracketStart - pszKey;
+			bracketStart++;
+
+			INT64 index = 0;
+			CExpression* expr = new CExpression(pArgs, pSrc);
+
+			if (bracketEnd)
+			{
+				TemporaryString strIndex;
+				strncpy(strIndex, bracketStart, bracketEnd - bracketStart);
+				index = expr->GetVal(strIndex);
+			}
+			else
+				index = expr->GetVal(bracketStart);
+
+			delete expr;
+
+			TemporaryString pszIndexBuffer;
+			sprintf(pszIndexBuffer, "%d", index);
+			TemporaryString pszBuffer;
+			strncpy(pszBuffer, pszKey, prefixLen);
+			strcat(pszBuffer, "[");
+			strcat(pszBuffer, pszIndexBuffer);
+			strcat(pszBuffer, "]");
+			varKey = pszBuffer;
+		}
 
 		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varKey);
 		if (pVar)

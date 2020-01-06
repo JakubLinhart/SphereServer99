@@ -793,7 +793,7 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 			TemporaryString tmpArgs;
 			strcpy(tmpArgs, pszArgs);
 
-			Str_ParseCmds(tmpArgs, ppArgs, COUNTOF(ppArgs), "+-*/^!%");
+			Str_ParseCmds(tmpArgs, ppArgs, COUNTOF(ppArgs), ".+-*/^!%");
 			int argsLen = strlen(tmpArgs);
 			CGString sVal;
 			if (m_pArgs->r_WriteVal(tmpArgs, sVal, m_pSrc))
