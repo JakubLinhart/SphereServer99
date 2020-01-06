@@ -1101,6 +1101,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 	static int sm_iReentrant = 0;
 	static bool sm_fBrackets = false;	// allowed to span multi lines
 
+	bool escaped = false;
 	bool fQvalCondition = false;
 	TCHAR chQval = '?';
 
@@ -1128,8 +1129,15 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 		{
 			if ( ch == chBegin )	// found the start
 			{
+				if ((pszResponse[i + 1] == '?'))
+				{
+					i++;
+					escaped = true;
+				}
+
 				if ( !(isalnum(pszResponse[i + 1]) || (pszResponse[i + 1] == '<')) )
 					continue;
+
 				iBegin = i;
 				sm_fBrackets = true;
 			}
@@ -1138,7 +1146,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 		if ( ch == '<' )	// recursive brackets
 		{
-			if ( !(isalnum(pszResponse[i + 1]) || (pszResponse[i + 1] == '<')) )
+			if (!(pszResponse[i + 1] == '?') && (!(isalnum(pszResponse[i + 1]) || (pszResponse[i + 1] == '<'))) )
 				continue;
 
 			if ( sm_iReentrant > 32 )
@@ -1163,14 +1171,25 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 		if ( ch == chEnd )
 		{
+			if (escaped && ch == '>' && *(pszResponse + i - 1) != '?')
+				continue;
+
 			if ( !strnicmp(static_cast<LPCTSTR>(pszResponse) + iBegin + 1, "QVAL", 4) && !fQvalCondition )
 				continue;
 			// QVAL fix end
 			sm_fBrackets = false;
-			pszResponse[i] = '\0';
+			if (escaped)
+			{
+				pszResponse[i - 1] = '\0';
+				pszKey = static_cast<LPCTSTR>(pszResponse) + iBegin + 1;
+			}
+			else
+			{
+				pszResponse[i] = '\0';
+				pszKey = static_cast<LPCTSTR>(pszResponse) + iBegin + 1;
+			}
 
 			EXC_SET("writeval");
-			pszKey = static_cast<LPCTSTR>(pszResponse) + iBegin + 1;
 			CGString sVal;
 			fRes = r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			if ( !fRes )
@@ -1192,9 +1211,19 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 			EXC_SET("mem shifting");
 			size_t iLen = sVal.GetLength();
-			memmove(pszResponse + iBegin + iLen, pszResponse + i + 1, strlen(pszResponse + i + 1) + 1);
-			memcpy(pszResponse + iBegin, static_cast<LPCTSTR>(sVal), iLen);
-			i = iBegin + iLen - 1;
+			if (escaped)
+			{
+				memmove(pszResponse + iBegin + iLen - 1, pszResponse + i + 1, strlen(pszResponse + i + 1) + 1);
+				memcpy(pszResponse + iBegin - 1, static_cast<LPCTSTR>(sVal), iLen);
+				i = iBegin + iLen - 2;
+			}
+			else
+			{
+				memmove(pszResponse + iBegin + iLen, pszResponse + i + 1, strlen(pszResponse + i + 1) + 1);
+				memcpy(pszResponse + iBegin, static_cast<LPCTSTR>(sVal), iLen);
+				i = iBegin + iLen - 1;
+			}
+			escaped = false;
 
 			if ( (iFlags & 2) != 0 )	// just do this one then bail out
 				return i;
