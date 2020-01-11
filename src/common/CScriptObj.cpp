@@ -1631,7 +1631,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		{
 			// <dSOMEVAL> same as <eval <SOMEVAL>> to get dec from the val
 			LPCTSTR pszArg = pszKey + 1;
-			if ( r_WriteVal(pszArg, sVal, pSrc) )
+			if ( r_WriteVal(pszArg, sVal, pSrc, pArgs) )
 			{
 				if ( *sVal != '-' )
 					sVal.FormatLLVal(ahextoi64(sVal));
@@ -2707,7 +2707,7 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 				return true;
 			}
 
-			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, this);
 	}
 	CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey);
 	if (pVar)
