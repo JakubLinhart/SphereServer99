@@ -615,7 +615,9 @@ CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTe
 			if (bracketEnd)
 			{
 				TemporaryString strIndex;
-				strncpy(strIndex, bracketStart, bracketEnd - bracketStart);
+				size_t len = bracketEnd - bracketStart;
+				strncpy(strIndex, bracketStart, len);
+				strIndex.setAt(len, '\0');
 				index = expr->GetVal(strIndex);
 			}
 			else
@@ -623,13 +625,12 @@ CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTe
 
 			delete expr;
 
-			TemporaryString pszIndexBuffer;
-			sprintf(pszIndexBuffer, "%d", index);
+			TemporaryString pszPrefix;
+			strncpy(pszPrefix, pszKey, prefixLen);
+			pszPrefix.setAt(prefixLen, '\0');
+
 			TemporaryString pszBuffer;
-			strncpy(pszBuffer, pszKey, prefixLen);
-			strcat(pszBuffer, "[");
-			strcat(pszBuffer, pszIndexBuffer);
-			strcat(pszBuffer, "]");
+			sprintf(pszBuffer, "%s[%d]", static_cast<TCHAR*>(pszPrefix), index);
 			varKey = pszBuffer;
 		}
 
