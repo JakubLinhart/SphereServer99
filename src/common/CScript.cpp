@@ -66,7 +66,15 @@ long CScriptKey::GetArgVal()
 	ADDTOCALLSTACK("CScriptKey::GetArgVal");
 	ASSERT(m_pszKey);
 	ASSERT(m_pszArg);
-	return Exp_GetVal(m_pszArg);
+
+	TCHAR* pArgs = m_pszArg;
+	if (*pArgs == '"')
+	{
+		pArgs++;
+		pArgs = Str_TrimEnd(pArgs, "\"");
+	}
+
+	return Exp_GetVal(pArgs);
 }
 
 long CScriptKey::GetArgRange()
