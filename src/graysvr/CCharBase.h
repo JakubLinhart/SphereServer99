@@ -29,6 +29,7 @@ public:
 	int m_MaxFood;					// Derived from foodtype, this is the max amount of food we can eat
 
 	WORD m_defense;			// base defense (basic to body type)
+	WORD m_attack;
 	DWORD m_Anims;			// bitmask of animations available for monsters (ANIM_TYPE)
 	HUE_TYPE m_wBloodHue;	// when damaged, what color is the blood (-1 = no blood)
 	HUE_TYPE m_wColor;

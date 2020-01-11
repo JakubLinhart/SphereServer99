@@ -177,6 +177,9 @@ bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 		case CBC_ARMOR:
 			sVal.FormatVal(m_defense);
 			break;
+		case CBC_ATTACK:
+			sVal.FormatVal(m_attack);
+			break;
 		case CBC_AVERSIONS:
 		{
 			TCHAR *pszTmp = Str_GetTemp();
@@ -236,6 +239,9 @@ bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 			break;
 		case CBC_MAXFOOD:
 			sVal.FormatVal(m_MaxFood);
+			break;
+		case CBC_MOUNTID:
+			sVal.FormatVal(0);
 			break;
 		case CBC_MOVERATE:
 			sVal.FormatVal(m_iMoveRate);
@@ -306,6 +312,9 @@ bool CCharBase::r_LoadVal(CScript &s)
 		case CBC_ARMOR:
 			m_defense = static_cast<WORD>(s.GetArgVal());
 			break;
+		case CBC_ATTACK:
+			m_attack = static_cast<WORD>(s.GetArgVal());
+			break;
 		case CBC_AVERSIONS:
 			m_Aversions.Load(s.GetArgStr());
 			break;
@@ -353,6 +362,8 @@ bool CCharBase::r_LoadVal(CScript &s)
 			break;
 		case CBC_MAXFOOD:
 			m_MaxFood = static_cast<int>(s.GetArgVal());
+			break;
+		case CBC_MOUNTID:
 			break;
 		case CBC_MOVERATE:
 			m_iMoveRate = static_cast<short>(s.GetArgVal());

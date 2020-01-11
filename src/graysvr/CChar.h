@@ -340,6 +340,7 @@ private:
 	#define STATF_DEAD			0x00000002
 	#define STATF_Freeze		0x00000004	// Paralyzed (spell)
 	#define STATF_Invisible		0x00000008	// Invisible (spell)
+	#define STATF_Sleeping      0x00000010
 	//							0x00000010
 	#define STATF_War			0x00000020	// War mode on ?
 	#define STATF_Reactive		0x00000040	// have reactive armor on
@@ -357,7 +358,8 @@ private:
 	#define STATF_Stone			0x00040000	// turned to stone
 	#define STATF_Hovering		0x00080000	// hovering (flying gargoyle)
 	#define STATF_Fly			0x00100000	// Flying or running
-	//							0x00200000
+	#define STATF_Running       0x00100000
+//							0x00200000
 	#define STATF_Hallucinating	0x00400000	// eat 'shrooms or bad food
 	#define STATF_Hidden		0x00800000	// Hidden (non-magical)
 	#define STATF_InDoors		0x01000000	// we are covered from the rain
@@ -1011,6 +1013,7 @@ private:
 	void Noto_Fame(int iFameChange);
 	void Noto_ChangeNewMsg(int iPrvLevel);
 	void Noto_ChangeDeltaMsg(int iDelta, LPCTSTR pszType);
+	void SetFlag(long long val);
 
 public:
 	// Notoriety stuff

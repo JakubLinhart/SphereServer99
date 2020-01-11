@@ -105,7 +105,12 @@ public:
 	#define ATTR_OWNED			0x0000040	// Item is owned by someone (item LINK = owner UID)
 	#define ATTR_INVIS			0x0000080	// Item is invisible (can be only seen by GMs and chars specified on TAG.SeenBy_[CharUID])
 	#define ATTR_CURSED			0x0000100	// Item will fall to character corpse when die (can't be blessed/insured)
+	#define ATTR_CURSED2		0x0000200
 	#define ATTR_BLESSED		0x0000400	// Item will stay on character body when die
+	#define ATTR_BLESSED2		0x0000800
+	#define ATTR_FORSALE        0x0001000
+	#define ATTR_STOLEN         0x0002000
+	#define ATTR_CANDECAY       0x0004000
 	#define ATTR_STATIC			0x0008000	// Item will be locked on ground and must be saved separately on world static save (WorldForge merge marker)
 	#define ATTR_EXCEPTIONAL	0x0010000	// Item is exceptional
 	#define ATTR_ENCHANTED		0x0020000	// Item is enchanted

@@ -1990,7 +1990,10 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 		case IC_DOOROPENID:
 			GetDefStr(pszKey, true);
 			break;
-		//return as string or hex number or NULL if not set
+		case IC_QUALITY:
+			sVal.FormatHex(0);
+			break;
+			//return as string or hex number or NULL if not set
 		case IC_CRAFTEDBY:
 			sVal = GetDefStr(pszKey);
 			break;
@@ -2131,8 +2134,59 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 		case IC_ATTR:
 			sVal.FormatHex( m_Attr );
 			break;
+		case IC_ATTR_BLESSED:
+			sVal.FormatLLVal(m_Attr & ATTR_BLESSED ? 1 : 0);
+			break;
+		case IC_ATTR_BLESSED2:
+			sVal.FormatLLVal(m_Attr & ATTR_BLESSED2 ? 1 : 0);
+			break;
+		case IC_ATTR_CANDECAY:
+			sVal.FormatLLVal(m_Attr & IC_ATTR_CANDECAY ? 1 : 0);
+			break;
+		case IC_ATTR_CURSED:
+			sVal.FormatLLVal(m_Attr & ATTR_CURSED ? 1 : 0);
+			break;
+		case IC_ATTR_CURSED2:
+			sVal.FormatLLVal(m_Attr & ATTR_CURSED2 ? 1 : 0);
+			break;
+		case IC_ATTR_DECAY:
+			sVal.FormatLLVal(m_Attr & ATTR_DECAY ? 1 : 0);
+			break;
+		case IC_ATTR_FORSALE:
+			sVal.FormatLLVal(m_Attr & ATTR_FORSALE ? 1 : 0);
+			break;
+		case IC_ATTR_IDENTIFIED:
+			sVal.FormatLLVal(m_Attr & ATTR_IDENTIFIED ? 1 : 0);
+			break;
+		case IC_ATTR_INVIS:
+			sVal.FormatLLVal(m_Attr & ATTR_INVIS ? 1 : 0);
+			break;
+		case IC_ATTR_MAGIC:
+			sVal.FormatLLVal(m_Attr & ATTR_MAGIC ? 1 : 0);
+			break;
+		case IC_ATTR_MOVEALWAYS:
+			sVal.FormatLLVal(m_Attr & ATTR_MOVE_ALWAYS ? 1 : 0);
+			break;
+		case IC_ATTR_MOVENEVER:
+			sVal.FormatLLVal(m_Attr & ATTR_MOVE_NEVER ? 1 : 0);
+			break;
+		case IC_ATTR_NEWBIE:
+			sVal.FormatLLVal(m_Attr & ATTR_NEWBIE ? 1 : 0);
+			break;
+		case IC_ATTR_OWNED:
+			sVal.FormatLLVal(m_Attr & ATTR_OWNED ? 1 : 0);
+			break;
+		case IC_ATTR_STATIC:
+			sVal.FormatLLVal(m_Attr & ATTR_STATIC ? 1 : 0);
+			break;
+		case IC_ATTR_STOLEN:
+			sVal.FormatLLVal(m_Attr & IC_ATTR_STOLEN ? 1 : 0);
+			break;
 		case IC_CANUSE:
 			sVal.FormatHex( m_CanUse );
+			break;
+		case IC_COOWNER:
+			sVal.FormatHex(0);
 			break;
 		case IC_CONT:
 			{
@@ -2323,7 +2377,8 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		case IC_DOOROPENID:
 			SetDefNum(s.GetKey(),s.GetArgVal(), false);
 			break;
-
+		case IC_QUALITY:
+			break;
 		case IC_USESMAX:
 		{
 			INT64 amount = s.GetArgLLVal();
@@ -2372,6 +2427,56 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			return true;
 		case IC_ATTR:
 			m_Attr = static_cast<DWORD>(s.GetArgVal());
+			break;
+		case IC_ATTR_BLESSED:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_BLESSED : m_Attr & ~ATTR_BLESSED;
+			break;
+		case IC_ATTR_BLESSED2:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_BLESSED2 : m_Attr & ~ATTR_BLESSED2;
+			break;
+		case IC_ATTR_CANDECAY:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_CANDECAY : m_Attr & ~ATTR_CANDECAY;
+			break;
+		case IC_ATTR_CURSED:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_CURSED : m_Attr & ~ATTR_CURSED;
+			break;
+		case IC_ATTR_CURSED2:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_CURSED2 : m_Attr & ~ATTR_CURSED2;
+			break;
+		case IC_ATTR_DECAY:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_DECAY : m_Attr & ~ATTR_DECAY;
+			break;
+		case IC_ATTR_FORSALE:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_FORSALE : m_Attr & ~ATTR_FORSALE;
+			break;
+		case IC_ATTR_IDENTIFIED:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_IDENTIFIED : m_Attr & ~ATTR_IDENTIFIED;
+			break;
+		case IC_ATTR_INVIS:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_INVIS : m_Attr & ~ATTR_INVIS;
+			break;
+		case IC_ATTR_MAGIC:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_MAGIC : m_Attr & ~ATTR_MAGIC;
+			break;
+		case IC_ATTR_MOVEALWAYS:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_MOVE_ALWAYS : m_Attr & ~ATTR_MOVE_ALWAYS;
+			break;
+		case IC_ATTR_MOVENEVER:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_MOVE_NEVER : m_Attr & ~ATTR_MOVE_NEVER;
+			break;
+		case IC_ATTR_NEWBIE:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_NEWBIE : m_Attr & ~ATTR_NEWBIE;
+			break;
+		case IC_ATTR_OWNED:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_OWNED : m_Attr & ~ATTR_OWNED;
+			break;
+		case IC_ATTR_STATIC:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_STATIC : m_Attr & ~ATTR_STATIC;
+			break;
+		case IC_ATTR_STOLEN:
+			m_Attr = s.GetArgVal() ? m_Attr | ATTR_STOLEN : m_Attr & ~ATTR_STOLEN;
+			break;
+		case IC_COOWNER:
 			break;
 		case IC_BASEWEIGHT:
 			m_weight = static_cast<WORD>(s.GetArgVal());

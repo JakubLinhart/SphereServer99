@@ -319,6 +319,8 @@ bool CBaseBaseDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc
 			sVal.FormatUVal(GetResLevel());
 			break;
 		case OBC_RESOURCES:
+		case OBC_RESOURCES2:
+		case OBC_RESOURCES3:
 		{
 			pszKey += 9;
 			if ( *pszKey == '.' )
@@ -588,6 +590,8 @@ bool CBaseBaseDef::r_LoadVal(CScript &s)
 		case OBC_RESLEVEL:
 			return SetResLevel(minimum(maximum(static_cast<BYTE>(s.GetArgVal()), RDS_NONE), RDS_QTY - 1));
 		case OBC_RESOURCES:
+		case OBC_RESOURCES2:
+		case OBC_RESOURCES3:
 			m_BaseResources.Load(s.GetArgStr());
 			return true;
 		case OBC_RESPHYSICAL:

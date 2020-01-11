@@ -1458,7 +1458,7 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 							sVal.FormatLLVal(refAttacker.elapsed);
 							return true;
 						}
-						else if ( !strnicmp(pszKey, "DAM", 3) )
+						else if ( !strnicmp(pszKey, "ATTACK", 6) )
 						{
 							sVal.FormatLLVal(refAttacker.damage);
 							return true;
@@ -2040,6 +2040,105 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 		case CHC_FLAGS:
 			sVal.FormatULLHex(m_StatFlag);
 			break;
+		case CHC_FLAG_INVUL:
+			sVal.FormatLLVal(m_StatFlag & STATF_INVUL ? 1 : 0);
+			break;
+		case CHC_FLAG_DEAD:
+			sVal.FormatLLVal(m_StatFlag & STATF_DEAD ? 1 : 0);
+			break;
+		case CHC_FLAG_FREEZE:
+			sVal.FormatLLVal(m_StatFlag & STATF_Freeze ? 1 : 0);
+			break;
+		case CHC_FLAG_IMMOBILE:
+			sVal.FormatLLVal(m_StatFlag & STATF_Freeze ? 1 : 0);
+			break;
+		case CHC_FLAG_INVISIBLE:
+			sVal.FormatLLVal(m_StatFlag & STATF_Invisible ? 1 : 0);
+			break;
+		case CHC_FLAG_SLEEPING:
+			sVal.FormatLLVal(m_StatFlag & STATF_Sleeping ? 1 : 0);
+			break;
+		case CHC_FLAG_WAR:
+			sVal.FormatLLVal(m_StatFlag & STATF_War ? 1 : 0);
+			break;
+		case CHC_FLAG_REACTIVE:
+			sVal.FormatLLVal(m_StatFlag & STATF_Reactive ? 1 : 0);
+			break;
+		case CHC_FLAG_POISONED:
+			sVal.FormatLLVal(m_StatFlag & STATF_Poisoned ? 1 : 0);
+			break;
+		case CHC_FLAG_NIGHTSIGHT:
+			sVal.FormatLLVal(m_StatFlag & STATF_NightSight ? 1 : 0);
+			break;
+		case CHC_FLAG_REFLECTION:
+			sVal.FormatLLVal(m_StatFlag & STATF_Reflection ? 1 : 0);
+			break;
+		case CHC_FLAG_POLYMORPH:
+			sVal.FormatLLVal(m_StatFlag & STATF_Polymorph ? 1 : 0);
+			break;
+		case CHC_FLAG_INCOGNITO:
+			sVal.FormatLLVal(m_StatFlag & STATF_Incognito ? 1 : 0);
+			break;
+		case CHC_FLAG_SPIRITSPEAK:
+			sVal.FormatLLVal(m_StatFlag & STATF_SpiritSpeak ? 1 : 0);
+			break;
+		case CHC_FLAG_INSUBSTANTIAL:
+			sVal.FormatLLVal(m_StatFlag & STATF_Insubstantial ? 1 : 0);
+			break;
+		case CHC_FLAG_EMOTEACTION:
+			sVal.FormatLLVal(m_StatFlag & STATF_EmoteAction ? 1 : 0);
+			break;
+		case CHC_FLAG_COMMCRYSTAL:
+			sVal.FormatLLVal(m_StatFlag & STATF_COMM_CRYSTAL ? 1 : 0);
+			break;
+		case CHC_FLAG_HASSHIELD:
+			sVal.FormatLLVal(m_StatFlag & STATF_HasShield ? 1 : 0);
+			break;
+		case CHC_FLAG_ARCHERCANMOV:
+			sVal.FormatLLVal(m_StatFlag & STATF_ArcherCanMove ? 1 : 0);
+			break;
+		case CHC_FLAG_STONE:
+			sVal.FormatLLVal(m_StatFlag & STATF_Stone ? 1 : 0);
+			break;
+		case CHC_FLAG_HOVERING:
+			sVal.FormatLLVal(m_StatFlag & STATF_Hovering ? 1 : 0);
+			break;
+		case CHC_FLAG_FLY:
+			sVal.FormatLLVal(m_StatFlag & STATF_Fly ? 1 : 0);
+			break;
+		case CHC_FLAG_HALLUCINATING:
+			sVal.FormatLLVal(m_StatFlag & STATF_Hallucinating ? 1 : 0);
+			break;
+		case CHC_FLAG_HIDDEN:
+			sVal.FormatLLVal(m_StatFlag & STATF_Hidden ? 1 : 0);
+			break;
+		case CHC_FLAG_INDOORS:
+			sVal.FormatLLVal(m_StatFlag & STATF_InDoors ? 1 : 0);
+			break;
+		case CHC_FLAG_CRIMINAL:
+			sVal.FormatLLVal(m_StatFlag & STATF_Criminal ? 1 : 0);
+			break;
+		case CHC_FLAG_CONJURED:
+			sVal.FormatLLVal(m_StatFlag & STATF_Conjured ? 1 : 0);
+			break;
+		case CHC_FLAG_PET:
+			sVal.FormatLLVal(m_StatFlag & STATF_Pet ? 1 : 0);
+			break;
+		case CHC_FLAG_SPAWNED:
+			sVal.FormatLLVal(m_StatFlag & STATF_Spawned ? 1 : 0);
+			break;
+		case CHC_FLAG_SAVEPARITY:
+			sVal.FormatLLVal(m_StatFlag & STATF_SaveParity ? 1 : 0);
+			break;
+		case CHC_FLAG_RIDDEN:
+			sVal.FormatLLVal(m_StatFlag & STATF_Ridden ? 1 : 0);
+			break;
+		case CHC_FLAG_RUNNING:
+			sVal.FormatLLVal(m_StatFlag & STATF_Running ? 1 : 0);
+			break;
+		case CHC_FLAG_ONHORSE:
+			sVal.FormatLLVal(m_StatFlag & STATF_OnHorse ? 1 : 0);
+			break;
 		case CHC_FONT:
 			sVal.FormatVal(m_fonttype);
 			break;
@@ -2141,6 +2240,19 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 	EXC_ADD_KEYRET(pSrc);
 	EXC_DEBUG_END;
 	return false;
+}
+
+void CChar::SetFlag(long long val)
+{
+	if (g_Serv.IsLoading())
+	{
+		// Don't set STATF_SaveParity at server startup, otherwise the first worldsave will not save these chars
+		m_StatFlag = val & ~STATF_SaveParity;
+		return;
+	}
+	// Don't modify STATF_SaveParity, STATF_Pet, STATF_Spawned here
+	m_StatFlag = (m_StatFlag & (STATF_SaveParity | STATF_Pet | STATF_Spawned)) | (val & ~(STATF_SaveParity | STATF_Pet | STATF_Spawned));
+	NotoSave_Update();
 }
 
 bool CChar::r_LoadVal(CScript &s)
@@ -2306,7 +2418,7 @@ bool CChar::r_LoadVal(CScript &s)
 							Attacker_SetElapsed(id, s.GetArgLLVal());
 							return true;
 						}
-						else if ( !strnicmp(pszKey, "DAM", 3) )
+						else if ( !strnicmp(pszKey, "ATTACK", 6) )
 						{
 							Attacker_SetDamage(id, s.GetArgLLVal());
 							return true;
@@ -2365,17 +2477,108 @@ bool CChar::r_LoadVal(CScript &s)
 		}
 		case CHC_FLAGS:
 		{
-			if ( g_Serv.IsLoading() )
-			{
-				// Don't set STATF_SaveParity at server startup, otherwise the first worldsave will not save these chars
-				m_StatFlag = s.GetArgLLVal() & ~STATF_SaveParity;
-				break;
-			}
-			// Don't modify STATF_SaveParity, STATF_Pet, STATF_Spawned here
-			m_StatFlag = (m_StatFlag & (STATF_SaveParity|STATF_Pet|STATF_Spawned)) | (s.GetArgLLVal() & ~(STATF_SaveParity|STATF_Pet|STATF_Spawned));
-			NotoSave_Update();
+			SetFlag(s.GetArgLLVal());
 			break;
 		}
+		case CHC_FLAG_INVUL:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_INVUL : m_StatFlag & ~STATF_INVUL;
+			break;
+		case CHC_FLAG_DEAD:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_DEAD : m_StatFlag & ~STATF_DEAD;
+			break;
+		case CHC_FLAG_FREEZE:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Freeze : m_StatFlag & ~STATF_Freeze;
+			break;
+		case CHC_FLAG_IMMOBILE:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Freeze : m_StatFlag & ~STATF_Freeze;
+			break;
+		case CHC_FLAG_INVISIBLE:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Invisible : m_StatFlag & ~STATF_Invisible;
+			break;
+		case CHC_FLAG_SLEEPING:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Sleeping : m_StatFlag & ~STATF_Sleeping;
+			break;
+		case CHC_FLAG_WAR:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_War : m_StatFlag & ~STATF_War;
+			break;
+		case CHC_FLAG_REACTIVE:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Reactive : m_StatFlag & ~STATF_Reactive;
+			break;
+		case CHC_FLAG_POISONED:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Poisoned : m_StatFlag & ~STATF_Poisoned;
+			break;
+		case CHC_FLAG_NIGHTSIGHT:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_NightSight : m_StatFlag & ~STATF_NightSight;
+			break;
+		case CHC_FLAG_REFLECTION:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Reflection : m_StatFlag & ~STATF_Reflection;
+			break;
+		case CHC_FLAG_POLYMORPH:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Polymorph : m_StatFlag & ~STATF_Polymorph;
+			break;
+		case CHC_FLAG_INCOGNITO:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Incognito : m_StatFlag & ~STATF_Incognito;
+			break;
+		case CHC_FLAG_SPIRITSPEAK:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_SpiritSpeak : m_StatFlag & ~STATF_SpiritSpeak;
+			break;
+		case CHC_FLAG_INSUBSTANTIAL:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Insubstantial : m_StatFlag & ~STATF_Insubstantial;
+			break;
+		case CHC_FLAG_EMOTEACTION:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_EmoteAction : m_StatFlag & ~STATF_EmoteAction;
+			break;
+		case CHC_FLAG_COMMCRYSTAL:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_COMM_CRYSTAL : m_StatFlag & ~STATF_COMM_CRYSTAL;
+			break;
+		case CHC_FLAG_HASSHIELD:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_HasShield : m_StatFlag & ~STATF_HasShield;
+			break;
+		case CHC_FLAG_ARCHERCANMOV:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_ArcherCanMove : m_StatFlag & ~STATF_ArcherCanMove;
+			break;
+		case CHC_FLAG_STONE:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Stone : m_StatFlag & ~STATF_Stone;
+			break;
+		case CHC_FLAG_HOVERING:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Hovering : m_StatFlag & ~STATF_Hovering;
+			break;
+		case CHC_FLAG_FLY:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Fly : m_StatFlag & ~STATF_Fly;
+			break;
+		case CHC_FLAG_HALLUCINATING:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Hallucinating : m_StatFlag & ~STATF_Hallucinating;
+			break;
+		case CHC_FLAG_HIDDEN:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Hidden : m_StatFlag & ~STATF_Hidden;
+			break;
+		case CHC_FLAG_INDOORS:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_InDoors : m_StatFlag & ~STATF_InDoors;
+			break;
+		case CHC_FLAG_CRIMINAL:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Criminal : m_StatFlag & ~STATF_Criminal;
+			break;
+		case CHC_FLAG_CONJURED:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Conjured : m_StatFlag & ~STATF_Conjured;
+			break;
+		case CHC_FLAG_PET:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Pet : m_StatFlag & ~STATF_Pet;
+			break;
+		case CHC_FLAG_SPAWNED:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Spawned : m_StatFlag & ~STATF_Spawned;
+			break;
+		case CHC_FLAG_SAVEPARITY:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_SaveParity : m_StatFlag & ~STATF_SaveParity;
+			break;
+		case CHC_FLAG_RIDDEN:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Ridden : m_StatFlag & ~STATF_Ridden;
+			break;
+		case CHC_FLAG_RUNNING:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Running : m_StatFlag & ~STATF_Running;
+			break;
+		case CHC_FLAG_ONHORSE:
+			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_OnHorse : m_StatFlag & ~STATF_OnHorse;
+			break;
 		case CHC_FOLLOWERSLOTS:
 			m_FollowerSlots = static_cast<short>(s.GetArgVal());
 			break;

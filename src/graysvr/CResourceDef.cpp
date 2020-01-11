@@ -568,11 +568,11 @@ enum SPC_TYPE
 
 LPCTSTR const CSpellDef::sm_szLoadKeys[SPC_QTY+1] =
 {
-	"CAST_TIME",
+	"CASTTIME",
 	"DEFNAME",
 	"DURATION",
 	"EFFECT",
-	"EFFECT_ID",
+	"EFFECTID",
 	"FLAGS",
 	"GROUP",
 	"INTERRUPT",
@@ -581,9 +581,9 @@ LPCTSTR const CSpellDef::sm_szLoadKeys[SPC_QTY+1] =
 	"NAME",
 	"PROMPT_MSG",
 	"RESOURCES",
-	"RUNE_ITEM",
+	"RUNEITEM",
 	"RUNES",
-	"SCROLL_ITEM",
+	"SCROLLITEM",
 	"SKILLREQ",
 	"SOUND",
 	"TITHINGUSE",

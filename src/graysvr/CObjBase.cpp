@@ -1414,6 +1414,9 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		case OC_PROPSCOUNT:
 			sVal.FormatVal(m_BaseDefs.GetCount());
 			break;
+		case OC_AGE:
+		case OC_CHANGER:
+			break;
 		default:
 			return false;
 	}

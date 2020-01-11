@@ -983,6 +983,10 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 		case IBC_CANUSE:
 			sVal.FormatHex(m_CanUse);
 			break;
+		case IBC_CAN_PILE:
+		case IBC_CAN_REPLICATE:
+			sVal.FormatHex(0);
+			break;
 		case IBC_DYE:
 			sVal.FormatVal((m_Can & CAN_I_DYE) ? true : false);
 			break;
@@ -1336,6 +1340,9 @@ bool CItemBase::r_LoadVal(CScript &s)
 			break;
 		case IBC_CANUSE:
 			m_CanUse = s.GetArgVal();
+			break;
+		case IBC_CAN_PILE:
+		case IBC_CAN_REPLICATE:
 			break;
 		case IBC_DISPID:
 			return false;	// can't set this
