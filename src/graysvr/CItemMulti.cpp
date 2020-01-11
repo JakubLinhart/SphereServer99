@@ -431,9 +431,9 @@ bool CItemMulti::r_LoadVal(CScript &s)
 			MoveTo(GetTopPoint());	// put item on the ground here
 			Update();
 		}
-		ASSERT(m_pRegion);
 		CScript script(s.GetKey() + 7, s.GetArgStr());
-		return m_pRegion->r_LoadVal(script);
+		if (m_pRegion)
+			return m_pRegion->r_LoadVal(script);
 	}
 	return CItem::r_LoadVal(s);
 	EXC_CATCH;

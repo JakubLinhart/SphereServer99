@@ -366,6 +366,10 @@ enum RC_TYPE
 	RC_CLIENTS,
 	RC_COLDCHANCE,
 	RC_EVENTS,
+	RC_FLAG_ANTIMAGIC_RECALLIN,
+	RC_FLAG_ANTIMAGIC_TELEPORT,
+	RC_FLAG_NOBUILDING,
+	RC_FLAG_NODECAY,
 	RC_FLAGS,
 	RC_GATE,
 	RC_GROUP,
@@ -403,6 +407,10 @@ LPCTSTR const CRegionBase::sm_szLoadKeys[RC_QTY+1] =	// static (Sorted)
 	"CLIENTS",
 	"COLDCHANCE",
 	"EVENTS",
+	"FLAG_AntiMagic_RecallIn",
+	"FLAG_AntiMagic_Teleport",
+	"FLAG_NoBuilding",
+	"FLAG_NoDecay",
 	"FLAGS",
 	"GATE",
 	"GROUP",
@@ -474,6 +482,18 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 			pszKey += 8;
 			sVal.FormatVal(m_Events.ContainsResourceName(RES_EVENTS, pszKey));
 			return( true );
+		case RC_FLAG_ANTIMAGIC_RECALLIN:
+			sVal.FormatVal(IsFlag(REGION_ANTIMAGIC_RECALL_IN));
+			break;
+		case RC_FLAG_ANTIMAGIC_TELEPORT:
+			sVal.FormatVal(IsFlag(REGION_ANTIMAGIC_TELEPORT));
+			break;
+		case RC_FLAG_NOBUILDING:
+			sVal.FormatVal(IsFlag(REGION_FLAG_NOBUILDING));
+			break;
+		case RC_FLAG_NODECAY:
+			sVal.FormatVal(IsFlag(REGION_FLAG_NODECAY));
+			break;
 		case RC_FLAGS:
 			sVal.FormatHex( GetRegionFlags() );
 			break;
@@ -672,6 +692,18 @@ bool CRegionBase::r_LoadVal( CScript & s )
 		case RC_FLAGS:
 			m_dwFlags = ( s.GetArgVal() &~REGION_FLAG_SHIP ) | ( m_dwFlags & REGION_FLAG_SHIP );
 			SetModified( REGMOD_FLAGS );
+			break;
+		case RC_FLAG_ANTIMAGIC_RECALLIN:
+			TogRegionFlags(REGION_ANTIMAGIC_RECALL_IN, s.GetArgVal() != 0);
+			break;
+		case RC_FLAG_ANTIMAGIC_TELEPORT:
+			TogRegionFlags(REGION_ANTIMAGIC_TELEPORT, s.GetArgVal() != 0);
+			break;
+		case RC_FLAG_NOBUILDING:
+			TogRegionFlags(REGION_FLAG_NOBUILDING, s.GetArgVal() != 0);
+			break;
+		case RC_FLAG_NODECAY:
+			TogRegionFlags(REGION_FLAG_NODECAY, s.GetArgVal() != 0);
 			break;
 		case RC_GATE:
 			TogRegionFlags( REGION_ANTIMAGIC_GATE, ! s.GetArgVal());

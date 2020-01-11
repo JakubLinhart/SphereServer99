@@ -2095,7 +2095,7 @@ bool CResource::LoadResourceSection(CScript *pScript)
 		restype = RES_DEFNAME;
 		fNewStyleDef = true;
 	}
-	else if ( !strnicmp(pszSection, "AREADEF", 7) )
+	else if ( !strnicmp(pszSection, "AREA", 4) )
 	{
 		restype = RES_AREA;
 		fNewStyleDef = true;

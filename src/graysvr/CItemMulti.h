@@ -57,7 +57,7 @@ protected:
 
 	const CItemBaseMulti *Multi_GetDef() const
 	{
-		return dynamic_cast<const CItemBaseMulti *>(Base_GetDef());
+		return static_cast<const CItemBaseMulti *>(Base_GetDef());
 	}
 
 	virtual void OnComponentCreate(const CItem *pComponent)
