@@ -2626,7 +2626,7 @@ bool CResource::LoadResourceSection(CScript *pScript)
 			pScript->SeekContext(LineContext);
 			break;
 		}
-		case RES_SKILLCLASS:
+		case RES_PROFESSION:
 		{
 			pPrvDef = ResourceGetDef(rid);
 			if ( pPrvDef )
@@ -3240,7 +3240,7 @@ RESOURCE_ID CResource::ResourceGetNewID(RES_TYPE restype, LPCTSTR pszName, CVarD
 		case RES_SCROLL:
 		case RES_TIP:
 		case RES_TYPEDEF:
-		case RES_SKILLCLASS:
+		case RES_PROFESSION:
 		case RES_REGIONRESOURCE:
 		{
 			iHashRange = 1000;
@@ -3334,7 +3334,7 @@ CResourceDef *CResource::ResourceGetDef(RESOURCE_ID_BASE rid) const
 		case RES_ITEMDEF:
 		case RES_CHARDEF:
 		case RES_SPAWN:
-		case RES_SKILLCLASS:
+		case RES_PROFESSION:
 		case RES_AREA:
 		case RES_ROOM:
 			return CResourceBase::ResourceGetDef(rid);
@@ -3565,12 +3565,12 @@ bool CResource::Load(bool fResync)
 	if ( g_Serv.GetName()[0] == '\0' )
 		g_Serv.SetName(SPHERE_TITLE);
 
-	if ( !g_Cfg.ResourceGetDef(RESOURCE_ID(RES_SKILLCLASS, 0)) )
+	if ( !g_Cfg.ResourceGetDef(RESOURCE_ID(RES_PROFESSION, 0)) )
 	{
 		// Must have at least 1 skill class
-		CSkillClassDef *pSkillClass = new CSkillClassDef(RESOURCE_ID(RES_SKILLCLASS));
+		CSkillClassDef *pSkillClass = new CSkillClassDef(RESOURCE_ID(RES_PROFESSION));
 		ASSERT(pSkillClass);
-		m_ResHash.AddSortKey(RESOURCE_ID(RES_SKILLCLASS, 0), pSkillClass);
+		m_ResHash.AddSortKey(RESOURCE_ID(RES_PROFESSION, 0), pSkillClass);
 	}
 
 	if ( m_StartDefs.GetCount() <= 0 )

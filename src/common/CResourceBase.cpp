@@ -31,6 +31,7 @@ LPCTSTR const CResourceBase::sm_szResourceBlocks[RES_QTY] =	// static
 	"NOTOTITLES",		// (SI) Define the noto titles used
 	"OBSCENE",			// (SL) A list of obscene words
 	"PLEVEL",			// Define the list of commands that a PLEVEL can access (or not access)
+	"PROFESSION",		// Define class specifics for a char with this skill class
 	"REGIONRESOURCE",	// Define ore types
 	"REGIONTYPE",		// Triggers etc. that can be assinged to a RES_AREA
 	"RESOURCELIST",
@@ -41,7 +42,6 @@ LPCTSTR const CResourceBase::sm_szResourceBlocks[RES_QTY] =	// static
 	"SECTOR",			// Make changes to a sector (SAVED in World)
 	"SERVERS",			// List a number of servers in 3 line format
 	"SKILL",			// Define attributes for a skill (how fast it raises, etc)
-	"SKILLCLASS",		// Define class specifics for a char with this skill class
 	"SKILLMENU",		// A menu that is attached to a skill. Special arguments over other menus
 	"SPAWN",			// Define a list of NPC's and how often they may spawn
 	"SPEECH",			// (SL) Preload these speech files
@@ -739,7 +739,7 @@ void CResourceLink::ScanSection(RES_TYPE restype)
 			break;
 		case RES_CHARDEF:
 		case RES_EVENTS:
-		case RES_SKILLCLASS:
+		case RES_PROFESSION:
 			ppTable = CChar::sm_szTrigName;
 			iQty = CTRIG_QTY;
 			break;

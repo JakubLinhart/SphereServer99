@@ -33,6 +33,7 @@ enum RES_TYPE	// all the script resource blocks we know how to deal with
 	RES_NOTOTITLES,		// (SI) Define the noto titles used
 	RES_OBSCENE,		// (SL) A list of obscene words
 	RES_PLEVEL,			// Define the list of commands that a PLEVEL can access (or not access)
+	RES_PROFESSION,		// Define class specifics for a char with this skill class
 	RES_REGIONRESOURCE,	// Define ore types
 	RES_REGIONTYPE,		// Triggers etc. that can be assinged to a RES_AREA
 	RES_RESOURCELIST,
@@ -43,7 +44,6 @@ enum RES_TYPE	// all the script resource blocks we know how to deal with
 	RES_SECTOR,			// Make changes to a sector (SAVED in World)
 	RES_SERVERS,		// List a number of servers in 3 line format
 	RES_SKILL,			// Define attributes for a skill (how fast it raises, etc)
-	RES_SKILLCLASS,		// Define class specifics for a char with this skill class
 	RES_SKILLMENU,		// A menu that is attached to a skill. Special arguments over other menus
 	RES_SPAWN,			// Define a list of NPC's and how often they may spawn
 	RES_SPEECH,			// (SL) Preload these speech files

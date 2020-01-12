@@ -2185,6 +2185,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 		case IC_CANUSE:
 			sVal.FormatHex( m_CanUse );
 			break;
+		case IC_FRIEND:
 		case IC_COOWNER:
 			sVal.FormatHex(0);
 			break;
@@ -2476,6 +2477,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		case IC_ATTR_STOLEN:
 			m_Attr = s.GetArgVal() ? m_Attr | ATTR_STOLEN : m_Attr & ~ATTR_STOLEN;
 			break;
+		case IC_FRIEND:
 		case IC_COOWNER:
 			break;
 		case IC_BASEWEIGHT:

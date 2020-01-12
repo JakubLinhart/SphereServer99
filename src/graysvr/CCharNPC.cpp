@@ -88,7 +88,7 @@ CCharPlayer::CCharPlayer(CChar *pChar, CAccount *pAccount)
 
 	memset(m_SkillLock, 0, sizeof(m_SkillLock));
 	memset(m_StatLock, 0, sizeof(m_StatLock));
-	SetSkillClass(pChar, RESOURCE_ID(RES_SKILLCLASS));
+	SetSkillClass(pChar, RESOURCE_ID(RES_PROFESSION));
 }
 
 CCharPlayer::~CCharPlayer()
@@ -108,7 +108,7 @@ bool CCharPlayer::SetSkillClass(CChar *pChar, RESOURCE_ID rid)
 		return true;
 
 	// Remove previous skillclass first
-	size_t i = pChar->m_OEvents.FindResourceType(RES_SKILLCLASS);
+	size_t i = pChar->m_OEvents.FindResourceType(RES_PROFESSION);
 	if ( i != pChar->m_OEvents.BadIndex() )
 		pChar->m_OEvents.RemoveAt(i);
 
@@ -266,7 +266,7 @@ bool CCharPlayer::r_WriteVal(CChar *pChar, LPCTSTR pszKey, CGString &sVal)
 		case CPC_REFUSETRADES:
 			sVal.FormatVal(m_fRefuseTrades);
 			return true;
-		case CPC_SKILLCLASS:
+		case CPC_PROFESSION:
 			sVal = GetSkillClass()->GetResourceName();
 			return true;
 		case CPC_SKILLLOCK:
@@ -343,12 +343,20 @@ bool CCharPlayer::r_LoadVal(CChar *pChar, CScript &s)
 			m_fRefuseTrades = (s.GetArgVal() > 0);
 			return true;
 		case CPC_PROFESSION:
-		case CPC_SKILLCLASS:
-			return SetSkillClass(pChar, g_Cfg.ResourceGetIDType(RES_SKILLCLASS, s.GetArgStr()));
+			return SetSkillClass(pChar, g_Cfg.ResourceGetIDType(RES_PROFESSION, s.GetArgStr()));
 		case CPC_SKILLLOCK:
 		{
 			SKILL_TYPE skill = Skill_GetLockType(s.GetKey());
-			SKILLLOCK_TYPE state = static_cast<SKILLLOCK_TYPE>(s.GetArgVal());
+			TCHAR* type = s.GetArgStr();
+			SKILLLOCK_TYPE state;
+			if (strnicmp(type, "UP", 2))
+				state = SKILLLOCK_UP;
+			else if (strnicmp(type, "DOWN", 4))
+				state = SKILLLOCK_DOWN;
+			else if (strnicmp(type, "LOCK", 4))
+				state = SKILLLOCK_LOCK;
+			else
+				state = static_cast<SKILLLOCK_TYPE>(s.GetArgVal());
 			if ( (state < SKILLLOCK_UP) || (state > SKILLLOCK_LOCK) )
 				return false;
 
@@ -405,7 +413,7 @@ void CCharPlayer::r_WriteChar(CChar *pChar, CScript &s)
 	if ( m_wMurders )
 		s.WriteKeyVal("KILLS", m_wMurders);
 	if ( GetSkillClass()->GetResourceID().GetResIndex() )
-		s.WriteKey("SKILLCLASS", GetSkillClass()->GetResourceName());
+		s.WriteKey("PROFESSION", GetSkillClass()->GetResourceName());
 	if ( m_speedMode )
 		s.WriteKeyVal("SPEEDMODE", m_speedMode);
 	if ( m_fRefuseTrades )

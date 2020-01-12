@@ -638,7 +638,7 @@ int CChar::FixWeirdness()
 
 		if ( !m_pPlayer->GetSkillClass() )	// this should never happen
 		{
-			m_pPlayer->SetSkillClass(this, RESOURCE_ID(RES_SKILLCLASS));
+			m_pPlayer->SetSkillClass(this, RESOURCE_ID(RES_PROFESSION));
 			ASSERT(m_pPlayer->GetSkillClass());
 		}
 
