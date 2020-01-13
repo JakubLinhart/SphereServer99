@@ -2563,7 +2563,8 @@ size_t CScriptTriggerArgs::getArgumentsCount()
 		}
 
 		pszArgs = s;	// arg starts here
-		++s;
+		if (fQuotes && *s != '"')
+			++s;
 
 		while (*s)
 		{
