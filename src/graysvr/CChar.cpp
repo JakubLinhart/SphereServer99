@@ -1277,6 +1277,7 @@ bool CChar::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 				pRef = m_Act_Targ.ObjFind();
 				return true;
 			case CHR_FINDLAYER:				// find equipped layers
+				SKIP_SEPARATORS(pszKey);
 				pRef = LayerFind(static_cast<LAYER_TYPE>(Exp_GetLLSingle(pszKey)));
 				SKIP_SEPARATORS(pszKey);
 				return true;

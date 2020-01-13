@@ -1599,7 +1599,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	{
 		if ( !pRef )	// good command but bad link
 		{
-			sVal.FormatVal(0);
+			sVal.Empty();
 			return true;
 		}
 		if ( pszKey[0] == '\0' )	// just testing the ref
