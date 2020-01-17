@@ -456,6 +456,27 @@ DWORD CContainer::ContentCountAll() const
 	return dwTotal;
 }
 
+bool CContainer::r_GetRefContainerNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
+{
+	ADDTOCALLSTACK("CContainer::r_GetRefContainer");
+
+	if (!strnicmp(pszKey, "FINDID", 6))
+	{
+		pszKey += 6;
+		if (*pszKey == '\0')
+			pszKey = pszRawArgs;
+
+		TemporaryString pszArgs;
+		if (Str_ParseArgumentList(pszKey, pszArgs))
+		{
+			pRef = ContentFind(g_Cfg.ResourceGetID(RES_ITEMDEF, pszArgs));
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool CContainer::r_GetRefContainer(LPCTSTR &pszKey, CScriptObj *&pRef)
 {
 	ADDTOCALLSTACK("CContainer::r_GetRefContainer");
@@ -464,15 +485,7 @@ bool CContainer::r_GetRefContainer(LPCTSTR &pszKey, CScriptObj *&pRef)
 	if ( !strnicmp(pszKey, "FIND", 4) )				// FIND*
 	{
 		pszKey += 4;
-		if ( !strnicmp(pszKey, "ID", 2) )			// FINDID
-		{
-			pszKey += 2;
-			SKIP_SEPARATORS(pszKey);
-			pRef = ContentFind(g_Cfg.ResourceGetID(RES_ITEMDEF, pszKey));
-			SKIP_SEPARATORS(pszKey);
-			return true;
-		}
-		else if ( !strnicmp(pszKey, "CONT", 4) )	// FINDCONT
+		if ( !strnicmp(pszKey, "CONT", 4) )	// FINDCONT
 		{
 			pszKey += 4;
 			SKIP_SEPARATORS(pszKey);

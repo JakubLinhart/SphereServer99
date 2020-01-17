@@ -1272,6 +1272,9 @@ bool CChar::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, 
 		}
 	}
 
+	if (r_GetRefContainerNew(pszKey, pRef, pszRawArgs, pArgs, pSrc))
+		return true;
+
 	return CObjBase::r_GetRefNew(pszKey, pRef, pszRawArgs, pArgs, pSrc);
 }
 

@@ -1066,7 +1066,8 @@ protected:
 	void r_WriteContent(CScript &s) const;
 
 	bool r_WriteValContainer(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
-	bool r_GetRefContainer(LPCTSTR &pszKey, CScriptObj *&pRef);
+	bool r_GetRefContainer(LPCTSTR& pszKey, CScriptObj*& pRef);
+	bool r_GetRefContainerNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 public:
 	CItem *GetAt(size_t index) const
