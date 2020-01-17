@@ -899,7 +899,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			case SK_IF:
 			{
 				EXC_SET("if statement");
-				bool fTrigger = (s.GetArgLLVal() != 0);
+				bool fTrigger = (s.GetArgLLVal(pArgs, pSrc, this) != 0);
 				bool fBeenTrue = false;
 				for (;;)
 				{
@@ -916,7 +916,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 					else if ( iRet == TRIGRET_ELSEIF )
 					{
 						ParseText(s.GetArgStr(), pSrc, 0, pArgs);
-						fTrigger = (s.GetArgLLVal() != 0);
+						fTrigger = (s.GetArgLLVal(pArgs, pSrc, this) != 0);
 					}
 				}
 				break;
@@ -1316,20 +1316,16 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 	if (!strnicmp(pszKey, "FINDUID", 7))
 	{
 		pszKey += 7;
-		if (*pszKey)
-		{
-			if (*pszKey == '(')
-				pszKey++;
-		}
-		else
-		{
+		
+		if (*pszKey == '\0')
 			pszKey = pszRawArgs;
+		TemporaryString pszArg;
+		if (Str_ParseArgumentList(pszKey, pszArg))
+		{
+			CExpression expr(pArgs, pSrc, this);
+			pRef = static_cast<CGrayUID>(expr.GetVal(pszArg)).ObjFind();
+			return true;
 		}
-
-		CExpression expr(pArgs, pSrc);
-		pRef = static_cast<CGrayUID>(expr.GetVal(pszKey)).ObjFind();
-		SKIP_SEPARATORS(pszKey);
-		return true;
 	}
 	else if (!strnicmp(pszKey, "FINDRES(", 8)) {
 		pszKey += 8;
@@ -1774,7 +1770,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			return true;
 		case SSC_EVAL:
 		{
-			CExpression* pExpr = new CExpression(pArgs, pSrc);
+			CExpression* pExpr = new CExpression(pArgs, pSrc, this);
 			sVal.FormatLLVal(pExpr->GetVal(pszKey));
 			delete pExpr;
 			return true;

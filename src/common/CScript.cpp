@@ -53,12 +53,19 @@ UINT64 CScriptKey::GetArgFlag(UINT64 uStart, UINT64 uMask)
 		return (uStart & ~uMask);
 }
 
-long long CScriptKey::GetArgLLVal()
+long long CScriptKey::GetArgLLVal(CScriptTriggerArgs* pArgs, CTextConsole* pSrc, CScriptObj* pObj)
 {
 	ADDTOCALLSTACK("CScriptKey::GetArgLLVal");
 	ASSERT(m_pszKey);
 	ASSERT(m_pszArg);
-	return Exp_GetLLVal(m_pszArg);
+
+	if (pArgs != NULL || pObj != NULL)
+	{
+		CExpression expr(pArgs, pSrc, pObj);
+		return expr.GetVal(m_pszArg);
+	}
+	else
+		return Exp_GetLLVal(m_pszArg);
 }
 
 long CScriptKey::GetArgVal()

@@ -5,6 +5,9 @@
 #include "CMemBlock.h"
 #include "CCacheableScriptFile.h"
 
+class CScriptObj;
+class CScriptTriggerArgs;
+
 struct CScriptLineContext
 {
 public:
@@ -83,7 +86,7 @@ public:
 		return GetArgStr(NULL);
 	}
 	UINT64 GetArgFlag(UINT64 uStart, UINT64 uMask);
-	long long GetArgLLVal();
+	long long GetArgLLVal(CScriptTriggerArgs *pArgs = NULL, CTextConsole *pSrc = NULL, CScriptObj* pObj = NULL);
 	long GetArgVal();
 	long GetArgRange();
 };

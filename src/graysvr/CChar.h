@@ -993,6 +993,7 @@ public:
 public:
 	// Load/Save
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
+	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Load(CScript &s);

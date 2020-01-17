@@ -342,10 +342,11 @@ int Calc_GetSCurve(int iMean, int iVariance)
 ///////////////////////////////////////////////////////////
 // CExpression
 
-CExpression::CExpression(CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
+CExpression::CExpression(CScriptTriggerArgs* pArgs, CTextConsole* pSrc, CScriptObj* pObj)
 {
 	m_pArgs = pArgs;
 	m_pSrc = pSrc;
+	m_pObj = pObj;
 }
 
 CExpression::~CExpression()
@@ -787,19 +788,29 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 			}
 		}
 
-		if (m_pArgs != NULL)
+		if (m_pArgs != NULL || m_pObj != NULL)
 		{
 			TCHAR* ppArgs[5];
 			TemporaryString tmpArgs;
-			strcpy(tmpArgs, pszArgs);
+			sprintf(tmpArgs, "%s", pszArgs);
 
-			Str_ParseCmds(tmpArgs, ppArgs, COUNTOF(ppArgs), ".+-*/^!%");
+			Str_ParseCmds(tmpArgs, ppArgs, COUNTOF(ppArgs), "+-*/^!%=");
 			int argsLen = strlen(tmpArgs);
 			CGString sVal;
-			if (m_pArgs->r_WriteVal(tmpArgs, sVal, m_pSrc))
+
+			bool fRes = false;
+			if (m_pObj != NULL)
+				fRes = m_pObj->r_WriteVal(Str_TrimEnd(tmpArgs, ") \t"), sVal, m_pSrc);
+
+			if (!fRes && m_pArgs != NULL)
+				fRes = m_pArgs->r_WriteVal(Str_TrimEnd(tmpArgs, ") \t"), sVal, m_pSrc);
+
+			if (fRes)
 			{
 				pszArgs += argsLen;
-				return atol(sVal);
+				LPCTSTR pszVal = sVal.GetPtr();
+				INT64 iVal = GetSingle(pszVal);
+				return iVal;
 			}
 		}
 

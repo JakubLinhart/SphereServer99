@@ -495,6 +495,8 @@ size_t Str_ParseCmds(TCHAR * pCmdLine, TCHAR ** ppCmd, size_t iMax, LPCTSTR pSep
 */
 size_t Str_ParseCmds(TCHAR * pCmdLine, INT64 * piCmd, size_t iMax, LPCTSTR pSep = NULL);
 
+size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs);
+
 /**
 * @brief Look for a string in a table.
 * @param pszFind string we are looking for.

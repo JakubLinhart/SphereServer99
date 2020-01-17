@@ -690,7 +690,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		if ( Base_GetDef()->r_WriteVal(pszKey, sVal, pSrc) )
 			return true;
 
-		return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+		return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 
 	bool fZero = false;
@@ -1266,12 +1266,14 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			// fall through
 		case OC_TAG:
 		{
-			if ( pszKey[3] != '.' )
+			if ( pszKey[3] != '.' && pszKey[3] != '(' )
 				return false;
 			pszKey += 4;
-			CVarDefCont *pVarKey = m_TagDefs.GetKey(pszKey);
+			TCHAR* pszTagName = Str_TrimWhitespace(const_cast<CHAR*>(pszKey));
+			pszTagName = Str_TrimEnd(pszTagName, ") \t");
+			CVarDefCont *pVarKey = m_TagDefs.GetKey(pszTagName);
 			if ( !pVarKey )
-				sVal = Base_GetDef()->m_TagDefs.GetKeyStr(pszKey, fZero);
+				sVal = Base_GetDef()->m_TagDefs.GetKeyStr(pszTagName, fZero);
 			else
 				sVal = pVarKey->GetValStr();
 			return true;
@@ -1438,10 +1440,48 @@ bool CObjBase::r_LoadVal(CScript &s)
 	// Using FindTableHeadSorted instead would result in keywords
 	// starting with "P" not working, for instance :)
 
-	if ( s.IsKeyHead("TAG.", 4) )
+	LPCTSTR pszKey = s.GetKey();
+
+	if ( s.IsKeyHead("TAG.", 4))
 	{
 		bool fQuoted = false;
-		m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, s.GetArgStr(&fQuoted), false);
+		TCHAR* arg2 = s.GetArgStr(&fQuoted);
+		if (*arg2 == '#')
+		{
+			LPCTSTR pszVarName = s.GetKey() + 4;
+			LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+
+			TemporaryString pszBuffer;
+			strcpy(pszBuffer, sVal);
+			strcat(pszBuffer, arg2 + 1);
+			int iValue = Exp_GetVal(pszBuffer);
+			m_TagDefs.SetNum(pszVarName, iValue, false);
+		}
+		else
+			m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+
+		return true;
+	}
+	else if ( !stricmp(pszKey, "TAG") )
+	{
+		TCHAR* ppArgs[2];
+		size_t iCount;
+		iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",");
+		TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+		if (*ppArgs[1] == '#')
+		{
+			LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+
+			TemporaryString pszBuffer;
+			strcpy(pszBuffer, sVal);
+			strcat(pszBuffer, ppArgs[1] + 1);
+			int iValue = Exp_GetVal(pszBuffer);
+			m_TagDefs.SetNum(pszVarName, iValue, false);
+		}
+		else
+		{
+			m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
+		}
 		return true;
 	}
 	else if ( s.IsKeyHead("TAG0.", 5) )

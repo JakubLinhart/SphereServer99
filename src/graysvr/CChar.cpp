@@ -1234,7 +1234,6 @@ enum CHR_TYPE
 {
 	CHR_ACCOUNT,
 	CHR_ACT,
-	CHR_FINDLAYER,
 	CHR_MEMORYFIND,
 	CHR_MEMORYFINDTYPE,
 	CHR_OWNER,
@@ -1247,7 +1246,6 @@ const LPCTSTR CChar::sm_szRefKeys[CHR_QTY + 1] =
 {
 	"ACCOUNT",
 	"ACT",
-	"FINDLAYER",
 	"MEMORYFIND",
 	"MEMORYFINDTYPE",
 	"OWNER",
@@ -1255,6 +1253,27 @@ const LPCTSTR CChar::sm_szRefKeys[CHR_QTY + 1] =
 	"WEAPON",
 	NULL
 };
+
+bool CChar::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
+{
+	ADDTOCALLSTACK("CChar::r_GetRefNew");
+
+	if (!strnicmp(pszKey, "FINDLAYER", 9))
+	{ 
+		pszKey += 9;
+		TemporaryString pszArg;
+		if (!*pszKey)
+			pszKey = pszRawArgs;
+		if (Str_ParseArgumentList(pszKey, pszArg))
+		{
+			CExpression expr(pArgs, pSrc, this);
+			pRef = LayerFind(static_cast<LAYER_TYPE>(expr.GetVal(pszArg)));
+			return true;
+		}
+	}
+
+	return CObjBase::r_GetRefNew(pszKey, pRef, pszRawArgs, pArgs, pSrc);
+}
 
 bool CChar::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 {
@@ -1275,11 +1294,6 @@ bool CChar::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 				if ( pszKey[-1] != '.' )	// only used as a ref
 					break;
 				pRef = m_Act_Targ.ObjFind();
-				return true;
-			case CHR_FINDLAYER:				// find equipped layers
-				SKIP_SEPARATORS(pszKey);
-				pRef = LayerFind(static_cast<LAYER_TYPE>(Exp_GetLLSingle(pszKey)));
-				SKIP_SEPARATORS(pszKey);
 				return true;
 			case CHR_MEMORYFINDTYPE:		// find a type of memory
 				pRef = Memory_FindTypes(static_cast<WORD>(Exp_GetLLSingle(pszKey)));
@@ -1382,7 +1396,7 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 			return true;
 		}
 
-		return CObjBase::r_WriteVal(pszKey, sVal, pSrc);
+		return CObjBase::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 
 	switch ( index )

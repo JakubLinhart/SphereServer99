@@ -612,6 +612,38 @@ size_t Str_ParseCmds(TCHAR * pszCmdLine, INT64 * piCmd, size_t iMax, LPCTSTR psz
 	return(iQty);
 }
 
+size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs)
+{
+	if (!*pszCmdLine)
+		return 0;
+
+	if (*pszCmdLine == '(')
+		pszCmdLine++;
+
+	LPCTSTR pszArgListStart = pszCmdLine;
+	int level = 1;
+	bool insideStr = false;
+	while (*pszCmdLine && level) {
+		if (!insideStr)
+		{
+			if (*pszCmdLine == '(')
+				level++;
+			if (*pszCmdLine == ')')
+				level--;
+		}
+		if (*pszCmdLine == '"')
+			insideStr = !insideStr;
+		pszCmdLine++;
+	}
+
+	strncpy(strArgs, pszArgListStart, pszCmdLine - pszArgListStart - 1);
+	strArgs.setAt(pszCmdLine - pszArgListStart - 1, '\0');
+
+	SKIP_SEPARATORS(pszCmdLine);
+
+	return pszCmdLine - pszArgListStart - 1;
+}
+
 static int Str_CmpHeadI(LPCTSTR pszFind, LPCTSTR pszTable)
 {
 	TCHAR ch0 = '_';

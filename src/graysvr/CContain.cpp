@@ -459,6 +459,8 @@ DWORD CContainer::ContentCountAll() const
 bool CContainer::r_GetRefContainer(LPCTSTR &pszKey, CScriptObj *&pRef)
 {
 	ADDTOCALLSTACK("CContainer::r_GetRefContainer");
+	LPCTSTR originalKey = pszKey;
+
 	if ( !strnicmp(pszKey, "FIND", 4) )				// FIND*
 	{
 		pszKey += 4;
@@ -488,6 +490,8 @@ bool CContainer::r_GetRefContainer(LPCTSTR &pszKey, CScriptObj *&pRef)
 			return true;
 		}
 	}
+
+	pszKey = originalKey;
 	return false;
 }
 
