@@ -1388,13 +1388,7 @@ bool CServer::r_Verb(CScript &s, CTextConsole *pSrc)
 		case SV_SMSG:
 		{
 			LPCTSTR pszArgs = s.GetArgStr();
-			if (pszArgs && (*pszArgs == '@'))
-			{
-				++pszArgs;
-				if (*pszArgs != '@')
-					dwMask |= LOGM_NOCONTEXT;
-			}
-			g_Log.Event(dwMask, "%s", pszArgs);
+			g_Serv.PrintStr(Str_MakeFiltered(const_cast<TCHAR*>(pszArgs)));
 			break;
 		}
 		case SV_RESPAWN:
