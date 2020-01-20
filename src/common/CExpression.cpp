@@ -424,9 +424,14 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 				++pszArgs;
 				return GetRange(pszArgs);
 			case '[':
-			case '(':	// parse out a sub expression
 				++pszArgs;
 				return GetVal(pszArgs);
+			case '(':	// parse out a sub expression
+			{
+				TemporaryString subExp;
+				Str_ParseArgumentList(pszArgs, subExp);
+				return GetVal(subExp);
+			}
 			case '+':
 				++pszArgs;
 				break;

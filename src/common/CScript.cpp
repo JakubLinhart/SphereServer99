@@ -62,6 +62,8 @@ long long CScriptKey::GetArgLLVal(CScriptTriggerArgs* pArgs, CTextConsole* pSrc,
 	if (pArgs != NULL || pObj != NULL)
 	{
 		CExpression expr(pArgs, pSrc, pObj);
+		if (*(m_pszArg - 1) == '(')
+			m_pszArg--;
 		return expr.GetVal(m_pszArg);
 	}
 	else

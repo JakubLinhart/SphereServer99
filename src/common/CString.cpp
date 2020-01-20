@@ -636,12 +636,16 @@ size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs)
 		pszCmdLine++;
 	}
 
-	strncpy(strArgs, pszArgListStart, pszCmdLine - pszArgListStart - 1);
-	strArgs.setAt(pszCmdLine - pszArgListStart - 1, '\0');
+	int len = pszCmdLine - pszArgListStart - 1;
+	if (!*pszCmdLine)
+		len++;
+
+	strncpy(strArgs, pszArgListStart, len);
+	strArgs.setAt(len, '\0');
 
 	SKIP_SEPARATORS(pszCmdLine);
 
-	return pszCmdLine - pszArgListStart - 1;
+	return len;
 }
 
 static int Str_CmpHeadI(LPCTSTR pszFind, LPCTSTR pszTable)
