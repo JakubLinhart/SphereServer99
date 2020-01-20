@@ -1215,6 +1215,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			sVal.FormatVal(m_Luck);
 			break;
 		case OC_MAP:
+		case OC_MAPPLANE:
 			sVal.FormatVal(GetTopPoint().m_map);
 			break;
 		case OC_MODAR:
@@ -1681,6 +1682,7 @@ bool CObjBase::r_LoadVal(CScript &s)
 			fSendUpdate = true;
 			break;
 		case OC_MAP:
+		case OC_MAPPLANE:
 		{
 			// Move to another map
 			if ( !IsTopLevel() )
