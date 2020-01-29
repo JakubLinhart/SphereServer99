@@ -612,6 +612,48 @@ size_t Str_ParseCmds(TCHAR * pszCmdLine, INT64 * piCmd, size_t iMax, LPCTSTR psz
 	return(iQty);
 }
 
+void Str_SkipArgumentList(LPCTSTR& pszCmdLine)
+{
+	int level = 1;
+	bool insideStr = false;
+	while (*pszCmdLine) {
+		if (!insideStr)
+		{
+			if (*pszCmdLine == '(')
+				level++;
+			if (*pszCmdLine == ')')
+			{
+				level--;
+				if (!level)
+					return;
+			}
+		}
+		if (*pszCmdLine == '"')
+			insideStr = !insideStr;
+		pszCmdLine++;
+	}
+}
+
+void Str_SkipIndexerArgument(LPCTSTR& pszCmdLine)
+{
+	int level = 0;
+	bool insideStr = false;
+	while (*pszCmdLine) {
+		if (!insideStr)
+		{
+			if (*pszCmdLine == '[')
+				level++;
+			if (*pszCmdLine == ']')
+				level--;
+		}
+		if (*pszCmdLine == '"')
+			insideStr = !insideStr;
+		pszCmdLine++;
+		if (!level)
+			return;
+	}
+}
+
 size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs)
 {
 	if (!*pszCmdLine)
@@ -621,32 +663,91 @@ size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs)
 		pszCmdLine++;
 
 	LPCTSTR pszArgListStart = pszCmdLine;
-	int level = 1;
-	bool insideStr = false;
-	while (*pszCmdLine && level) {
-		if (!insideStr)
-		{
-			if (*pszCmdLine == '(')
-				level++;
-			if (*pszCmdLine == ')')
-				level--;
-		}
-		if (*pszCmdLine == '"')
-			insideStr = !insideStr;
-		pszCmdLine++;
-	}
+	Str_SkipArgumentList(pszCmdLine);
 
-	int len = pszCmdLine - pszArgListStart - 1;
+	int len = pszCmdLine - pszArgListStart;
 	if (!*pszCmdLine)
 		len++;
 
 	strncpy(strArgs, pszArgListStart, len);
 	strArgs.setAt(len, '\0');
 
-	SKIP_SEPARATORS(pszCmdLine);
+	if (*pszCmdLine == ')')
+		pszCmdLine++;
 
 	return len;
 }
+
+bool Str_ParseChained(LPCTSTR& pszCmdLine, String& chainedPrefix)
+{
+	LPCTSTR pszOrig = pszCmdLine;
+
+	SKIP_IDENTIFIERSTRING(pszCmdLine);
+	GETNONWHITESPACE(pszCmdLine);
+	Str_SkipArgumentList(pszCmdLine);
+	Str_SkipIndexerArgument(pszCmdLine);
+
+	if (*pszCmdLine == '.')
+	{
+		strcpylen(chainedPrefix, pszOrig, pszCmdLine - pszOrig + 1);
+		return true;
+	}
+
+	pszCmdLine = pszOrig;
+
+	return false;
+}
+
+bool Str_ParseArgumentStart(LPCTSTR& pszKey, bool bMandatory)
+{
+	if (*pszKey == '(')
+	{
+		pszKey++;
+		return true;
+	}
+
+	return !bMandatory;
+}
+
+bool Str_ParseVariableName(LPCTSTR& pszKey, String& varName)
+{
+	LPCTSTR pszOriginalKey = pszKey;
+	GETNONWHITESPACE(pszKey);
+	LPCTSTR pszStart = pszKey;
+	if (_ISCSYM(*pszKey))
+	{
+		pszKey++;
+		SKIP_IDENTIFIERSTRING(pszKey);
+
+		if (*pszKey == '[')
+			Str_SkipIndexerArgument(pszKey);
+
+		if (*pszKey == '\0' || *pszKey == '.' || *pszKey == ')' || *pszKey == ' ' || *pszKey == '\t')
+		{
+			strncpy(varName, pszStart, pszKey - pszStart);
+			varName.setAt(pszKey - pszStart, '\0');
+			return true;
+		}
+	}
+
+	pszKey = pszOriginalKey;
+	return false;
+}
+
+bool Str_ParseArgumentEnd(LPCTSTR& pszKey, bool bMandatory)
+{
+	LPCTSTR pszOriginal = pszKey;
+	GETNONWHITESPACE(pszKey);
+	if (*pszKey == ')')
+	{
+		pszKey++;
+		return true;
+	}
+
+	pszKey = pszOriginal;
+	return !bMandatory;
+}
+
 
 static int Str_CmpHeadI(LPCTSTR pszFind, LPCTSTR pszTable)
 {

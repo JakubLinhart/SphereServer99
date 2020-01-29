@@ -119,6 +119,7 @@ public:
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Load(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool CScriptObj::r_WriteValChained(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);	
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// execute command from script
 
 	bool r_Call(LPCTSTR pszFunction, CTextConsole *pSrc, CScriptTriggerArgs *pArgs, CGString *psVal = NULL, TRIGRET_TYPE *piRet = NULL);

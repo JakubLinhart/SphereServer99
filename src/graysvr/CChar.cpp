@@ -1266,6 +1266,8 @@ bool CChar::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, 
 			pszKey = pszRawArgs;
 		if (Str_ParseArgumentList(pszKey, pszArg))
 		{
+			if (*pszKey == '.')
+				pszKey++;
 			CExpression expr(pArgs, pSrc, this);
 			pRef = LayerFind(static_cast<LAYER_TYPE>(expr.GetVal(pszArg)));
 			return true;

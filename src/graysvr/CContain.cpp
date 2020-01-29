@@ -469,6 +469,8 @@ bool CContainer::r_GetRefContainerNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTST
 		TemporaryString pszArgs;
 		if (Str_ParseArgumentList(pszKey, pszArgs))
 		{
+			if (*pszKey == '.')
+				pszKey++;
 			pRef = ContentFind(g_Cfg.ResourceGetID(RES_ITEMDEF, pszArgs));
 			return true;
 		}

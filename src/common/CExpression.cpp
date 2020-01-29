@@ -805,10 +805,10 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 
 			bool fRes = false;
 			if (m_pObj != NULL)
-				fRes = m_pObj->r_WriteVal(Str_TrimEnd(tmpArgs, ") \t"), sVal, m_pSrc);
+				fRes = m_pObj->r_WriteVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc);
 
 			if (!fRes && m_pArgs != NULL)
-				fRes = m_pArgs->r_WriteVal(Str_TrimEnd(tmpArgs, ") \t"), sVal, m_pSrc);
+				fRes = m_pArgs->r_WriteVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc);
 
 			if (fRes)
 			{

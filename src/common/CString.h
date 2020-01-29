@@ -497,6 +497,11 @@ size_t Str_ParseCmds(TCHAR * pCmdLine, INT64 * piCmd, size_t iMax, LPCTSTR pSep 
 
 size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs);
 
+bool Str_ParseChained(LPCTSTR& pszCmdLine, String& chainedPrefix);
+bool Str_ParseArgumentStart(LPCTSTR& pszKey, bool bMandatory);
+bool Str_ParseVariableName(LPCTSTR& pszKey, String& varName);
+bool Str_ParseArgumentEnd(LPCTSTR& pszKey, bool bMandatory);
+
 /**
 * @brief Look for a string in a table.
 * @param pszFind string we are looking for.

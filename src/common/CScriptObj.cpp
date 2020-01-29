@@ -1324,6 +1324,8 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 		{
 			CExpression expr(pArgs, pSrc, this);
 			pRef = static_cast<CGrayUID>(expr.GetVal(pszArg)).ObjFind();
+			if (*pszKey == '.')
+				pszKey++;
 			return true;
 		}
 	}
@@ -1466,13 +1468,21 @@ bool CScriptObj::r_LoadVal(CScript &s)
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 				if (*ppArgs[1] == '#')
 				{
-					LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName);
+					LPCTSTR ppArgs1 = ppArgs[1] + 1;
+					if (!IsStrNumeric(ppArgs1))
+					{
+						LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName);
 
-					TemporaryString pszBuffer;
-					strcpy(pszBuffer, sVal);
-					strcat(pszBuffer, ppArgs[1] + 1);
-					int iValue = Exp_GetVal(pszBuffer);
-					g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
+						TemporaryString pszBuffer;
+						strcpy(pszBuffer, sVal);
+						strcat(pszBuffer, ppArgs[1] + 1);
+						int iValue = Exp_GetVal(pszBuffer);
+						g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
+					}
+					else
+					{
+						g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+					}
 				}
 				else
 				{
@@ -1531,6 +1541,30 @@ bool CScriptObj::r_Load(CScript &s)
 	return true;
 }
 
+bool CScriptObj::r_WriteValChained(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+{
+	if (*pszKey != '.')
+		return true;
+	pszKey++;
+	
+	LPCTSTR pszId = sVal;
+	if (*pszId != '#')
+		return false;
+	pszId++;
+
+	CExpression expr(pArgs, pSrc, this);
+	CScriptObj* pRef = static_cast<CGrayUID>(expr.GetVal(pszId)).ObjFind();
+	if (pRef)
+	{
+		if (*pszKey == '.')
+			pszKey++;
+		sVal.Empty();
+		return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
+	}
+
+	return true;
+}
+
 bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs *pArgs)
 {
 	ADDTOCALLSTACK("CScriptObj::r_WriteVal");
@@ -1538,6 +1572,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	CObjBase *pObj;
 	CScriptObj *pRef = NULL;
 	bool fGetRef = r_GetRef(pszKey, pRef);
+	LPCTSTR pszOriginalKey = pszKey;
 
 	if ( !strnicmp(pszKey, "GetRefType", 10) )
 	{
@@ -1610,18 +1645,23 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	int index = FindTableHeadSorted(pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( index < 0 )
 	{
-		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(pszKey, pArgs, pSrc);
-		if (pVar)
+		TemporaryString varName;
+		if (Str_ParseVariableName(pszKey, varName))
 		{
-			sVal = pVar->GetValStr();
-			return true;
+			CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc);
+			if (pVar)
+			{
+				sVal = pVar->GetValStr();
+				return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
+			}
+			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc);
+			if (pDef)
+			{
+				sVal = pDef->GetValStr();
+				return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
+			}
 		}
-		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(pszKey, pArgs, pSrc);
-		if (pDef)
-		{
-			sVal = pDef->GetValStr();
-			return true;
-		}
+		pszKey = pszOriginalKey;
 
 		if ( (*pszKey == 'd') || (*pszKey == 'D') )
 		{
@@ -1739,14 +1779,23 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			// fall through
 		case SSC_VAR:
 		{
-			GETNONWHITESPACE(pszKey);
-			pszKey = Str_TrimEnd((TCHAR*)pszKey, ") \t");
-			CVarDefCont *pVar = g_Exp.m_VarGlobals.GetKey(pszKey, pArgs, pSrc);
-			if ( pVar )
-				sVal = pVar->GetValStr();
-			else if ( fZero )
-				sVal.FormatVal(0);
-			return true;
+			TemporaryString varName;
+			if (Str_ParseArgumentStart(pszKey, false))
+			{
+				if (Str_ParseVariableName(pszKey, varName))
+				{
+					if (Str_ParseArgumentEnd(pszKey, false))
+					{
+						CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc);
+						if (pVar)
+							sVal = pVar->GetValStr();
+						else if (fZero)
+							sVal.FormatVal(0);
+						return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
+					}
+				}
+			}
+			pszKey = pszOriginalKey;
 		}
 		case SSC_DEFLIST:
 			g_Exp.m_ListInternals.r_Write(pSrc, pszKey, sVal);
@@ -2616,11 +2665,29 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 	else if (!strnicmp("arg(", pszKey, 4) || !strnicmp("arg.", pszKey, 4))
 	{
 		EXC_SET("localarg");
-		pszKey += 4;
-		TCHAR *pszVarName = Str_TrimWhitespace((TCHAR*)pszKey);
-		pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), " )");
-		sVal = m_VarsLocal.GetKeyStr(pszVarName, true);
-		return true;
+		pszKey += 3;
+
+		if (*pszKey == '.')
+		{
+			pszKey++;
+			sVal = m_VarsLocal.GetKeyStr(pszKey, true);
+			return true;
+		}
+		else
+		{
+			if (Str_ParseArgumentStart(pszKey, true))
+			{
+				TemporaryString varName;
+				if (Str_ParseVariableName(pszKey, varName))
+				{
+					if (Str_ParseArgumentEnd(pszKey, true))
+					{
+						sVal = m_VarsLocal.GetKeyStr(varName, true);
+						return r_WriteValChained(pszKey, sVal, pSrc, this);
+					}
+				}
+			}
+		}
 	}
 	if ( !strnicmp("FLOAT.", pszKey, 6) )
 	{
@@ -2739,26 +2806,56 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc)
 	}
 	else if (!strnicmp("arg", pszKey, 3) || !strnicmp("arg.", pszKey, 4))
 	{
-		bool fQuoted = false;
-		TCHAR* ppArgs[2];
-		size_t iCount;
-		iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
-		TCHAR *pszVarName = Str_TrimWhitespace(ppArgs[0]);
-		TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
-
-		if (*pszValue == '#')
+		if (*(pszKey + 3) == '.')
 		{
-			LPCTSTR sVal = m_VarsLocal.GetKeyStr(pszVarName);
-
-			TemporaryString pszBuffer;
-			strcpy(pszBuffer, sVal);
-			strcat(pszBuffer, pszValue + 1);
-			int iValue = Exp_GetVal(pszBuffer);
-			m_VarsLocal.SetNum(pszVarName, iValue, false);
+			bool fQuoted = false;
+			TCHAR* args = s.GetArgStr(&fQuoted);
+			if (*args == '#')
+			{
+				TemporaryString pszBuffer;
+				strcpy(pszBuffer, m_VarsLocal.GetKeyStr(pszKey + 4));
+				strcat(pszBuffer, args + 1);
+				CExpression expr(this, pSrc, NULL);
+				int iValue = expr.GetVal(pszBuffer);
+				m_VarsLocal.SetNum(pszKey + 4, iValue, false);
+			}
+			else
+			{
+				m_VarsLocal.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false);
+			}
+			return true;
 		}
 		else
 		{
-			m_VarsLocal.SetStr(pszVarName, fQuoted, pszValue, false);
+			bool fQuoted = false;
+			TCHAR* ppArgs[2];
+			size_t iCount;
+			iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
+			TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+			TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
+
+			if (*pszValue == '#')
+			{
+				LPCTSTR ppArgs1 = ppArgs[1] + 1;
+				if (!IsStrNumeric(ppArgs1))
+				{
+					LPCTSTR sVal = m_VarsLocal.GetKeyStr(pszVarName);
+
+					TemporaryString pszBuffer;
+					strcpy(pszBuffer, sVal);
+					strcat(pszBuffer, pszValue + 1);
+					int iValue = Exp_GetVal(pszBuffer);
+					m_VarsLocal.SetNum(pszVarName, iValue, false);
+				}
+				else
+				{
+					m_VarsLocal.SetStr(pszVarName, fQuoted, ppArgs[1], false);
+				}
+			}
+			else
+			{
+				m_VarsLocal.SetStr(pszVarName, fQuoted, pszValue, false);
+			}
 		}
 
 		return true;
