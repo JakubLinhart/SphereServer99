@@ -253,6 +253,14 @@ void CGString::FormatULLVal(unsigned long long iVal)
 	Format("%llu", iVal);
 }
 
+void CGString::FormatUid(DWORD dwVal)
+{
+	if (dwVal > static_cast<DWORD>(INT_MIN))
+		return FormatULLHex(dwVal);
+	Format("#0%" FMTDWORDH, dwVal);
+	MakeUpper();
+}
+
 void CGString::FormatHex(DWORD dwVal)
 {
 	// In principle, all values in sphere logic are signed.. 

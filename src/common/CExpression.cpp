@@ -363,6 +363,9 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 	if ( pszArgs[0] == '.' )
 		++pszArgs;
 
+	if (pszArgs[0] == '#')
+		++pszArgs;
+
 	if ( pszArgs[0] == '0' )	// leading '0' = hex value
 	{
 		// Hex value

@@ -1336,7 +1336,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
 			// fall through
 		case OC_SERIAL:
-			sVal.FormatHex(GetUID());
+			sVal.FormatUid(GetUID());
 			break;
 		case OC_SPAWNITEM:
 		{

@@ -2009,7 +2009,7 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 		{
 			if ( pszKey[3] == '.' )		// used as a ref
 				goto do_default;
-			sVal.FormatHex(m_Act_Targ.GetObjUID());
+			sVal.FormatUid(m_Act_Targ.GetObjUID());
 			break;
 		}
 		case CHC_ACTP:

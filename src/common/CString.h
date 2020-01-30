@@ -161,6 +161,7 @@ public:
 	* @param iVal value to print.
 	*/
 	void FormatUVal(unsigned long iVal);
+	void FormatUid(DWORD dwVal);
 	/**
 	* @brief Print a DWORD value into the string (hex format).
 	* @see Format()
