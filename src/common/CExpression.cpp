@@ -711,7 +711,19 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 						if ( iCount < 2 )
 							iResult = 1;
 						else
+						{
+							if (*ppArgs[0] == '"')
+							{
+								ppArgs[0]++;
+								ppArgs[0] = Str_TrimEnd(ppArgs[0], "\"");
+							}
+							if (*ppArgs[1] == '"')
+							{
+								ppArgs[1]++;
+								ppArgs[1] = Str_TrimEnd(ppArgs[1], "\"");
+							}
 							iResult = strcmp(ppArgs[0], ppArgs[1]);
+						}
 						break;
 					}
 					case INTRINSIC_STRCMPI:
@@ -737,6 +749,11 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 					case INTRINSIC_STRLEN:
 					{
 						iCount = 1;
+						if (*pszArgs == '"')
+						{
+							pszArgs++;
+							pszArgs = Str_TrimEnd(const_cast<TCHAR*>(pszArgs), "\"");
+						}
 						iResult = strlen(pszArgs);
 						break;
 					}
