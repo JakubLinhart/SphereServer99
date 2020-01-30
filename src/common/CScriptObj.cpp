@@ -2505,7 +2505,6 @@ enum AGC_TYPE
 	AGC_N2,
 	AGC_N3,
 	AGC_O,
-	AGC_S,
 	AGC_V,
 	AGC_LVAR,
 	AGC_SAFE,
@@ -2521,7 +2520,6 @@ LPCTSTR const CScriptTriggerArgs::sm_szLoadKeys[AGC_QTY + 1] =
 	"ARGN2",
 	"ARGN3",
 	"ARGO",
-	"ARGS",
 	"ARGV",
 	"LOCAL",
 	"SAFE",
@@ -2709,7 +2707,9 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 	{
 		EXC_SET("argv");
 		pszKey += 4;
-		SKIP_SEPARATORS(pszKey);
+
+		bool bChainedArguments = *pszKey == '.';
+		pszKey++;
 
 		size_t iQty = getArgumentsCount();
 
@@ -2719,7 +2719,8 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 			return true;
 		}
 
-		INT64 iKey = Exp_GetLLSingle(pszKey);
+		CExpression expr(this, pSrc, NULL);
+		INT64 iKey = bChainedArguments ? 0 : expr.GetVal(pszKey);
 		if ( (iKey < 0) || !m_v.IsValidIndex(static_cast<size_t>(iKey)) )
 		{
 			sVal = "";
@@ -2727,7 +2728,14 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 		}
 
 		sVal = m_v.GetAt(static_cast<size_t>(iKey));
-		return true;
+		if (sVal.GetLength() > 0 && sVal.GetAt(0) == '#')
+		{
+			LPCTSTR pszVal = sVal;
+			pszVal++;
+			if (IsStrNumeric(pszVal))
+				sVal.MakeUpper();
+		}
+		return r_WriteValChained(pszKey, sVal, pSrc, this);
 	}
 	else if (!strnicmp(pszKey, "SAFE", 4)) {
 		pszKey += 4;
@@ -2737,6 +2745,11 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 		if (!r_WriteVal(pszKey, sVal, pSrc))
 			sVal = "";
 		return true;
+	}
+	else if (!strnicmp(pszKey, "ARGS", 4)) {
+		sVal = m_s1;
+		pszKey += 4;
+		return r_WriteValChained(pszKey, sVal, pSrc, this);
 	}
 
 	EXC_SET("generic");
@@ -2759,9 +2772,6 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 			sVal.FormatHex(pObj ? static_cast<DWORD>(pObj->GetUID()) : UID_CLEAR);
 			break;
 		}
-		case AGC_S:
-			sVal = m_s1;
-			break;
 		default:
 			CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
 			if (pVar)
@@ -2912,6 +2922,11 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc)
 		r_Verb(safe_script, pSrc);
 		return true;
 	}
+	else if (!strnicmp(pszKey, "ARGS", 4))
+	{
+		Init(s.GetArgStr());
+		return true;
+	}
 	else
 		index = FindTableSorted(s.GetKey(), sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 
@@ -2926,9 +2941,6 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc)
 			return true;
 		case AGC_N3:
 			m_iN3 = s.GetArgLLVal();
-			return true;
-		case AGC_S:
-			Init(s.GetArgStr());
 			return true;
 		case AGC_O:
 		{

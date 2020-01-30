@@ -502,6 +502,8 @@ bool Str_ParseArgumentStart(LPCTSTR& pszKey, bool bMandatory);
 bool Str_ParseVariableName(LPCTSTR& pszKey, String& varName);
 bool Str_ParseArgumentEnd(LPCTSTR& pszKey, bool bMandatory);
 
+bool Str_SkipFunctionCall(LPCTSTR& pszCmdLine);
+
 /**
 * @brief Look for a string in a table.
 * @param pszFind string we are looking for.

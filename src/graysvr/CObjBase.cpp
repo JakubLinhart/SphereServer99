@@ -1269,15 +1269,38 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		{
 			if ( pszKey[3] != '.' && pszKey[3] != '(' )
 				return false;
-			pszKey += 4;
-			TCHAR* pszTagName = Str_TrimWhitespace(const_cast<CHAR*>(pszKey));
-			pszTagName = Str_TrimEnd(pszTagName, ") \t");
-			CVarDefCont *pVarKey = m_TagDefs.GetKey(pszTagName);
-			if ( !pVarKey )
-				sVal = Base_GetDef()->m_TagDefs.GetKeyStr(pszTagName, fZero);
+			if (pszKey[3] == '.')
+			{
+				pszKey += 4;
+				TCHAR* pszTagName = Str_TrimWhitespace(const_cast<CHAR*>(pszKey));
+				pszTagName = Str_TrimEnd(pszTagName, ") \t");
+				CVarDefCont* pVarKey = m_TagDefs.GetKey(pszTagName);
+				if (!pVarKey)
+					sVal = Base_GetDef()->m_TagDefs.GetKeyStr(pszTagName, fZero);
+				else
+					sVal = pVarKey->GetValStr();
+				return true;
+			}
 			else
-				sVal = pVarKey->GetValStr();
-			return true;
+			{
+				pszKey += 3;
+				if (Str_ParseArgumentStart(pszKey, true))
+				{
+					TemporaryString tagName;
+					if (Str_ParseVariableName(pszKey, tagName))
+					{
+						if (Str_ParseArgumentEnd(pszKey, true))
+						{
+							CVarDefCont* pVarKey = m_TagDefs.GetKey(tagName);
+							if (!pVarKey)
+								sVal = Base_GetDef()->m_TagDefs.GetKeyStr(tagName, fZero);
+							else
+								sVal = pVarKey->GetValStr();
+							return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
+						}
+					}
+				}
+			}
 		}
 		case OC_TIMER:
 			sVal.FormatLLVal(GetTimerAdjusted());
@@ -1449,14 +1472,22 @@ bool CObjBase::r_LoadVal(CScript &s)
 		TCHAR* arg2 = s.GetArgStr(&fQuoted);
 		if (*arg2 == '#')
 		{
-			LPCTSTR pszVarName = s.GetKey() + 4;
-			LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+			LPCTSTR ppArg2 = arg2 + 1;
+			if (!IsStrNumeric(ppArg2))
+			{
+				LPCTSTR pszVarName = s.GetKey() + 4;
+				LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
 
-			TemporaryString pszBuffer;
-			strcpy(pszBuffer, sVal);
-			strcat(pszBuffer, arg2 + 1);
-			int iValue = Exp_GetVal(pszBuffer);
-			m_TagDefs.SetNum(pszVarName, iValue, false);
+				TemporaryString pszBuffer;
+				strcpy(pszBuffer, sVal);
+				strcat(pszBuffer, arg2 + 1);
+				int iValue = Exp_GetVal(pszBuffer);
+				m_TagDefs.SetNum(pszVarName, iValue, false);
+			}
+			else
+			{
+				m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+			}
 		}
 		else
 			m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
@@ -1471,13 +1502,21 @@ bool CObjBase::r_LoadVal(CScript &s)
 		TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 		if (*ppArgs[1] == '#')
 		{
-			LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+			LPCTSTR ppArgs2 = ppArgs[1] + 1;
+			if (!IsStrNumeric(ppArgs2))
+			{
+				LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
 
-			TemporaryString pszBuffer;
-			strcpy(pszBuffer, sVal);
-			strcat(pszBuffer, ppArgs[1] + 1);
-			int iValue = Exp_GetVal(pszBuffer);
-			m_TagDefs.SetNum(pszVarName, iValue, false);
+				TemporaryString pszBuffer;
+				strcpy(pszBuffer, sVal);
+				strcat(pszBuffer, ppArgs[1] + 1);
+				int iValue = Exp_GetVal(pszBuffer);
+				m_TagDefs.SetNum(pszVarName, iValue, false);
+			}
+			else
+			{
+				m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
+			}
 		}
 		else
 		{

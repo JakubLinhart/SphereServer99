@@ -634,6 +634,21 @@ void Str_SkipArgumentList(LPCTSTR& pszCmdLine)
 	}
 }
 
+bool Str_SkipFunctionCall(LPCTSTR& pszCmdLine)
+{
+	GETNONWHITESPACE(pszCmdLine);
+	LPCTSTR pszStart = pszCmdLine;
+	if (_ISCSYM(*pszCmdLine))
+	{
+		SKIP_IDENTIFIERSTRING(pszCmdLine);
+		if (*pszCmdLine == '(')
+		Str_SkipArgumentList(pszCmdLine);
+		return true;
+	}
+
+	return false;
+}
+
 void Str_SkipIndexerArgument(LPCTSTR& pszCmdLine)
 {
 	int level = 0;
