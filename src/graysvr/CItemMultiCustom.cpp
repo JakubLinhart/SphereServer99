@@ -931,7 +931,7 @@ bool CItemMultiCustom::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return CItemMulti::r_GetRef(pszKey, pRef);
 }
 
-bool CItemMultiCustom::r_Verb(CScript &s, CTextConsole *pSrc)	// execute command from script
+bool CItemMultiCustom::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	// execute command from script
 {
 	ADDTOCALLSTACK("CItemMultiCustom::r_Verb");
 	EXC_TRY("Verb");

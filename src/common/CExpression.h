@@ -104,6 +104,7 @@ public:
 	CScriptTriggerArgs* m_pArgs;
 	CTextConsole* m_pSrc;
 	CScriptObj* m_pObj;
+	bool m_bMuted;
 
 	// Defined default messages
 	static TCHAR sm_szMessages[DEFMSG_QTY][EXPRESSION_MAX_KEY_LEN];		// like: "You put %s to %s"
@@ -139,7 +140,7 @@ public:
 	INT64 GetRange(LPCTSTR &pszArgs);
 
 public:
-	CExpression(CScriptTriggerArgs *pArgs = NULL, CTextConsole* pSrc = NULL, CScriptObj* pObj = NULL);
+	CExpression(CScriptTriggerArgs *pArgs = NULL, CTextConsole* pSrc = NULL, CScriptObj* pObj = NULL, bool bMuted = false);
 	~CExpression();
 
 private:

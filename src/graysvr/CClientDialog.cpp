@@ -126,7 +126,7 @@ size_t CDialogDef::GumpAddText( LPCTSTR pszText )
 		c = Exp_GetSingle( pszArgs );			
 	
 
-bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc )	// some command on this object as a target
+bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs)	// some command on this object as a target
 {
 	ADDTOCALLSTACK("CDialogDef::r_Verb");
 	EXC_TRY("Verb");

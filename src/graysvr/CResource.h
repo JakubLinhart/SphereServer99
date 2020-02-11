@@ -1183,7 +1183,7 @@ public:
 
 	bool r_LoadVal(CScript &s);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
-	bool r_Verb(CScript &s, CTextConsole *pSrc);
+	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 
 private:
 	CDialogDef(const CDialogDef &copy);

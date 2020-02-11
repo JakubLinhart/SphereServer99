@@ -620,10 +620,10 @@ size_t Str_ParseCmds(TCHAR * pszCmdLine, INT64 * piCmd, size_t iMax, LPCTSTR psz
 	return(iQty);
 }
 
-void Str_SkipArgumentList(LPCTSTR& pszCmdLine)
+void Str_SkipInnerArgumentList(LPCTSTR& pszCmdLine)
 {
-	int level = 1;
 	bool insideStr = false;
+	int level = 1;
 	while (*pszCmdLine) {
 		if (!insideStr)
 		{
@@ -633,12 +633,32 @@ void Str_SkipArgumentList(LPCTSTR& pszCmdLine)
 			{
 				level--;
 				if (!level)
-					return;
+					break;
 			}
 		}
 		if (*pszCmdLine == '"')
 			insideStr = !insideStr;
 		pszCmdLine++;
+	}
+}
+
+void Str_SkipArgumentList(LPCTSTR& pszCmdLine)
+{
+	int level = *pszCmdLine == '(' ? 0 : 1;
+	bool insideStr = false;
+	while (*pszCmdLine) {
+		if (!insideStr)
+		{
+			if (*pszCmdLine == '(')
+				level++;
+			if (*pszCmdLine == ')')
+				level--;
+		}
+		if (*pszCmdLine == '"')
+			insideStr = !insideStr;
+		pszCmdLine++;
+		if (!level)
+			break;
 	}
 }
 
@@ -686,14 +706,17 @@ size_t Str_ParseArgumentList(LPCTSTR& pszCmdLine, String& strArgs)
 		pszCmdLine++;
 
 	LPCTSTR pszArgListStart = pszCmdLine;
-	Str_SkipArgumentList(pszCmdLine);
+	Str_SkipInnerArgumentList(pszCmdLine);
 
 	int len = pszCmdLine - pszArgListStart;
-	if (!*pszCmdLine)
-		len++;
 
-	strncpy(strArgs, pszArgListStart, len);
-	strArgs.setAt(len, '\0');
+	if (len > 0)
+	{
+		strncpy(strArgs, pszArgListStart, len);
+		strArgs.setAt(len, '\0');
+	}
+	else
+		strArgs.setAt(0, '\0');
 
 	if (*pszCmdLine == ')')
 		pszCmdLine++;

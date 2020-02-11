@@ -2800,7 +2800,7 @@ LPCTSTR const CItem::sm_szVerbKeys[CIV_QTY+1] =
 	NULL
 };
 
-bool CItem::r_Verb( CScript & s, CTextConsole * pSrc ) // Execute command from script
+bool CItem::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs) // Execute command from script
 {
 	ADDTOCALLSTACK("CItem::r_Verb");
 	EXC_TRY("Verb");

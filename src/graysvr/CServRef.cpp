@@ -330,7 +330,16 @@ bool CServerDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 
 			CScriptTriggerArgs Args(pszArgs ? pszArgs : "");
 			if (r_Call(pszKey, pSrc, &Args, &sVal))
+			{
+				if (sVal.GetLength() > 0 && sVal.GetAt(0) == '#')
+				{
+					LPCTSTR pszChainingKey = pszKey;
+					Str_SkipFunctionCall(pszChainingKey);
+					return r_WriteValChained(pszChainingKey, sVal, pSrc, pArgs);
+				}
 				return true;
+			}
+
 
 			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}

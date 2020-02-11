@@ -3079,7 +3079,7 @@ const LPCTSTR CChar::sm_szVerbKeys[CHV_QTY + 1] =
 	NULL
 };
 
-bool CChar::r_Verb(CScript &s, CTextConsole *pSrc)	// execute command from script
+bool CChar::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	// execute command from script
 {
 	ADDTOCALLSTACK("CChar::r_Verb");
 	if ( !pSrc )
@@ -3091,7 +3091,7 @@ bool CChar::r_Verb(CScript &s, CTextConsole *pSrc)	// execute command from scrip
 
 	int index = FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )
-		return (NPC_OnVerb(s, pSrc) || Player_OnVerb(s, pSrc) || CObjBase::r_Verb(s, pSrc));
+		return (NPC_OnVerb(s, pSrc) || Player_OnVerb(s, pSrc) || CObjBase::r_Verb(s, pSrc, pArgs));
 
 	CChar *pCharSrc = pSrc->GetChar();
 

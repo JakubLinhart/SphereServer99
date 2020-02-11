@@ -1180,7 +1180,7 @@ LPCTSTR const CServer::sm_szVerbKeys[SV_QTY + 1] =
 	NULL
 };
 
-bool CServer::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CServer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CServer::r_Verb");
 	if ( !pSrc )
@@ -1495,7 +1495,7 @@ bool CServer::r_Verb(CScript &s, CTextConsole *pSrc)
 			break;
 		}
 		default:
-			return CScriptObj::r_Verb(s, pSrc);
+			return CScriptObj::r_Verb(s, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;

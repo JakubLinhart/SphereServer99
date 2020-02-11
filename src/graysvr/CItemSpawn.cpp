@@ -829,7 +829,7 @@ LPCTSTR const CItemMessage::sm_szVerbKeys[] =
 	NULL
 };
 
-bool CItemMessage::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CItemMessage::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemMessage::r_Verb");
 	EXC_TRY("Verb");
@@ -1114,7 +1114,7 @@ bool CItemScript::r_LoadVal(CScript &s)
 	return CItemVendable::r_LoadVal(s);
 }
 
-bool CItemScript::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CItemScript::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemScript::r_Verb");
 	return CItemVendable::r_Verb(s, pSrc);

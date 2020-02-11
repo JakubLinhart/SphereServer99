@@ -130,7 +130,7 @@ bool CWebPageDef::r_LoadVal(CScript &s) // Load an item Script
 	return false;
 }
 
-bool CWebPageDef::r_Verb(CScript &s, CTextConsole *pSrc)	// some command on this object as a target
+bool CWebPageDef::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	// some command on this object as a target
 {
 	ADDTOCALLSTACK("CWebPageDef::r_Verb");
 	EXC_TRY("Verb");

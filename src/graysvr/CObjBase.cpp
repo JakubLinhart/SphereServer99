@@ -1468,31 +1468,40 @@ bool CObjBase::r_LoadVal(CScript &s)
 
 	if ( s.IsKeyHead("TAG.", 4))
 	{
-		bool fQuoted = false;
-		TCHAR* arg2 = s.GetArgStr(&fQuoted);
-		if (*arg2 == '#')
+		if (s.IsKeyHead("TAG.REMOVE",10))
 		{
-			LPCTSTR ppArg2 = arg2 + 1;
-			if (!IsStrNumeric(ppArg2))
-			{
-				LPCTSTR pszVarName = s.GetKey() + 4;
-				LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
-
-				TemporaryString pszBuffer;
-				strcpy(pszBuffer, sVal);
-				strcat(pszBuffer, arg2 + 1);
-				int iValue = Exp_GetVal(pszBuffer);
-				m_TagDefs.SetNum(pszVarName, iValue, false);
-			}
-			else
-			{
-				m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
-			}
+			LPCTSTR pszArgs = s.GetArgStr();
+			m_TagDefs.DeleteKey(pszArgs);
+			return true;
 		}
 		else
-			m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+		{
+			bool fQuoted = false;
+			TCHAR* arg2 = s.GetArgStr(&fQuoted);
+			if (*arg2 == '#')
+			{
+				LPCTSTR ppArg2 = arg2 + 1;
+				if (!IsStrNumeric(ppArg2))
+				{
+					LPCTSTR pszVarName = s.GetKey() + 4;
+					LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
 
-		return true;
+					TemporaryString pszBuffer;
+					strcpy(pszBuffer, sVal);
+					strcat(pszBuffer, arg2 + 1);
+					int iValue = Exp_GetVal(pszBuffer);
+					m_TagDefs.SetNum(pszVarName, iValue, false);
+				}
+				else
+				{
+					m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+				}
+			}
+			else
+				m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+
+			return true;
+		}
 	}
 	else if ( !stricmp(pszKey, "TAG") )
 	{
@@ -1946,7 +1955,7 @@ LPCTSTR const CObjBase::sm_szVerbKeys[OV_QTY+1] =
 };
 
 // Execute command from script
-bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CObjBase::r_Verb");
 	EXC_TRY("Verb");
@@ -1973,7 +1982,7 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc)
 	{
 		index = FindTableSorted(pszKey, sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 		if ( index < 0 )
-			return CScriptObj::r_Verb(s, pSrc);
+			return CScriptObj::r_Verb(s, pSrc, pArgs);
 	}
 
 	CChar *pCharSrc = pSrc->GetChar();

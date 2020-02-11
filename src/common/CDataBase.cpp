@@ -376,7 +376,7 @@ bool CDataBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 	}
 }
 
-bool CDataBase::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CDataBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CDataBase::r_Verb");
 	UNREFERENCED_PARAMETER(pSrc);

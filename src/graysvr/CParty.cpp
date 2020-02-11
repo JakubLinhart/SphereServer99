@@ -727,7 +727,7 @@ bool CPartyDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 	return false;
 }
 
-bool CPartyDef::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CPartyDef::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CPartyDef::r_Verb");
 	EXC_TRY("Verb");

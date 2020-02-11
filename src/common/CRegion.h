@@ -590,7 +590,7 @@ public:
 	virtual bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual void r_WriteBody( CScript & s, LPCTSTR pszPrefix );
 	virtual void r_WriteModified( CScript & s );
-	virtual bool r_Verb( CScript & s, CTextConsole * pSrc ); // Execute command from script
+	virtual bool r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs = NULL); // Execute command from script
 	virtual void r_Write( CScript & s );
 
 	bool AddRegionRect( const CRectMap & rect );
@@ -659,7 +659,7 @@ public:
 	virtual void r_WriteBody( CScript &s, LPCTSTR pszPrefix );
 	virtual void r_WriteModified( CScript &s );
 	virtual void r_Write( CScript & s );
-	virtual bool r_Verb( CScript & s, CTextConsole * pSrc ); // Execute command from script
+	virtual bool r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs = NULL); // Execute command from script
 
 public:
 	explicit CRegionWorld( RESOURCE_ID rid, LPCTSTR pszName = NULL );

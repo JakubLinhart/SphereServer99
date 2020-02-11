@@ -847,6 +847,28 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			}
 		}
 
+		LPCTSTR pszKey = s.GetKey();
+		if (!strnicmp(pszKey, "RETURN", 6))
+		{
+			EXC_SET("return");
+			if (psResult)
+			{
+				LPCTSTR pszArgs = s.GetArgStr();
+				if (*pszArgs)
+				{
+					psResult->Copy(s.GetArgStr());
+					return TRIGRET_RET_TRUE;
+				}
+				else
+				{
+					pszKey += 6;
+					psResult->Copy(pszKey);
+					return TRIGRET_RET_TRUE;
+				}
+			}
+			return static_cast<TRIGRET_TYPE>(s.GetArgVal());
+		}
+
 		switch ( index )
 		{
 			case SK_FORITEM:
@@ -885,16 +907,6 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 					return iRet;
 				}
 				break;
-			}
-			case SK_RETURN:
-			{
-				EXC_SET("return");
-				if ( psResult )
-				{
-					psResult->Copy(s.GetArgStr());
-					return TRIGRET_RET_TRUE;
-				}
-				return static_cast<TRIGRET_TYPE>(s.GetArgVal());
 			}
 			case SK_IF:
 			{
@@ -1048,7 +1060,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 					else
 					{
 						EXC_SET("verb");
-						fRes = r_Verb(s, pSrc);
+						fRes = r_Verb(s, pSrc, pArgs);
 					}
 
 					if ( !fRes )
@@ -1334,24 +1346,35 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 		TCHAR* ppArgs[3];
 		ppArgs[0] = const_cast<TCHAR*>(pszKey);
 		Str_Parse(ppArgs[0], &(ppArgs[1]), ",");
-		Str_Parse(ppArgs[1], &(ppArgs[2]), ")");
 
-		pszKey = ppArgs[2];
+		LPCTSTR pszArg2Start = ppArgs[1];
+		LPCTSTR pszArg2End = pszArg2Start;
+		Str_SkipFunctionCall(pszArg2End);
+
+		TemporaryString arg2;
+		strncpy(arg2, pszArg2Start, pszArg2End - pszArg2Start);
+		arg2.setAt(pszArg2End - pszArg2Start, '\0');
+
+		pszKey = pszArg2End;
+		if (*pszKey == ')')
+			pszKey++;
 		if (*pszKey == '.')
 			pszKey++;
 
-		if (g_Cfg.r_GetRef(ppArgs[0], ppArgs[1], pRef))
-		{
-			return true;
-		}
 		CGString resName;
 		if (pArgs)
 		{
-			pArgs->r_WriteVal(ppArgs[1], resName, pSrc);
+			pArgs->r_WriteVal(arg2.toBuffer(), resName, pSrc);
 			if (g_Cfg.r_GetRef(ppArgs[0], resName, pRef))
 			{
-				return true;
+				if (pRef)
+					return true;
 			}
+		}
+
+		if (g_Cfg.r_GetRef(ppArgs[0], arg2.toBuffer(), pRef))
+		{
+			return true;
 		}
 
 		return false;
@@ -1384,9 +1407,11 @@ bool CScriptObj::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 		pRef = g_World.m_uidObj.ObjFind();
 		return true;
 	}
-	else if ( !strnicmp(pszKey, "LASTNEW.", 8) )
+	else if ( !strnicmp(pszKey, "LASTNEW", 7) )
 	{
-		pszKey += 8;
+		pszKey += 7;
+		if (*pszKey == '.')
+			pszKey++;
 		pRef = g_World.m_uidNew.ObjFind();
 		return true;
 	}
@@ -1819,9 +1844,8 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			return true;
 		case SSC_EVAL:
 		{
-			CExpression* pExpr = new CExpression(pArgs, pSrc, this);
-			sVal.FormatLLVal(pExpr->GetVal(pszKey));
-			delete pExpr;
+			CExpression expr(pArgs, pSrc, this);
+			sVal.FormatLLVal(expr.GetVal(pszKey));
 			return true;
 		}
 		case SSC_UVAL:
@@ -1834,8 +1858,11 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			return true;
 		}
 		case SSC_HVAL:
-			sVal.FormatULLHex(Exp_GetLLVal(pszKey));
+		{
+			CExpression expr(pArgs, pSrc, this);
+			sVal.FormatULLHex(expr.GetVal(pszKey));
 			return true;
+		}
 		case SSC_FEVAL:		// Float EVAL
 			sVal.FormatVal(ATOI(pszKey));
 			break;
@@ -1965,6 +1992,31 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			sVal = pszBuffer;
 			return true;
 		}
+		case SSC_StrCmp:
+		{
+			int iResult = 0;
+			TCHAR* ppArgs[2];
+			size_t iCount = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs), ",");
+			if (iCount < 2)
+				iResult = 1;
+			else
+			{
+				if (*ppArgs[0] == '"')
+				{
+					ppArgs[0]++;
+					ppArgs[0] = Str_TrimEnd(ppArgs[0], "\"");
+				}
+				ppArgs[1] = Str_TrimEnd(ppArgs[1], ")");
+				if (*ppArgs[1] == '"')
+				{
+					ppArgs[1]++;
+					ppArgs[1] = Str_TrimEnd(ppArgs[1], "\"");
+				}
+				iResult = strcmp(ppArgs[0], ppArgs[1]);
+			}
+			sVal.FormatLLVal(iResult);
+			return true;
+		}
 		case SSC_StrEat:
 		{
 			GETNONWHITESPACE(pszKey);
@@ -1975,6 +2027,19 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			sVal = pszKey;
 			return true;
 		}
+		case SSC_StrLen:
+			if (*pszKey)
+			{
+				if (*pszKey == '"')
+					pszKey++;
+
+				pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
+				pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), "\"");
+				sVal.FormatLLVal(strlen(pszKey));
+			}
+			else
+				sVal = "0";
+			return true;
 		case SSC_StrTrim:
 			sVal = *pszKey ? Str_TrimWhitespace(const_cast<TCHAR *>(pszKey)) : "";
 			return true;
@@ -2163,7 +2228,33 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	return false;
 }
 
-bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CScriptObj::r_VerbChained(CScript &s, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+{
+	LPCTSTR pszKey = s.GetKey();
+	if (*pszKey != '.')
+		return true;
+	pszKey++;
+
+	LPCTSTR pszId = sVal;
+	if (*pszId != '#')
+		return false;
+	pszId++;
+
+	CExpression expr(NULL, pSrc, this);
+	CScriptObj* pRef = static_cast<CGrayUID>(expr.GetVal(pszId)).ObjFind();
+	if (pRef)
+	{
+		if (*pszKey == '.')
+			pszKey++;
+		sVal.Empty();
+		CScript chainedScript(pszKey, s.GetArgStr());
+		return pRef->r_Verb(chainedScript, pSrc, pArgs);
+	}
+
+	return true;
+}
+
+bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CScriptObj::r_Verb");
 	// Execute command from script
@@ -2209,6 +2300,33 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc)
 	}
 
 	SSV_TYPE index = static_cast<SSV_TYPE>(FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1));
+
+	if (index < 0)
+	{
+		LPCTSTR pszOriginalKey = pszKey;
+		CGString sVal;
+		TemporaryString varName;
+		if (Str_ParseVariableName(pszKey, varName))
+		{
+			CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, NULL, pSrc);
+			if (pVar)
+			{
+				sVal = pVar->GetValStr();
+				CScript chainedScript(pszKey, s.GetArgStr());
+				return r_VerbChained(chainedScript, sVal, pSrc);
+			}
+			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
+			if (pDef)
+			{
+				sVal = pDef->GetValStr();
+				CScript chainedScript(pszKey, s.GetArgStr());
+				return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
+			}
+		}
+		pszKey = pszOriginalKey;
+	}
+
+
 	switch ( index )
 	{
 		case SSV_OBJ:
@@ -2799,7 +2917,7 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 	return false;
 }
 
-bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CScriptTriggerArgs::r_Verb");
 	EXC_TRY("Verb");
@@ -3417,7 +3535,7 @@ bool CFileObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 	return false;
 }
 
-bool CFileObj::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CFileObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CFileObj::r_Verb");
 	EXC_TRY("Verb");
@@ -3704,7 +3822,7 @@ bool CFileObjContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole 
 	return false;
 }
 
-bool CFileObjContainer::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CFileObjContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CFileObjContainer::r_Verb");
 	EXC_TRY("Verb");

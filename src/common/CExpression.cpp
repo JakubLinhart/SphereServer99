@@ -342,11 +342,12 @@ int Calc_GetSCurve(int iMean, int iVariance)
 ///////////////////////////////////////////////////////////
 // CExpression
 
-CExpression::CExpression(CScriptTriggerArgs* pArgs, CTextConsole* pSrc, CScriptObj* pObj)
+CExpression::CExpression(CScriptTriggerArgs* pArgs, CTextConsole* pSrc, CScriptObj* pObj, bool bMuted)
 {
 	m_pArgs = pArgs;
 	m_pSrc = pSrc;
 	m_pObj = pObj;
+	m_bMuted = bMuted;
 }
 
 CExpression::~CExpression()
@@ -850,10 +851,13 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 	// Error of some sort
 	TCHAR szTag[EXPRESSION_MAX_KEY_LEN];
 	pszArgs += GetIdentifierString(szTag, pszArgs);		// skip it
-	if ( strlen(orig) > 1 )
-		DEBUG_ERR(("Undefined symbol '%s' ['%s']\n", szTag, orig));
-	else
-		DEBUG_ERR(("Undefined symbol '%s'\n", szTag));
+	if (!m_bMuted)
+	{
+		if (strlen(orig) > 1)
+			DEBUG_ERR(("Undefined symbol '%s' ['%s']\n", szTag, orig));
+		else
+			DEBUG_ERR(("Undefined symbol '%s'\n", szTag));
+	}
 	return 0;
 }
 

@@ -503,6 +503,7 @@ bool Str_ParseArgumentStart(LPCTSTR& pszKey, bool bMandatory);
 bool Str_ParseVariableName(LPCTSTR& pszKey, String& varName);
 bool Str_ParseArgumentEnd(LPCTSTR& pszKey, bool bMandatory);
 
+void Str_SkipArgumentList(LPCTSTR& pszCmdLine);
 bool Str_SkipFunctionCall(LPCTSTR& pszCmdLine);
 
 /**

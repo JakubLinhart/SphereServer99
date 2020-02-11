@@ -172,7 +172,7 @@ const LPCTSTR CSector::sm_szVerbKeys[SEV_QTY + 1] =
 	NULL
 };
 
-bool CSector::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CSector::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CSector::r_Verb");
 	EXC_TRY("Verb");

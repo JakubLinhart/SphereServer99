@@ -808,7 +808,7 @@ bool CItemShip::r_GetRef( LPCTSTR & pszKey, CScriptObj * & pRef )
 	return( CItemMulti::r_GetRef( pszKey, pRef ));
 }
 
-bool CItemShip::r_Verb( CScript & s, CTextConsole * pSrc ) // Execute command from script
+bool CItemShip::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs) // Execute command from script
 {
 	ADDTOCALLSTACK("CItemShip::r_Verb");
 	EXC_TRY("Verb");

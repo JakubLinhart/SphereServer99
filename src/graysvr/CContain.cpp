@@ -1628,7 +1628,7 @@ LPCTSTR const CItemContainer::sm_szVerbKeys[ICV_QTY + 1] =
 	NULL
 };
 
-bool CItemContainer::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CItemContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemContainer::r_Verb");
 	EXC_TRY("Verb");

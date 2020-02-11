@@ -934,7 +934,7 @@ bool CClient::r_LoadVal(CScript &s)
 	return false;
 }
 
-bool CClient::r_Verb(CScript &s, CTextConsole *pSrc) // Execute command from script
+bool CClient::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs) // Execute command from script
 {
 	ADDTOCALLSTACK("CClient::r_Verb");
 	EXC_TRY("Verb");

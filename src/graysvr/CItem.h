@@ -741,7 +741,7 @@ public:
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Load(CScript &s);	// Load an item from script
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// Execute command from script
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);	// Execute command from script
 
 private:
 	TRIGRET_TYPE OnTrigger(LPCTSTR pszTrigName, CTextConsole *pSrc, CScriptTriggerArgs *pArgs);
@@ -1156,7 +1156,7 @@ public:
 	bool IsItemInside(const CItem *pItem) const;
 	bool CanContainerHold(const CItem *pItem, const CChar *pCharMsg);
 
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
@@ -1215,7 +1215,7 @@ private:
 	CItemScript &operator=(const CItemScript &other);
 
 public:
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// some command on this object as a target
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);	// some command on this object as a target
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
@@ -1446,7 +1446,7 @@ public:
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
 	virtual bool r_LoadVal(CScript &s);
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc);	// execute command from script
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);	// execute command from script
 
 	WORD GetPageCount() const
 	{

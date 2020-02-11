@@ -226,7 +226,7 @@ bool CSQLite::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 	return false;
 }
 
-bool CSQLite::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CSQLite::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CSQLite::r_Verb");
 	EXC_TRY("Verb");

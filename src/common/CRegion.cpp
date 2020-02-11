@@ -932,7 +932,7 @@ enum SEV_TYPE
 	SEV_QTY
 };
 
-bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc ) // Execute command from script
+bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs) // Execute command from script
 {
 	ADDTOCALLSTACK("CRegionBase::r_Verb");
 	EXC_TRY("Verb");
@@ -1206,7 +1206,7 @@ void CRegionWorld::r_Write( CScript &s )
 	NULL
 };*/
 
-bool CRegionWorld::r_Verb( CScript & s, CTextConsole * pSrc ) // Execute command from script
+bool CRegionWorld::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs ) // Execute command from script
 {
 	ADDTOCALLSTACK("CRegionWorld::r_Verb");
 	EXC_TRY("Verb");

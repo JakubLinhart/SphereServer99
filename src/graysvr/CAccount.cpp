@@ -1113,7 +1113,7 @@ const LPCTSTR CAccount::sm_szVerbKeys[] =
 	NULL
 };
 
-bool CAccount::r_Verb(CScript &s, CTextConsole *pSrc)
+bool CAccount::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CAccount::r_Verb");
 	EXC_TRY("Verb");

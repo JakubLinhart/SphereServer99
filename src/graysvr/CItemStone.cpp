@@ -145,7 +145,7 @@ LPCTSTR const CStoneMember::sm_szVerbKeys[STMMV_QTY + 1] =
 	NULL
 };
 
-bool CStoneMember::r_Verb(CScript &s, CTextConsole *pSrc)	// execute command from script
+bool CStoneMember::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	// execute command from script
 {
 	ADDTOCALLSTACK("CStoneMember::r_Verb");
 	EXC_TRY("Verb");
@@ -890,7 +890,7 @@ LPCTSTR const CItemStone::sm_szVerbKeys[ISV_QTY + 1] =
 	NULL
 };
 
-bool CItemStone::r_Verb(CScript &s, CTextConsole *pSrc)		// execute command from script
+bool CItemStone::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)		// execute command from script
 {
 	ADDTOCALLSTACK("CItemStone::r_Verb");
 	// NOTE:: Only call this from CChar::r_Verb
