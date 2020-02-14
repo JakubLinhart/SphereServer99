@@ -938,7 +938,7 @@ bool CItemMultiCustom::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs
 
 	int index = FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )
-		return CItemMulti::r_Verb(s, pSrc);
+		return CItemMulti::r_Verb(s, pSrc, pArgs);
 
 	switch ( index )
 	{
@@ -1018,7 +1018,7 @@ bool CItemMultiCustom::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs
 		}
 		default:
 		{
-			return CItemMulti::r_Verb(s, pSrc);
+			return CItemMulti::r_Verb(s, pSrc, pArgs);
 		}
 	}
 	return true;
@@ -1149,7 +1149,7 @@ bool CItemMultiCustom::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *
 		}
 		default:
 		{
-			return CItemMulti::r_WriteVal(pszKey, sVal, pSrc);
+			return CItemMulti::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 	}
 	return true;

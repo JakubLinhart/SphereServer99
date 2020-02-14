@@ -161,12 +161,12 @@ bool CStoneMember::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pA
 	if ( m_uidLinkTo.IsChar() )
 	{
 		CScriptObj *pRef = m_uidLinkTo.CharFind();
-		return pRef->r_Verb(s, pSrc);
+		return pRef->r_Verb(s, pSrc, pArgs);
 	}
 	else if ( m_uidLinkTo.IsItem() )
 	{
 		CScriptObj *pRef = m_uidLinkTo.ItemFind();
-		return pRef->r_Verb(s, pSrc);
+		return pRef->r_Verb(s, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -291,7 +291,7 @@ bool CStoneMember::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc
 			default:
 			{
 				CScriptObj *pRef = m_uidLinkTo.CharFind();
-				return pRef->r_WriteVal(pszKey, sVal, pSrc);
+				return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			}
 		}
 	}
@@ -320,7 +320,7 @@ bool CStoneMember::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc
 			default:
 			{
 				CScriptObj *pRef = m_uidLinkTo.ItemFind();
-				return pRef->r_WriteVal(pszKey, sVal, pSrc);
+				return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			}
 		}
 	}
@@ -900,7 +900,7 @@ bool CItemStone::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 
 	int index = FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )
-		return CItem::r_Verb(s, pSrc);
+		return CItem::r_Verb(s, pSrc, pArgs);
 
 	switch ( index )
 	{
@@ -918,13 +918,13 @@ bool CItemStone::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 						continue;
 
 					if ( iFlags == 0 )
-						pMember->r_Verb(script, pSrc);
+						pMember->r_Verb(script, pSrc, pArgs);
 					else if ( (iFlags == 1) && pMember->m_Enemy.m_fWeDeclared && !pMember->m_Enemy.m_fTheyDeclared )
-						pMember->r_Verb(script, pSrc);
+						pMember->r_Verb(script, pSrc, pArgs);
 					else if ( (iFlags == 2) && !pMember->m_Enemy.m_fWeDeclared && pMember->m_Enemy.m_fTheyDeclared )
-						pMember->r_Verb(script, pSrc);
+						pMember->r_Verb(script, pSrc, pArgs);
 					else if ( (iFlags == 3) && pMember->m_Enemy.m_fWeDeclared && pMember->m_Enemy.m_fTheyDeclared )
-						pMember->r_Verb(script, pSrc);
+						pMember->r_Verb(script, pSrc, pArgs);
 				}
 			}
 			break;
@@ -943,7 +943,7 @@ bool CItemStone::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 						continue;
 
 					if ( (priv == -1) || (priv == pMember->m_priv) )
-						pMember->r_Verb(script, pSrc);
+						pMember->r_Verb(script, pSrc, pArgs);
 				}
 			}
 			break;
@@ -1157,7 +1157,7 @@ bool CItemStone::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 				if ( !pszCmd[0] )
 					return true;
 
-				return pMember->r_WriteVal(pszCmd, sVal, pSrc);
+				return pMember->r_WriteVal(pszCmd, sVal, pSrc, pArgs);
 			}
 			++i;
 		}
@@ -1169,7 +1169,7 @@ bool CItemStone::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		CStoneMember *pMember = GetMember(static_cast<CGrayUID>(Exp_GetVal(pszCmd)).CharFind());
 		SKIP_SEPARATORS(pszCmd);
 		if ( pMember )
-			return pMember->r_WriteVal(pszCmd, sVal, pSrc);
+			return pMember->r_WriteVal(pszCmd, sVal, pSrc, pArgs);
 
 		sVal.FormatVal(0);
 		return true;
@@ -1226,7 +1226,7 @@ bool CItemStone::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 				if ( !pszCmd[0] )
 					return true;
 
-				return pMember->r_WriteVal(pszCmd, sVal, pSrc);
+				return pMember->r_WriteVal(pszCmd, sVal, pSrc, pArgs);
 			}
 			++i;
 		}
@@ -1238,7 +1238,7 @@ bool CItemStone::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		CStoneMember *pMember = GetMember(static_cast<CGrayUID>(Exp_GetVal(pszCmd)).ItemFind());
 		SKIP_SEPARATORS(pszCmd);
 		if ( pMember )
-			return pMember->r_WriteVal(pszCmd, sVal, pSrc);
+			return pMember->r_WriteVal(pszCmd, sVal, pSrc, pArgs);
 
 		sVal.FormatVal(0);
 		return true;
@@ -1337,7 +1337,7 @@ bool CItemStone::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		}
 		default:
 		{
-			return CItem::r_WriteVal(pszKey, sVal, pSrc);
+			return CItem::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 	}
 	EXC_CATCH;

@@ -141,8 +141,8 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 		if ( r_Call(s.GetKey(), pSrc, &Args, &sVal) )
 			return true;
 		if (!m_pObj)
-			return CResourceLink::r_Verb(s, pSrc);
-		return m_pObj->r_Verb(s, pSrc);
+			return CResourceLink::r_Verb(s, pSrc, pArgs);
+		return m_pObj->r_Verb(s, pSrc, pArgs);
 	}
 	
 	LPCTSTR pszArgs	= s.GetArgStr();
@@ -510,7 +510,7 @@ bool	CDialogDef::r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * pSrc
 	ADDTOCALLSTACK("CDialogDef::r_WriteVal");
 	if ( !m_pObj )
 		return false;
-	return m_pObj->r_WriteVal( pszKey, sVal, pSrc );
+	return m_pObj->r_WriteVal( pszKey, sVal, pSrc, NULL );
 }
 
 

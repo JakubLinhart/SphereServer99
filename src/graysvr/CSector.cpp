@@ -221,7 +221,7 @@ bool CSector::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			SetWeather(WEATHER_Snow);
 			break;
 		default:
-			return CScriptObj::r_Verb(s, pSrc);
+			return CScriptObj::r_Verb(s, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -320,7 +320,7 @@ bool CSector::v_AllChars(CScript &s, CTextConsole *pSrc)
 	for ( CChar *pChar = static_cast<CChar *>(m_Chars_Active.GetHead()); pChar != NULL; pChar = pCharNext )
 	{
 		pCharNext = pChar->GetNext();
-		fRet |= pChar->r_Verb(script, pSrc);
+		fRet |= pChar->r_Verb(script, pSrc, NULL);
 	}
 	return fRet;
 }
@@ -337,7 +337,7 @@ bool CSector::v_AllCharsIdle(CScript &s, CTextConsole *pSrc)
 	for ( CChar *pChar = static_cast<CChar *>(m_Chars_Disconnect.GetHead()); pChar != NULL; pChar = pCharNext )
 	{
 		pCharNext = pChar->GetNext();
-		fRet |= pChar->r_Verb(script, pSrc);
+		fRet |= pChar->r_Verb(script, pSrc, NULL);
 	}
 	return fRet;
 }
@@ -355,7 +355,7 @@ bool CSector::v_AllClients(CScript &s, CTextConsole *pSrc)
 	{
 		pCharNext = pChar->GetNext();
 		if ( pChar->m_pClient )
-			fRet |= pChar->r_Verb(script, pSrc);
+			fRet |= pChar->r_Verb(script, pSrc, NULL);
 	}
 	return fRet;
 }
@@ -372,12 +372,12 @@ bool CSector::v_AllItems(CScript &s, CTextConsole *pSrc)
 	for ( CItem *pItem = static_cast<CItem *>(m_Items_Timer.GetHead()); pItem != NULL; pItem = pItemNext )
 	{
 		pItemNext = pItem->GetNext();
-		fRet |= pItem->r_Verb(script, pSrc);
+		fRet |= pItem->r_Verb(script, pSrc, NULL);
 	}
 	for ( CItem *pItem = static_cast<CItem *>(m_Items_Inert.GetHead()); pItem != NULL; pItem = pItemNext )
 	{
 		pItemNext = pItem->GetNext();
-		fRet |= pItem->r_Verb(script, pSrc);
+		fRet |= pItem->r_Verb(script, pSrc, NULL);
 	}
 	return fRet;
 }

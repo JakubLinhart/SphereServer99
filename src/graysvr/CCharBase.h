@@ -53,7 +53,7 @@ public:
 	bool SetDispID(CREID_TYPE id);
 	LPCTSTR GetTradeName() const;
 
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
+	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	bool r_LoadVal(CScript &s);
 	bool r_Load(CScript &s);
 

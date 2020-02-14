@@ -805,7 +805,7 @@ bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 			sVal = m_Targ_Text;
 			break;
 		default:
-			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -1631,10 +1631,10 @@ bool CClient::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs) 
 			if ( r_LoadVal(s) )
 			{
 				CGString sVal;
-				if ( r_WriteVal(s.GetKey(), sVal, pSrc) )
+				if ( r_WriteVal(s.GetKey(), sVal, pSrc, pArgs) )
 					return true;
 			}
-			return CScriptObj::r_Verb(s, pSrc);		// used in the case of web pages to access server level things
+			return CScriptObj::r_Verb(s, pSrc, pArgs);		// used in the case of web pages to access server level things
 	}
 	return true;
 	EXC_CATCH;

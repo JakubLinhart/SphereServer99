@@ -2192,7 +2192,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 		case IC_CONT:
 			{
 				if ( pszKey[4] == '.' )
-					return(CScriptObj::r_WriteVal(pszKey, sVal, pSrc));
+					return(CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs));
 
 				CObjBase *pCont = GetParentObj();
 				sVal.FormatHex(pCont ? (static_cast<DWORD>(pCont->GetUID())) : 0);
@@ -2266,7 +2266,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 		case IC_LINK:
 			if ( pszKey[4] == '.' )
 			{
-				return( CScriptObj::r_WriteVal( pszKey, sVal, pSrc ));
+				return( CScriptObj::r_WriteVal( pszKey, sVal, pSrc, pArgs));
 			}
 			sVal.FormatHex( m_uidLink );
 			break;
@@ -2323,7 +2323,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 			fDoDefault = true;
 	}
 	if ( fDoDefault )
-		return( CObjBase::r_WriteVal( pszKey, sVal, pSrc ));
+		return( CObjBase::r_WriteVal( pszKey, sVal, pSrc, pArgs ));
 	return true;
 	EXC_CATCH;
 
@@ -2809,7 +2809,7 @@ bool CItem::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs)
 	int index = FindTableSorted( s.GetKey(), sm_szVerbKeys, COUNTOF( sm_szVerbKeys )-1 );
 	if ( index < 0 )
 	{
-		return( CObjBase::r_Verb( s, pSrc ));
+		return( CObjBase::r_Verb( s, pSrc, pArgs ));
 	}
 
 	CChar * pCharSrc = pSrc->GetChar();

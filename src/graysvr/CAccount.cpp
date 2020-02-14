@@ -265,7 +265,7 @@ bool CAccounts::Account_OnCmd(TCHAR *pszArgs, CTextConsole *pSrc)
 			sVal.Format("%s", ppCmd[2]);
 
 		CScript script(ppCmd[1], sVal.GetPtr());
-		return pAccount->r_Verb(script, pSrc);
+		return pAccount->r_Verb(script, pSrc, NULL);
 	}
 }
 
@@ -406,7 +406,7 @@ bool CAccounts::Cmd_ListUnused(CTextConsole *pSrc, LPCTSTR pszDays, LPCTSTR pszV
 		else
 		{
 			CScript script(pszVerb, pszArgs);
-			pAccount->r_Verb(script, pSrc);
+			pAccount->r_Verb(script, pSrc, NULL);
 		}
 	}
 
@@ -1085,7 +1085,7 @@ bool CAccount::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			sVal.FormatLLVal(m_Total_Connect_Time);
 			break;
 		default:
-			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -1134,7 +1134,7 @@ bool CAccount::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 	int index = FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )
 	{
-		bool fLoad = CScriptObj::r_Verb(s, pSrc);
+		bool fLoad = CScriptObj::r_Verb(s, pSrc, pArgs);
 		if ( !fLoad )	// try calling custom functions
 		{
 			CGString sVal;

@@ -1044,7 +1044,7 @@ bool CChar::ReadScript(CResourceLock &s, bool fVendor)
 		if ( pItem )
 		{
 			if ( fFullInterp )	// modify the item
-				pItem->r_Verb(s, &g_Serv);
+				pItem->r_Verb(s, &g_Serv, NULL);
 			else
 				pItem->r_LoadVal(s);
 		}
@@ -1346,7 +1346,7 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 {
 	ADDTOCALLSTACK("CChar::r_WriteVal");
 
-	if ( m_pClient && m_pClient->r_WriteVal(pszKey, sVal, pSrc) )
+	if ( m_pClient && m_pClient->r_WriteVal(pszKey, sVal, pSrc, pArgs) )
 		return true;
 
 	EXC_TRY("WriteVal");
@@ -1994,7 +1994,7 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 					CScriptObj *pRef = m_pPlayer->m_pAccount;
 					if ( pRef )
 					{
-						if ( pRef->r_WriteVal(pszKey, sVal, pSrc) )
+						if ( pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs) )
 							break;
 						return false;
 					}
@@ -3084,7 +3084,7 @@ bool CChar::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	//
 	ADDTOCALLSTACK("CChar::r_Verb");
 	if ( !pSrc )
 		return false;
-	if ( m_pClient && m_pClient->r_Verb(s, pSrc) )
+	if ( m_pClient && m_pClient->r_Verb(s, pSrc, pArgs) )
 		return true;
 
 	EXC_TRY("Verb");

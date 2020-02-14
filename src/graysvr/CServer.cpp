@@ -706,13 +706,13 @@ bool CServer::OnConsoleCmd(CGString &sText, CTextConsole *pSrc)
 		case 'h':
 		{
 			CScript script("HEARALL");
-			fRet = r_Verb(script, pSrc);
+			fRet = r_Verb(script, pSrc, NULL);
 			break;
 		}
 		case 'i':
 		{
 			CScript script("INFORMATION");
-			fRet = r_Verb(script, pSrc);
+			fRet = r_Verb(script, pSrc, NULL);
 			break;
 		}
 		case 'l':
@@ -744,7 +744,7 @@ bool CServer::OnConsoleCmd(CGString &sText, CTextConsole *pSrc)
 		case 's':
 		{
 			CScript script("SECURE");
-			fRet = r_Verb(script, pSrc);
+			fRet = r_Verb(script, pSrc, NULL);
 			break;
 		}
 		case 't':
@@ -874,7 +874,7 @@ longcommand:
 		else
 		{
 			CScript script(pszText);
-			if ( !r_Verb(script, pSrc) )
+			if ( !r_Verb(script, pSrc, NULL) )
 			{
 				pSrc->SysMessagef("unknown command '%s'\n", pszText);
 				fRet = false;
@@ -1068,7 +1068,7 @@ bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 		else if ( pAccount )	// get an account property
 		{
 			SKIP_SEPARATORS(pszKey);
-			return pAccount->r_WriteVal(pszKey, sVal, pSrc);
+			return pAccount->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 		return false;
 	}
@@ -1089,7 +1089,7 @@ bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 
 	if ( g_Cfg.r_WriteVal(pszKey, sVal, pSrc) )
 		return true;
-	if ( g_World.r_WriteVal(pszKey, sVal, pSrc) )
+	if ( g_World.r_WriteVal(pszKey, sVal, pSrc, pArgs) )
 		return true;
 	return CServerDef::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
@@ -1277,7 +1277,7 @@ bool CServer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 				if ( !pClient->GetChar() )
 					continue;
 				CScript script(s.GetArgStr());
-				pClient->GetChar()->r_Verb(script, pSrc);
+				pClient->GetChar()->r_Verb(script, pSrc, pArgs);
 			}
 			break;
 		}

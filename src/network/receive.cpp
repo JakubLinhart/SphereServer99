@@ -2058,7 +2058,7 @@ bool PacketHelpPageReq::onReceive(NetState* net)
 		return false;
 
 	CScript script("HelpPage");
-	character->r_Verb(script, client);
+	character->r_Verb(script, client, NULL);
 	return true;
 }
 
@@ -2261,7 +2261,7 @@ bool PacketGumpValueInputResponse::onReceive(NetState* net)
 		sprintf(pszLogMsg, "%lx:'%s' tweak UID=0%" FMTDWORDH " (%s) to '%s %s'", net->id(), client->GetName(), static_cast<DWORD>(object->GetUID()), object->GetName(), static_cast<LPCTSTR>(client->m_Targ_Text), static_cast<LPCTSTR>(text));
 
 		CScript script(client->m_Targ_Text, text);
-		bool fRet = object->r_Verb(script, client->GetChar());
+		bool fRet = object->r_Verb(script, client->GetChar(), NULL);
 		if ( !fRet )
 			client->SysMessageDefault(DEFMSG_MSG_ERR_INVSET);
 		if ( client->GetPrivLevel() >= g_Cfg.m_iCommandLog )

@@ -606,7 +606,7 @@ bool CItemContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pS
 	ADDTOCALLSTACK("CItemContainer::r_WriteVal");
 	if ( r_WriteValContainer(pszKey, sVal, pSrc) )
 		return true;
-	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc);
+	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
 bool CItemContainer::IsItemInTrade() const
@@ -1690,7 +1690,7 @@ bool CItemContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* 
 			return true;
 		}
 	}
-	return CItemVendable::r_Verb(s, pSrc);
+	return CItemVendable::r_Verb(s, pSrc, pArgs);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

@@ -820,7 +820,7 @@ bool CItemShip::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pA
 
 	int iCmd = FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( iCmd < 0 )
-		return CItemMulti::r_Verb(s, pSrc);
+		return CItemMulti::r_Verb(s, pSrc, pArgs);
 
 	if ( !pSrc || !IsTopLevel() )
 		return false;
@@ -1243,7 +1243,7 @@ bool CItemShip::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 		} break;
 
 		default:
-			return( CItemMulti::r_WriteVal(pszKey, sVal, pSrc) );
+			return( CItemMulti::r_WriteVal(pszKey, sVal, pSrc, pArgs) );
 	}
 
 	return true;

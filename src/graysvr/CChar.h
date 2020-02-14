@@ -994,10 +994,10 @@ public:
 	// Load/Save
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Load(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual void r_Write(CScript &s);
 
 	void r_WriteParity(CScript &s);

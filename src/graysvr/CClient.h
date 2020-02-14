@@ -627,8 +627,8 @@ public:
 		return static_cast<CClient *>(CGObListRec::GetNext());
 	}
 
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);	// execute script type command on me
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);	// execute script type command on me
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_LoadVal(CScript &s);
 
 	// Low level message traffic

@@ -222,7 +222,7 @@ bool CCharPlayer::r_WriteVal(CChar *pChar, LPCTSTR pszKey, CGString &sVal)
 		{
 			++pszKey;
 			if ( pStone )
-				return pStone->r_WriteVal(pszKey, sVal, pChar);
+				return pStone->r_WriteVal(pszKey, sVal, pChar, NULL);
 		}
 		return false;
 	}
@@ -502,7 +502,7 @@ bool CChar::Player_OnVerb(CScript &s, CTextConsole *pSrc)	// execute command fro
 				if ( pStone )
 				{
 					CScript script(pszKey, s.GetArgRaw());
-					return pStone->r_Verb(script, pSrc);
+					return pStone->r_Verb(script, pSrc, NULL);
 				}
 			}
 			return false;

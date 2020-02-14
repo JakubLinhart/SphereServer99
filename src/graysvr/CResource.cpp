@@ -867,7 +867,7 @@ bool CResource::r_LoadVal(CScript &s)
 							CScript scp(pszArgs);
 							int iSectorQty = g_MapList.GetSectorQty(iMap);
 							for ( int i = 0; i < iSectorQty; ++i )
-								g_World.GetSector(iMap, i)->r_Verb(scp, &g_Serv);
+								g_World.GetSector(iMap, i)->r_Verb(scp, &g_Serv, NULL);
 						}
 						return true;
 					}
@@ -887,7 +887,7 @@ bool CResource::r_LoadVal(CScript &s)
 						if ( pszArgs && *pszArgs )
 						{
 							CScript scp(pszArgs);
-							g_World.GetSector(iMap, iSector - 1)->r_Verb(scp, &g_Serv);
+							g_World.GetSector(iMap, iSector - 1)->r_Verb(scp, &g_Serv, NULL);
 						}
 						return true;
 					}
@@ -1335,7 +1335,7 @@ bool CResource::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 					g_Log.EventError("Invalid sector #%d for map %d\n", iSector, iMap);
 					return false;
 				}
-				return g_World.GetSector(iMap, iSector - 1)->r_WriteVal(pszKey, sVal, pSrc);
+				return g_World.GetSector(iMap, iSector - 1)->r_WriteVal(pszKey, sVal, pSrc, NULL);
 			}
 		}
 		else if ( !strnicmp(pszKey, "FUNCTIONS.", 10) )
@@ -1410,7 +1410,7 @@ bool CResource::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 				return true;
 			}
 			if ( pStone && ((fGuild && (pStone->GetType() == IT_STONE_GUILD)) || (!fGuild && (pStone->GetType() == IT_STONE_TOWN))) )
-				return pStone->r_WriteVal(pszCmd, sVal, pSrc);
+				return pStone->r_WriteVal(pszCmd, sVal, pSrc, NULL);
 
 			return true;
 		}
@@ -1435,9 +1435,9 @@ bool CResource::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 				if ( !*pszKey )
 					sVal.FormatVal(pChar ? 1 : 0);
 				else if ( pChar )
-					return pChar->r_WriteVal(pszKey, sVal, pSrc);
+					return pChar->r_WriteVal(pszKey, sVal, pSrc, NULL);
 				else
-					return pClient->r_WriteVal(pszKey, sVal, pSrc);
+					return pClient->r_WriteVal(pszKey, sVal, pSrc, NULL);
 			}
 			return true;
 		}

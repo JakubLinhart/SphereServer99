@@ -38,7 +38,7 @@ bool CClient::OnTarg_Obj_Set(CObjBase *pObj)
 		return true;
 	}
 
-	bool fRet = pObj->r_Verb(sCmd, this);
+	bool fRet = pObj->r_Verb(sCmd, this, NULL);
 	if ( !fRet )
 		SysMessageDefault(DEFMSG_MSG_ERR_INVSET);
 	if ( GetPrivLevel() >= g_Cfg.m_iCommandLog )
@@ -563,7 +563,7 @@ bool CClient::OnTarg_Tile(CObjBase *pObj, const CPointMap &pt)
 				else
 				{
 					CScript script(m_Targ_Text);
-					if ( !pItem->r_Verb(script, this) )
+					if ( !pItem->r_Verb(script, this, NULL) )
 						continue;
 				}
 				++iCount;
@@ -588,7 +588,7 @@ bool CClient::OnTarg_Tile(CObjBase *pObj, const CPointMap &pt)
 				else
 				{
 					CScript script(m_Targ_Text);
-					if ( !pChar->r_Verb(script, this) )
+					if ( !pChar->r_Verb(script, this, NULL) )
 						continue;
 				}
 				++iCount;

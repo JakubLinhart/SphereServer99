@@ -360,7 +360,7 @@ bool CItemMulti::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 			return true;
 		}
 		default:
-			return CItem::r_Verb(s, pSrc);
+			return CItem::r_Verb(s, pSrc, pArgs);
 	}
 	EXC_CATCH;
 
@@ -417,7 +417,7 @@ bool CItemMulti::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		}
 		return false;
 	}
-	return CItem::r_WriteVal(pszKey, sVal, pSrc);
+	return CItem::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
 bool CItemMulti::r_LoadVal(CScript &s)

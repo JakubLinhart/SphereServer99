@@ -447,7 +447,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 	bool fZero = false;
 	int index = FindTableHeadSorted(pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( index < 0 )
-		return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+		return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 
 	switch ( index )
 	{
@@ -629,7 +629,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 		case RC_UID:
 			// Allow use of UID.x.KEY on the REGION object
 			if ( pszKey[3] == '.' )
-				return CScriptObj::r_WriteVal( pszKey, sVal, pSrc );
+				return CScriptObj::r_WriteVal( pszKey, sVal, pSrc, pArgs);
 
 			sVal.FormatHex( GetResourceID() );
 			break;
@@ -966,7 +966,7 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 					continue;
 
 				CScript script( s.GetArgStr() );
-				pChar->r_Verb(script, pSrc);
+				pChar->r_Verb(script, pSrc, pArgs);
 			}
 			return true;
 		}
@@ -980,7 +980,7 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 			break;
 	}
 
-	return CScriptObj::r_Verb(s, pSrc);
+	return CScriptObj::r_Verb(s, pSrc, pArgs);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;
@@ -1004,7 +1004,7 @@ bool CRegionBase::SendSectorsVerb( LPCTSTR pszVerb, LPCTSTR pszArgs, CTextConsol
 		if ( IsOverlapped( pSector->GetRect() ) )
 		{
 			CScript script( pszVerb, pszArgs );
-			fRet |= pSector->r_Verb( script, pSrc );
+			fRet |= pSector->r_Verb( script, pSrc, NULL);
 		}
 	}
 	return( fRet );
@@ -1124,12 +1124,12 @@ bool CRegionWorld::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * p
 				// ELSE - We're trying to retrieve a property from the region.
 				pszKey += 7;
 				if ( pRegionTemp && m_pt.GetRegion( REGION_TYPE_MULTI ) )
-					return pRegionTemp->r_WriteVal( pszKey, sVal, pSrc );
+					return pRegionTemp->r_WriteVal( pszKey, sVal, pSrc, pArgs);
 
-				return( this->r_WriteVal( pszKey, sVal, pSrc ));
+				return( this->r_WriteVal( pszKey, sVal, pSrc, pArgs));
 			}
 		default:
-			return( CRegionBase::r_WriteVal( pszKey, sVal, pSrc ));
+			return( CRegionBase::r_WriteVal( pszKey, sVal, pSrc, pArgs));
 	}
 	return true;
 	EXC_CATCH;
@@ -1222,7 +1222,7 @@ bool CRegionWorld::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs*
 	
 	int index = FindTableSorted(pszKey, sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )*/
-		return CRegionBase::r_Verb(s, pSrc);
+		return CRegionBase::r_Verb(s, pSrc, pArgs);
 
 	/*switch( static_cast<RWV_TYPE>(index) )
 	{

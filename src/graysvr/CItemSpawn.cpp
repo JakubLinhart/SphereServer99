@@ -411,7 +411,7 @@ bool CItemSpawn::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		{
 			CObjBase *pObj = m_obj[i].ObjFind();
 			if ( pObj )
-				pObj->r_WriteVal(pszKey, sVal, pSrc);
+				pObj->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 		return true;
 	}
@@ -421,7 +421,7 @@ bool CItemSpawn::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		return true;
 	}
 	EXC_CATCH;
-	return CItem::r_WriteVal(pszKey, sVal, pSrc);
+	return CItem::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
 bool CItemSpawn::r_LoadVal(CScript &s)
@@ -694,7 +694,7 @@ bool CItemMap::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			return true;
 		}
 	}
-	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc);
+	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;
@@ -813,7 +813,7 @@ bool CItemMessage::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc
 			sVal = GetName();
 			return true;
 	}
-	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc);
+	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;
@@ -858,7 +858,7 @@ bool CItemMessage::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pA
 		SetPageText(wPage - 1, s.GetArgStr());
 		return true;
 	}
-	return CItemVendable::r_Verb(s, pSrc);
+	return CItemVendable::r_Verb(s, pSrc, pArgs);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;
@@ -1054,7 +1054,7 @@ bool CItemCommCrystal::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *
 			m_Speech.WriteResourceRefList(sVal);
 			break;
 		default:
-			return CItemVendable::r_WriteVal(pszKey, sVal, pSrc);
+			return CItemVendable::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 }
@@ -1105,7 +1105,7 @@ void CItemScript::r_Write(CScript &s)
 bool CItemScript::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemScript::r_WriteVal");
-	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc);
+	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
 bool CItemScript::r_LoadVal(CScript &s)
@@ -1117,7 +1117,7 @@ bool CItemScript::r_LoadVal(CScript &s)
 bool CItemScript::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CItemScript::r_Verb");
-	return CItemVendable::r_Verb(s, pSrc);
+	return CItemVendable::r_Verb(s, pSrc, pArgs);
 }
 
 void CItemScript::DupeCopy(const CItem *pItem)

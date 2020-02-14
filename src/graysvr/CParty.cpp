@@ -637,7 +637,7 @@ bool CPartyDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 				sVal.FormatVal(1);
 			return true;
 		}
-		return pRef->r_WriteVal(pszKey, sVal, pSrc);
+		return pRef->r_WriteVal(pszKey, sVal, pSrc, NULL);
 	}
 
 	bool fZero = false;
@@ -742,7 +742,7 @@ bool CPartyDef::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs
 			if ( !pRef )
 				return true;
 			CScript script(pszKey, s.GetArgStr());
-			return pRef->r_Verb(script, pSrc);
+			return pRef->r_Verb(script, pSrc, pArgs);
 		}
 	}
 

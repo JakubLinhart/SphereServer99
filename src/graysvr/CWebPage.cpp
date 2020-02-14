@@ -85,7 +85,7 @@ bool CWebPageDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc,
 			sVal.FormatVal(m_iUpdatePeriod / TICK_PER_SEC);
 			break;
 		default:
-			return g_Serv.r_WriteVal(pszKey, sVal, pSrc);
+			return g_Serv.r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -204,7 +204,7 @@ bool CWebPageDef::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pAr
 			return ServPage(pClient, s.GetArgStr(), NULL);
 		}
 		default:
-			return CResourceLink::r_Verb(s, pSrc);
+			return CResourceLink::r_Verb(s, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -286,7 +286,7 @@ bool CWebPageDef::WebPageUpdate(bool fNow, LPCTSTR pszDstName, CTextConsole *pSr
 			{
 				// Allow if/else logic? OnTriggerRun(CScript &s, TRIGRUN_SINGLE_EXEC, &FileOut)
 				CScript script(pszFormat);
-				if ( !r_Verb(script, &FileOut) )
+				if ( !r_Verb(script, &FileOut, NULL) )
 				{
 					DEBUG_ERR(("Web page source format error '%s'\n", static_cast<LPCTSTR>(pszTemp)));
 					continue;

@@ -474,7 +474,7 @@ public:
 	DWORD GetMakeValue(int iQualityLevel);
 	void ResetMakeValue();
 
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
+	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_LoadVal(CScript &s);
 
 public:

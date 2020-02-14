@@ -279,7 +279,7 @@ public:
 	static bool OpenScriptBackup(CScript &s, LPCTSTR pszBaseDir, LPCTSTR pszBaseName, int iSaveCount);
 
 	void r_Write(CScript &s);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
+	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	bool r_LoadVal(CScript &s);
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 

@@ -1164,7 +1164,7 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 			sVal.FormatVal(m_weight / WEIGHT_UNITS);
 			break;
 		default:
-			return CBaseBaseDef::r_WriteVal(pszKey, sVal);
+			return CBaseBaseDef::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
@@ -1934,7 +1934,7 @@ bool CItemBaseMulti::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pS
 			break;
 		}
 		default:
-			return CItemBase::r_WriteVal(pszKey, sVal, pSrc);
+			return CItemBase::r_WriteVal(pszKey, sVal, pSrc, NULL);
 	}
 	return true;
 	EXC_CATCH;

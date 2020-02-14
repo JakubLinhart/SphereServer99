@@ -176,7 +176,7 @@ void CTimedFunctionHandler::OnTick()
 					else
 						it = m_timedFunctions[iTick].erase(it);
 
-					pObj->r_Verb(s, pSrc);
+					pObj->r_Verb(s, pSrc, NULL);
 				}
 				else
 				{

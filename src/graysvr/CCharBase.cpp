@@ -277,7 +277,7 @@ bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 			m_Speech.WriteResourceRefList(sVal);
 			break;
 		default:
-			return CBaseBaseDef::r_WriteVal(pszKey, sVal);
+			return CBaseBaseDef::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;

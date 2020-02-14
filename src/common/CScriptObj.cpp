@@ -944,7 +944,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			default:
 			{
 				EXC_SET("parsing");
-				if ( !pArgs->r_Verb(s, pSrc) )
+				if ( !pArgs->r_Verb(s, pSrc, pArgs) )
 				{
 					bool fRes;
 					if ( !strcmpi(s.GetKey(), "call") )
@@ -1797,7 +1797,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 				sVal.FormatHex(pObj ? static_cast<DWORD>(pObj->GetUID()) : UID_CLEAR);
 				return true;
 			}
-			return pRef->r_WriteVal(pszKey, sVal, pSrc);
+			return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 		case SSC_VAR0:
 			fZero = true;
@@ -2270,7 +2270,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 			if ( !pRef )
 				return true;
 			CScript script(pszKey, s.GetArgStr());
-			return pRef->r_Verb(script, pSrc);
+			return pRef->r_Verb(script, pSrc, pArgs);
 		}
 		// else just fall through. as they seem to be setting the pointer !?
 	}
@@ -2281,7 +2281,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 			if (!pRef)
 				return true;
 			CScript script(pszKey);
-			return pRef->r_Verb(script, pSrc);
+			return pRef->r_Verb(script, pSrc, pArgs);
 		}
 	}
 
@@ -2296,7 +2296,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 				return false;
 		}
 		CScript script(pszKey, s.GetArgStr());
-		return pRef->r_Verb(script, pSrc);
+		return pRef->r_Verb(script, pSrc, pArgs);
 	}
 
 	SSV_TYPE index = static_cast<SSV_TYPE>(FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1));
@@ -2313,7 +2313,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 			{
 				sVal = pVar->GetValStr();
 				CScript chainedScript(pszKey, s.GetArgStr());
-				return r_VerbChained(chainedScript, sVal, pSrc);
+				return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
 			}
 			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
 			if (pDef)
@@ -2355,7 +2355,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 
 			g_World.m_uidNew = uid;
 			CScript script("DUPE");
-			bool fRes = pObj->r_Verb(script, pSrc);
+			bool fRes = pObj->r_Verb(script, pSrc, pArgs);
 
 			if ( this != &g_Serv )
 			{
@@ -2452,7 +2452,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 		case SSV_SHOW:
 		{
 			CGString sVal;
-			if ( !r_WriteVal(s.GetArgStr(), sVal, pSrc) )
+			if ( !r_WriteVal(s.GetArgStr(), sVal, pSrc, pArgs) )
 				return false;
 			TCHAR *pszMsg = Str_GetTemp();
 			sprintf(pszMsg, "'%s' for '%s' is '%s'\n", static_cast<LPCTSTR>(s.GetArgStr()), GetName(), static_cast<LPCTSTR>(sVal));
@@ -3013,7 +3013,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 						return false;
 
 					CScript script(pszKey, s.GetArgStr());
-					return pObj->r_Verb(script, pSrc);
+					return pObj->r_Verb(script, pSrc, pArgs);
 				}
 			}
 		}
@@ -3037,7 +3037,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			pszKey++;
 
 		CScript safe_script(pszKey, s.GetArgStr());
-		r_Verb(safe_script, pSrc);
+		r_Verb(safe_script, pSrc, pArgs);
 		return true;
 	}
 	else if (!strnicmp(pszKey, "ARGS", 4))
@@ -3070,7 +3070,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 					return false;
 
 				CScript script(pszTemp, s.GetArgStr());
-				return m_pO1->r_Verb(script, pSrc);
+				return m_pO1->r_Verb(script, pSrc, pArgs);
 			}
 			return false;
 		}
@@ -3078,7 +3078,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 		case AGC_TRYSRV:
 		{
 			CScript try_script(s.GetArgStr());
-			if ( r_Verb(try_script, pSrc) )
+			if ( r_Verb(try_script, pSrc, pArgs) )
 				return true;
 		}
 		default:
@@ -3777,7 +3777,7 @@ bool CFileObjContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole 
 		for ( std::vector<CFileObj *>::iterator i = m_FileList.begin(); i != m_FileList.end(); ++i )
 		{
 			if ( (*i)->IsInUse() )
-				return static_cast<CScriptObj *>(*i)->r_WriteVal(pszKey, sVal, pSrc);
+				return static_cast<CScriptObj *>(*i)->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 		return false;
 	}
@@ -3796,7 +3796,7 @@ bool CFileObjContainer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole 
 		{
 			CScriptObj *pObj = dynamic_cast<CScriptObj *>(pFile);
 			if ( pObj )
-				return pObj->r_WriteVal(pszKey, sVal, pSrc);
+				return pObj->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 		return false;
 	}
@@ -3835,7 +3835,7 @@ bool CFileObjContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArg
 		for ( std::vector<CFileObj *>::iterator i = m_FileList.begin(); i != m_FileList.end(); ++i )
 		{
 			if ( (*i)->IsInUse() )
-				return static_cast<CScriptObj *>(*i)->r_Verb(s, pSrc);
+				return static_cast<CScriptObj *>(*i)->r_Verb(s, pSrc, pArgs);
 		}
 		return false;
 	}
@@ -3856,7 +3856,7 @@ bool CFileObjContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArg
 					if ( pObj )
 					{
 						CScript psContinue(pszKey, s.GetArgStr());
-						return pObj->r_Verb(psContinue, pSrc);
+						return pObj->r_Verb(psContinue, pSrc, pArgs);
 					}
 				}
 				return false;

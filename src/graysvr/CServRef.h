@@ -77,7 +77,7 @@ public:
 	}
 
 	virtual bool r_LoadVal(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_WriteVal(LPCTSTR pKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 private:
 	CServerDef(const CServerDef &copy);

@@ -309,7 +309,7 @@ bool CSkillDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 		sVal.FormatVal( m_GainRadius );
 		break;
    default:
-		return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc ));
+		return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc, NULL ));
 	}
 	return true;
 	EXC_CATCH;
@@ -469,7 +469,7 @@ bool CSkillClassDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole *
 				break;
 			}
 		}
-		return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc ));
+		return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc, NULL ));
 	}
 	return true;
 	EXC_CATCH;
@@ -717,7 +717,7 @@ bool CSpellDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 			sVal.FormatVal(m_wTithingUse);
 			break;
 		default:
-			return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc ));
+			return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc, NULL ));
 	}
 	return true;
 	EXC_CATCH;
@@ -1023,7 +1023,7 @@ bool CRandGroupDef::r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * p
 		} break;
 
 		default:
-			return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc ));
+			return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc, pArgs));
 	}
 
 	return true;
@@ -1217,7 +1217,7 @@ bool CRegionResourceDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConso
 			sVal = m_Skill.Write();
 			break;
 		default:
-			return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc ));
+			return( CResourceDef::r_WriteVal( pszKey, sVal, pSrc, NULL ));
 	}
 	return true;
 	EXC_CATCH;

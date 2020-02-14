@@ -99,7 +99,7 @@ bool CGMPage::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 			sVal.FormatLLVal(-g_World.GetTimeDiff(m_time) / TICK_PER_SEC);
 			break;
 		default:
-			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, NULL);
 	}
 	return true;
 	EXC_CATCH;

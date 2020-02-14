@@ -152,7 +152,7 @@ bool CItemVendable::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSr
 			sVal.FormatUVal(m_quality);
 			return true;
 		default:
-			return CItem::r_WriteVal(pszKey, sVal, pSrc);
+			return CItem::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	EXC_CATCH;
 

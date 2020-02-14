@@ -311,7 +311,7 @@ bool CPointBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal ) const
 			return false;
 		}
 
-		return pItemDef->r_WriteVal( pszKey, sVal, &g_Serv );
+		return pItemDef->r_WriteVal( pszKey, sVal, &g_Serv, NULL );
 	}
 	else if ( !strnicmp( pszKey, "COMPONENTS", 10) )
 	{
@@ -489,7 +489,7 @@ bool CPointBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal ) const
 			if (*pszKey != '\0')
 			{
 				SKIP_SEPARATORS(pszKey);
-				return pItem->r_WriteVal( pszKey, sVal, &g_Serv );
+				return pItem->r_WriteVal( pszKey, sVal, &g_Serv, NULL );
 			}
 
 			sVal.FormatHex( pItem->GetUID() );
@@ -509,7 +509,7 @@ bool CPointBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal ) const
 			return false;
 		}
 
-		return pItemDef->r_WriteVal( pszKey, sVal, &g_Serv );
+		return pItemDef->r_WriteVal( pszKey, sVal, &g_Serv, NULL );
 	}
 	
 	int index = FindTableHeadSorted( pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys)-1 );
@@ -567,7 +567,7 @@ bool CPointBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal ) const
 			// We're trying to retrieve a property from the region.
 			pszKey += 7;
 			if ( pRegionTemp )
-				return pRegionTemp->r_WriteVal( pszKey, sVal, &g_Serv );
+				return pRegionTemp->r_WriteVal( pszKey, sVal, &g_Serv, NULL );
 
 			return false;
 		}
@@ -586,7 +586,7 @@ bool CPointBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal ) const
 
 			pszKey += 5;
 			if ( pRegionTemp )
-				return pRegionTemp->r_WriteVal( pszKey, sVal, &g_Serv );
+				return pRegionTemp->r_WriteVal( pszKey, sVal, &g_Serv, NULL );
 
 			return false;
 		}
@@ -597,7 +597,7 @@ bool CPointBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal ) const
 				pszKey += 7;
 				CSector * pSectorTemp = this->GetSector();
 				if (pSectorTemp)
-					return pSectorTemp->r_WriteVal(pszKey, sVal, &g_Serv);
+					return pSectorTemp->r_WriteVal(pszKey, sVal, &g_Serv, NULL);
 			}
 			return false;
 		}

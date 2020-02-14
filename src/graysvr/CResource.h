@@ -449,7 +449,7 @@ private:
 
 public:
 	virtual bool r_LoadVal(CScript &s);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	CResourceQty GetMember(size_t i) const
 	{
@@ -1183,7 +1183,7 @@ public:
 
 	bool r_LoadVal(CScript &s);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
-	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
+	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 private:
 	CDialogDef(const CDialogDef &copy);

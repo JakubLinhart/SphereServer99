@@ -854,7 +854,7 @@ bool CClient::Event_Command(LPCTSTR pszCommand, TALKMODE_TYPE mode)
 		else
 		{
 			CScript s(pszCommand);
-			if ( !m_pChar->r_Verb(s, m_pChar) )
+			if ( !m_pChar->r_Verb(s, m_pChar, NULL) )
 				SysMessageDefault(DEFMSG_CMD_INVALID);
 		}
 	}
@@ -1372,7 +1372,7 @@ void CClient::Event_PromptResp(LPCTSTR pszText, CGrayUID uidChar, CGrayUID uidPr
 				if ( pObj )
 				{
 					CScript script(m_Prompt_Text, pszText);
-					pObj->r_Verb(script, this);
+					pObj->r_Verb(script, this, NULL);
 				}
 			}
 			return;
@@ -1381,7 +1381,7 @@ void CClient::Event_PromptResp(LPCTSTR pszText, CGrayUID uidChar, CGrayUID uidPr
 		{
 			CScript script(m_Prompt_Text, pszText);
 			if ( m_pChar )
-				m_pChar->r_Verb(script, this);
+				m_pChar->r_Verb(script, this, NULL);
 			return;
 		}
 

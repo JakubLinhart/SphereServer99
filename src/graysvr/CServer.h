@@ -77,9 +77,9 @@ public:
 	LPCTSTR GetStatusString(BYTE bIndex) const;
 
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_LoadVal(CScript &s);
-	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs = NULL);
+	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	LPCTSTR GetName() const
 	{

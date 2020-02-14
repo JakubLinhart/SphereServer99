@@ -687,7 +687,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		CScriptTriggerArgs Args(pszArgs ? pszArgs : "");
 		if ( r_Call(pszKey, pSrc, &Args, &sVal) )
 			return true;
-		if ( Base_GetDef()->r_WriteVal(pszKey, sVal, pSrc) )
+		if ( Base_GetDef()->r_WriteVal(pszKey, sVal, pSrc, pArgs) )
 			return true;
 
 		return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
@@ -906,7 +906,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		{
 			if ( IsDisconnected() || !GetTopLevelObj()->GetTopPoint().IsValidPoint() )
 				return false;
-			return GetTopLevelObj()->GetTopSector()->r_WriteVal(pszKey, sVal, pSrc);
+			return GetTopLevelObj()->GetTopSector()->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 		}
 		case OC_CTAGCOUNT:
 		{
@@ -1327,13 +1327,13 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		case OC_TOPOBJ:
 		{
 			if ( pszKey[6] == '.' )
-				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			sVal.FormatHex(GetTopLevelObj()->GetUID());
 			break;
 		}
 		case OC_UID:
 			if ( pszKey[3] == '.' )
-				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			// fall through
 		case OC_SERIAL:
 			sVal.FormatUid(GetUID());
@@ -1341,7 +1341,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		case OC_SPAWNITEM:
 		{
 			if ( pszKey[9] == '.' )
-				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc);
+				return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 			sVal.FormatHex(m_uidSpawnItem);
 			break;
 		}
@@ -2111,7 +2111,7 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			size_t iArgQty = Str_ParseCmds(s.GetArgStr(), ppArgs, COUNTOF(ppArgs));
 
 			CGString sOrgValue;
-			if ( !r_WriteVal(ppArgs[0], sOrgValue, pSrc) )
+			if ( !r_WriteVal(ppArgs[0], sOrgValue, pSrc, pArgs) )
 				sOrgValue = ".";
 
 			pClientSrc->m_Targ_Text = ppArgs[0];	// The attribute we want to edit.
@@ -2545,7 +2545,7 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			EXC_SET("TRY or TRYP");
 			LPCTSTR pszVerb = s.GetArgStr();
 			CScript script(pszVerb);
-			if ( !r_Verb(script, pSrc) )
+			if ( !r_Verb(script, pSrc, pArgs) )
 			{
 				DEBUG_ERR(("Can't try %s object %s (0%" FMTDWORDH ")\n", pszVerb, GetName(), static_cast<DWORD>(GetUID())));
 				return false;
@@ -2582,7 +2582,7 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			}
 
 			CScript script(pszVerb);
-			if ( !r_Verb(script, pNewSrc) )
+			if ( !r_Verb(script, pNewSrc, pArgs) )
 			{
 				if ( index == OV_TRYSRC )
 					DEBUG_ERR(("Can't trysrc %s object %s (0%" FMTDWORDH ") with src %s (0%" FMTDWORDH ")\n", pszVerb, GetName(), static_cast<DWORD>(GetUID()), pNewSrc->GetName(), static_cast<DWORD>(uidNewSrc)));
