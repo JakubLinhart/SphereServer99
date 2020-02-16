@@ -2309,7 +2309,9 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 
 	if (!strcmpi(pszKey, "SRC"))
 	{
-		CChar* pChar = static_cast<CGrayUID>(s.GetArgVal()).CharFind();
+		CExpression expr(pArgs, pSrc, this, false);
+		LPCTSTR pszArg = s.GetArgStr();
+		CChar* pChar = static_cast<CGrayUID>(expr.GetVal(const_cast<LPCTSTR>(pszArg))).CharFind();
 		pSrc->SetChar(pChar);
 	}
 
