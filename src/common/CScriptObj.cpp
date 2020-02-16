@@ -11,7 +11,15 @@
 CChar *CTextConsole::GetChar() const
 {
 	ADDTOCALLSTACK("CTextConsole::GetChar");
+	if (m_pChar) return m_pChar;
+
 	return const_cast<CChar *>(dynamic_cast<const CChar *>(this));
+}
+
+void CTextConsole::SetChar(CChar* pChar)
+{
+	ADDTOCALLSTACK("CTextConsole::SetChar");
+	m_pChar = pChar;
 }
 
 int CTextConsole::OnConsoleKey(CGString &sText, TCHAR szChar, bool fEcho)
@@ -1794,7 +1802,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			if ( !*pszKey )
 			{
 				pObj = dynamic_cast<CObjBase *>(pRef);
-				sVal.FormatHex(pObj ? static_cast<DWORD>(pObj->GetUID()) : UID_CLEAR);
+				sVal.FormatUid(pObj ? static_cast<DWORD>(pObj->GetUID()) : UID_CLEAR);
 				return true;
 			}
 			return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
@@ -2297,6 +2305,12 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 		}
 		CScript script(pszKey, s.GetArgStr());
 		return pRef->r_Verb(script, pSrc, pArgs);
+	}
+
+	if (!strcmpi(pszKey, "SRC"))
+	{
+		CChar* pChar = static_cast<CGrayUID>(s.GetArgVal()).CharFind();
+		pSrc->SetChar(pChar);
 	}
 
 	SSV_TYPE index = static_cast<SSV_TYPE>(FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1));

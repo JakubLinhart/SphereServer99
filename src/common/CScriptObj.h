@@ -58,6 +58,7 @@ public:
 	virtual PLEVEL_TYPE GetPrivLevel() const = 0;
 	virtual LPCTSTR GetName() const = 0;	// every object must have at least a type name
 	virtual CChar *GetChar() const;			// are we also a CChar? dynamic_cast?
+	void SetChar(CChar* pChar);
 
 	virtual void SysMessage(LPCTSTR pszMessage) const = 0;	// feedback message
 	void VSysMessage(LPCTSTR pszFormat, va_list args) const
@@ -80,6 +81,7 @@ protected:
 private:
 	CTextConsole(const CTextConsole &copy);
 	CTextConsole &operator=(const CTextConsole &other);
+	CChar* m_pChar;
 };
 
 class CScriptTriggerArgs;
