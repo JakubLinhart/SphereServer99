@@ -1499,18 +1499,25 @@ bool CScriptObj::r_LoadVal(CScript &s)
 				size_t iCount;
 				iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
-				if (*ppArgs[1] == '#')
+				if (iCount > 1)
 				{
-					LPCTSTR ppArgs1 = ppArgs[1] + 1;
-					if (!IsStrNumeric(ppArgs1))
+					if (*ppArgs[1] == '#')
 					{
-						LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName);
+						LPCTSTR ppArgs1 = ppArgs[1] + 1;
+						if (!IsStrNumeric(ppArgs1))
+						{
+							LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName);
 
-						TemporaryString pszBuffer;
-						strcpy(pszBuffer, sVal);
-						strcat(pszBuffer, ppArgs[1] + 1);
-						int iValue = Exp_GetVal(pszBuffer);
-						g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
+							TemporaryString pszBuffer;
+							strcpy(pszBuffer, sVal);
+							strcat(pszBuffer, ppArgs[1] + 1);
+							int iValue = Exp_GetVal(pszBuffer);
+							g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
+						}
+						else
+						{
+							g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+						}
 					}
 					else
 					{
@@ -1519,7 +1526,20 @@ bool CScriptObj::r_LoadVal(CScript &s)
 				}
 				else
 				{
-					g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+					TemporaryString varName;
+					LPCTSTR cmd = ppArgs[0];
+					Str_ParseArgumentList(cmd, varName);
+					Str_ParseArgumentEnd(cmd, true);
+					if (*cmd == '.')
+					{
+						cmd++;
+						CObjBase* pObj = static_cast<CGrayUID>(g_Exp.m_VarGlobals.GetKeyNum(varName)).ObjFind();
+						if (pObj)
+						{
+							CScript subS(cmd);
+							return pObj->r_LoadVal(subS);
+						}
+					}
 				}
 				return true;
 			}
@@ -2704,7 +2724,13 @@ bool CScriptTriggerArgs::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 bool CScriptTriggerArgs::r_LoadVal(CScript &s)
 {
 	ADDTOCALLSTACK("CScriptTriggerArgs::r_LoadVal");
-	UNREFERENCED_PARAMETER(s);
+
+	if (s.IsKeyHead("ARGV(", 4))
+	{
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -2948,7 +2974,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 		m_VarsLocal.SetStr(s.GetKey() + 6, fQuoted, s.GetArgStr(&fQuoted), false);
 		return true;
 	}
-	else if (!strnicmp("arg", pszKey, 3) || !strnicmp("arg.", pszKey, 4))
+	else if (!stricmp("arg", pszKey) || !strnicmp("arg.", pszKey, 4))
 	{
 		if (*(pszKey + 3) == '.')
 		{
@@ -2975,30 +3001,50 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			TCHAR* ppArgs[2];
 			size_t iCount;
 			iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
-			TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
-			TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
-
-			if (*pszValue == '#')
+			if (iCount > 1)
 			{
-				LPCTSTR ppArgs1 = ppArgs[1] + 1;
-				if (!IsStrNumeric(ppArgs1))
-				{
-					LPCTSTR sVal = m_VarsLocal.GetKeyStr(pszVarName);
+				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+				TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
 
-					TemporaryString pszBuffer;
-					strcpy(pszBuffer, sVal);
-					strcat(pszBuffer, pszValue + 1);
-					int iValue = Exp_GetVal(pszBuffer);
-					m_VarsLocal.SetNum(pszVarName, iValue, false);
+				if (*pszValue == '#')
+				{
+					LPCTSTR ppArgs1 = ppArgs[1] + 1;
+					if (!IsStrNumeric(ppArgs1))
+					{
+						LPCTSTR sVal = m_VarsLocal.GetKeyStr(pszVarName);
+
+						TemporaryString pszBuffer;
+						strcpy(pszBuffer, sVal);
+						strcat(pszBuffer, pszValue + 1);
+						int iValue = Exp_GetVal(pszBuffer);
+						m_VarsLocal.SetNum(pszVarName, iValue, false);
+					}
+					else
+					{
+						m_VarsLocal.SetStr(pszVarName, fQuoted, ppArgs[1], false);
+					}
 				}
 				else
 				{
-					m_VarsLocal.SetStr(pszVarName, fQuoted, ppArgs[1], false);
+					m_VarsLocal.SetStr(pszVarName, fQuoted, pszValue, false);
 				}
 			}
 			else
 			{
-				m_VarsLocal.SetStr(pszVarName, fQuoted, pszValue, false);
+				TemporaryString varName;
+				LPCTSTR cmd = ppArgs[0];
+				Str_ParseArgumentList(cmd, varName);
+				Str_ParseArgumentEnd(cmd, true);
+				if (*cmd == '.')
+				{
+					cmd++;
+					CObjBase* pObj = static_cast<CGrayUID>(m_VarsLocal.GetKeyNum(varName)).ObjFind();
+					if (pObj)
+					{
+						CScript subS(cmd);
+						return pObj->r_LoadVal(subS);
+					}
+				}
 			}
 		}
 
@@ -3096,6 +3142,27 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			CScript try_script(s.GetArgStr());
 			if ( r_Verb(try_script, pSrc, pArgs) )
 				return true;
+		}
+		case AGC_V:
+		{
+			TemporaryString varIndexStr;
+			LPCTSTR pszCmd = const_cast<LPCTSTR>(s.GetArgStr());
+			Str_ParseArgumentList(pszCmd, varIndexStr);
+			Str_ParseArgumentEnd(pszCmd, true);
+			if (*pszCmd == '.')
+			{
+				pszCmd++;
+				CExpression expr(pArgs, pSrc, NULL);
+				long varIndex = expr.GetVal(varIndexStr);
+				LPCTSTR varValue = this->GetArgV(varIndex);
+				CObjBase* pObj = static_cast<CGrayUID>(expr.GetVal(varValue)).ObjFind();
+				if (pObj)
+				{
+					CScript subS(pszCmd);
+					return pObj->r_LoadVal(subS);
+				}
+			}
+			break;
 		}
 		default:
 			return false;

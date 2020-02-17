@@ -51,7 +51,7 @@ class CTextConsole
 public:
 	static const char *m_sClassName;
 
-	CTextConsole() { };
+	CTextConsole() { m_pChar = NULL; };
 	virtual ~CTextConsole() { };
 
 public:
