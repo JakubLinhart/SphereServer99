@@ -1057,11 +1057,22 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			break;
 		case OC_ISEVENT:
 		{
-			if ( pszKey[7] != '.' )
-				return false;
-			pszKey += 8;
-			sVal.FormatVal(m_OEvents.ContainsResourceName(RES_EVENTS, pszKey));
-			return true;
+			if (pszKey[7] == '.' || pszKey[7] == ' ')
+			{
+				pszKey += 8;
+				sVal.FormatVal(m_OEvents.ContainsResourceName(RES_EVENTS, pszKey));
+				return true;
+			}
+			else if (pszKey[7] == '(')
+			{
+				pszKey += 8;
+				TemporaryString args;
+				Str_ParseArgumentList(pszKey, args);
+				Str_ParseArgumentEnd(pszKey, true);
+				sVal.FormatVal(m_OEvents.ContainsResourceName(RES_EVENTS, args));
+				return true;
+			}
+			return false;
 		}
 		case OC_ISTEVENT:
 		{
