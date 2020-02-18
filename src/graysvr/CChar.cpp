@@ -3203,8 +3203,21 @@ bool CChar::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	//
 			pChar->DupeFrom(this, (s.GetArgVal() < 1) ? true : false);
 			break;
 		}
+		case CHV_NEWEQUIP:
+		{
+			CScript newScript("newitem", s.GetArgStr());
+			if (!r_Verb(newScript, pSrc, pArgs))
+				return false;
+			CExpression expr(pArgs, pSrc, this, false);
+			LPCTSTR pszArg = "lastnew";
+			return ItemEquip(static_cast<CGrayUID>(expr.GetVal(pszArg)).ItemFind());
+		}
 		case CHV_EQUIP:
-			return ItemEquip(static_cast<CGrayUID>(s.GetArgVal()).ItemFind());
+		{
+			CExpression expr(pArgs, pSrc, this, false);
+			LPCTSTR pszArg = s.GetArgStr();
+			return ItemEquip(static_cast<CGrayUID>(expr.GetVal(pszArg)).ItemFind());
+		}
 		case CHV_EQUIPHALO:
 		{
 			CItem *pItem = CItem::CreateScript(ITEMID_LIGHT_SRC, this);
