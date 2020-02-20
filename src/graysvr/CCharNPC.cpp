@@ -612,6 +612,7 @@ bool CCharNPC::r_LoadVal(CChar *pChar, CScript &s)
 		case CNC_ACTPRI:
 			m_Act_Motivation = static_cast<BYTE>(s.GetArgVal());
 			return true;
+		case CNC_BRAIN:
 		case CNC_NPC:
 			m_Brain = static_cast<NPCBRAIN_TYPE>(s.GetArgVal());
 			return true;
@@ -682,6 +683,7 @@ bool CCharNPC::r_WriteVal(CChar *pChar, LPCTSTR pszKey, CGString &sVal)
 		case CNC_ACTPRI:
 			sVal.FormatUVal(m_Act_Motivation);
 			return true;
+		case CNC_BRAIN:
 		case CNC_NPC:
 			sVal.FormatVal(m_Brain);
 			return true;
