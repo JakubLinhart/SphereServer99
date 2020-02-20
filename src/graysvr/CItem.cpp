@@ -2195,7 +2195,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 					return(CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs));
 
 				CObjBase *pCont = GetParentObj();
-				sVal.FormatHex(pCont ? (static_cast<DWORD>(pCont->GetUID())) : 0);
+				sVal.FormatUid(pCont ? (static_cast<DWORD>(pCont->GetUID())) : 0);
 			}
 			break;
 		case IC_CONTGRID:
@@ -2238,7 +2238,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 		case IC_DUPEITEM:
 			{
 				if ( GetID() != GetDispID() )
-					sVal.FormatHex( GetID() );
+					sVal.FormatUid( GetID() );
 				else
 					sVal.FormatVal(0);
 			}
@@ -2268,7 +2268,7 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 			{
 				return( CScriptObj::r_WriteVal( pszKey, sVal, pSrc, pArgs));
 			}
-			sVal.FormatHex( m_uidLink );
+			sVal.FormatUid( m_uidLink );
 			break;
 		case IC_MAXHITS:
 			sVal.FormatVal(HIWORD(m_itNormal.m_more1));
