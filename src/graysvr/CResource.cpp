@@ -2109,7 +2109,7 @@ bool CResource::LoadResourceSection(CScript *pScript)
 		if ( g_Serv.m_fResyncPause )
 			g_Serv.m_fReloadMultis = true;
 	}
-	else if ( !strnicmp(pszSection, "GLOBALS", 7) )
+	else if ( !strnicmp(pszSection, "VARNAMES", 7) )
 		restype = RES_WORLDVARS;
 	else if ( !strnicmp(pszSection, "LIST", 4) )
 		restype = RES_WORLDLISTS;

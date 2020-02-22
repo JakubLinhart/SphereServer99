@@ -1121,10 +1121,10 @@ bool CWorld::SaveStage()
 		m_FileData.WriteSection("TIMERF");
 		g_World.m_TimedFunctions.r_Write(m_FileData);
 
-		m_FileData.WriteSection("GLOBALS");
-		g_Exp.m_VarGlobals.r_WritePrefix(m_FileData);
+		m_FileWorld.WriteSection("VARNAMES");
+		g_Exp.m_VarGlobals.r_WritePrefix(m_FileWorld);
 
-		g_Exp.m_ListGlobals.r_WriteSave(m_FileData);
+		g_Exp.m_ListGlobals.r_WriteSave(m_FileWorld);
 
 		size_t iQty = g_Cfg.m_RegionDefs.GetCount();
 		for ( size_t i = 0; i < iQty; ++i )
