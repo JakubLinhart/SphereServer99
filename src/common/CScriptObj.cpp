@@ -2390,6 +2390,44 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
 			if (pDef)
 			{
+				if (*pszKey == '.')
+				{
+					INT64 num = pDef->GetValNum();
+					if (num > 0)
+					{
+						RES_TYPE resType = static_cast<RES_TYPE>(RES_GET_TYPE(num));
+						RESOURCE_ID resId(resType, RES_GET_INDEX(num));
+						switch (resType)
+						{
+							case RES_ITEMDEF:
+							{
+								CItemBase* itemBase = CItemBase::FindItemBase(static_cast<ITEMID_TYPE>(RES_GET_INDEX(num)));
+								if (itemBase)
+								{
+									pszKey++;
+									CScript chainedScript(pszKey, s.GetArgStr());
+									return itemBase->r_Verb(chainedScript, pSrc, pArgs);
+								}
+								break;
+							}
+							case RES_SKILL:
+							{
+								CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
+								if (pDef)
+								{
+									CSkillDef* pSkillDef = g_Cfg.GetSkillDef(static_cast<SKILL_TYPE>(resId.GetResIndex()));
+									if (pSkillDef)
+									{
+										pszKey++;
+										CScript chainedScript(pszKey, s.GetArgStr());
+										return pSkillDef->r_Verb(chainedScript, pSrc, pArgs);
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
 				sVal = pDef->GetValStr();
 				CScript chainedScript(pszKey, s.GetArgStr());
 				return r_VerbChained(chainedScript, sVal, pSrc, pArgs);

@@ -733,6 +733,12 @@ bool Str_ParseChained(LPCTSTR& pszCmdLine, String& chainedPrefix)
 	Str_SkipArgumentList(pszCmdLine);
 	Str_SkipIndexerArgument(pszCmdLine);
 
+	if (*pszCmdLine != '.')
+	{
+		Str_SkipArgumentList(pszCmdLine);
+		Str_SkipIndexerArgument(pszCmdLine);
+	}
+
 	if (*pszCmdLine == '.')
 	{
 		strcpylen(chainedPrefix, pszOrig, pszCmdLine - pszOrig + 1);
