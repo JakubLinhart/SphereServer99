@@ -367,7 +367,7 @@ enum ITEMID_TYPE	// InsideUO is great for this stuff.
 	// Multi slots
 	ITEMID_MULTI_LEGACY			= 0x4000,	// ITEMID_MULTI for old clients (< 7.0.0.0)
 	ITEMID_MULTI_SA				= 0x8000,	// ITEMID_MULTI for SA clients (< 7.0.8.44)
-	ITEMID_MULTI				= 0x10000,
+	ITEMID_MULTI				= 0x4000,
 
 	ITEMID_SHIP_SMALL_N			= ITEMID_MULTI + 0x0,
 	ITEMID_GALLEON_BRIT2_W		= ITEMID_MULTI + 0x47,
