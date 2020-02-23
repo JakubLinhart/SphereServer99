@@ -2559,6 +2559,7 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			EXC_SET("TRY or TRYP");
 			LPCTSTR pszVerb = s.GetArgStr();
 			CScript script(pszVerb);
+			g_Log.Event(LOGM_NOCONTEXT | LOGL_EVENT, "'%s' commands uid=0%" FMTDWORDH " to '%s'\n", GetName(), static_cast<DWORD>(GetUID()), pszVerb);
 			if ( !r_Verb(script, pSrc, pArgs) )
 			{
 				DEBUG_ERR(("Can't try %s object %s (0%" FMTDWORDH ")\n", pszVerb, GetName(), static_cast<DWORD>(GetUID())));
