@@ -270,19 +270,41 @@ CResource::~CResource()
 	Unload(false);
 }
 
+bool CResource::r_GetAnyRef(LPCTSTR pszKey, CScriptObj*& pRef)
+{
+	ADDTOCALLSTACK("CResource::r_GetRefAny");
+
+	if (r_GetCharDefRef(pszKey, pRef))
+		return true;
+	if (r_GetItemDefRef(pszKey, pRef))
+		return true;
+
+	return false;
+}
+
+bool CResource::r_GetCharDefRef(LPCTSTR pszKey, CScriptObj*& pRef)
+{
+	pRef = CCharBase::FindCharBase(static_cast<CREID_TYPE>(g_Cfg.ResourceGetIndexType(RES_CHARDEF, pszKey)));
+	return pRef != NULL;
+}
+
+bool CResource::r_GetItemDefRef(LPCTSTR pszKey, CScriptObj*& pRef)
+{
+	pRef = CItemBase::FindItemBase(static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, pszKey)));
+	return pRef != NULL;
+}
+
 bool CResource::r_GetRef(LPCTSTR pszResType, LPCTSTR pszKey, CScriptObj*& pRef)
 {
 	ADDTOCALLSTACK("CResource::r_GetRef");
 	int iResType = FindTableSorted(pszResType, sm_szResourceBlocks, RES_QTY);
 	if (iResType == RES_CHARDEF)
 	{
-		pRef = CCharBase::FindCharBase(static_cast<CREID_TYPE>(g_Cfg.ResourceGetIndexType(RES_CHARDEF, pszKey)));
-		return true;
+		return r_GetCharDefRef(pszKey, pRef);
 	}
 	else if (iResType == RES_ITEMDEF)
 	{
-		pRef = CItemBase::FindItemBase(static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, pszKey)));
-		return true;
+		return r_GetItemDefRef(pszKey, pRef);
 	}
 
 	return false;

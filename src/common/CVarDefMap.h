@@ -63,10 +63,10 @@ private:
 	CGString m_sVal;	// the assigned value. (What if numeric?)
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 
-	CVarDefContStr( LPCTSTR pszKey, LPCTSTR pszVal );
-	explicit CVarDefContStr( LPCTSTR pszKey );
+	CVarDefContStr(LPCTSTR pszKey, LPCTSTR pszVal);
+	explicit CVarDefContStr(LPCTSTR pszKey);
 	~CVarDefContStr();
 
 private:
@@ -75,15 +75,42 @@ private:
 
 public:
 	LPCTSTR GetValStr() const;
-	void SetValStr( LPCTSTR pszVal );
+	void SetValStr(LPCTSTR pszVal);
 	INT64 GetValNum() const;
 
-	bool r_LoadVal( CScript & s );
-	bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc );
+	bool r_LoadVal(CScript& s);
+	bool r_WriteVal(LPCTSTR pKey, CGString& sVal, CTextConsole* pSrc);
 
-	virtual CVarDefCont * CopySelf() const;
+	virtual CVarDefCont* CopySelf() const;
 };
 
+class CVarDefContRef : public CVarDefCont
+{
+private:
+	CScriptObj* m_pRef;	// the assigned value. (What if numeric?)
+
+public:
+	static const char* m_sClassName;
+
+	CVarDefContRef(LPCTSTR pszKey, CScriptObj *pRef);
+	explicit CVarDefContRef(LPCTSTR pszKey);
+	~CVarDefContRef();
+
+private:
+	CVarDefContRef(const CVarDefContRef& copy);
+	CVarDefContRef& operator=(const CVarDefContRef& other);
+
+public:
+	CScriptObj* GetValRef() const;
+	void SetValRef(CScriptObj* pRef);
+
+	LPCTSTR GetValStr() const;
+	INT64 GetValNum() const;
+	bool r_LoadVal(CScript& s);
+	bool r_WriteVal(LPCTSTR pKey, CGString& sVal, CTextConsole* pSrc);
+
+	virtual CVarDefCont* CopySelf() const;
+};
 
 class CVarDefMap
 {
@@ -127,7 +154,8 @@ private:
 	void DeleteAtIterator( DefSet::iterator it );
 
 	int SetNumOverride( LPCTSTR pszKey, INT64 iVal );
-	int SetStrOverride( LPCTSTR pszKey, LPCTSTR pszVal );
+	int SetStrOverride(LPCTSTR pszKey, LPCTSTR pszVal);
+	int SetRefOverride(LPCTSTR pszKey, CScriptObj *pRef);
 
 public:
 	void Copy( const CVarDefMap * pArray );
@@ -152,6 +180,8 @@ public:
 	int SetNum( LPCTSTR pszKey, INT64 iVal, bool fZero = false );
 	int SetStrNew( LPCTSTR pszKey, LPCTSTR pszVal );
 	int SetStr( LPCTSTR pszKey, bool fQuoted, LPCTSTR pszVal, bool fZero = false );
+	int SetRefNew(LPCTSTR pszKey, CScriptObj *pRef);
+	int SetRef(LPCTSTR pszKey, CScriptObj *pRef, bool fZero = false);
 
 	CVarDefCont * GetAt( size_t at ) const;
 	CVarDefCont * GetKey( LPCTSTR pszKey, CScriptTriggerArgs *pArgs = NULL, CTextConsole *pSrc = NULL ) const;

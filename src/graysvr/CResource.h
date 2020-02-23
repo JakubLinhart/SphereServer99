@@ -1027,6 +1027,9 @@ public:
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	bool r_GetRef(LPCTSTR pszResType, LPCTSTR pszKey, CScriptObj*& pRef);
+	bool r_GetAnyRef(LPCTSTR pszKey, CScriptObj*& pRef);
+	bool r_GetCharDefRef(LPCTSTR pszKey, CScriptObj*& pRef);
+	bool r_GetItemDefRef(LPCTSTR pszKey, CScriptObj*& pRef);
 
 	bool LoadIni(bool fTest);
 	bool LoadCryptIni();

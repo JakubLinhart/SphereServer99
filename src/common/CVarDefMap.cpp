@@ -108,11 +108,11 @@ CVarDefCont * CVarDefContNum::CopySelf() const
 *
 ***************************************************************************/
 
-CVarDefContStr::CVarDefContStr( LPCTSTR pszKey, LPCTSTR pszVal ) : CVarDefCont( pszKey ), m_sVal( pszVal ) 
+CVarDefContStr::CVarDefContStr(LPCTSTR pszKey, LPCTSTR pszVal) : CVarDefCont(pszKey), m_sVal(pszVal)
 {
 }
 
-CVarDefContStr::CVarDefContStr( LPCTSTR pszKey ) : CVarDefCont( pszKey )
+CVarDefContStr::CVarDefContStr(LPCTSTR pszKey) : CVarDefCont(pszKey)
 {
 }
 
@@ -120,9 +120,9 @@ CVarDefContStr::~CVarDefContStr()
 {
 }
 
-LPCTSTR CVarDefContStr::GetValStr() const 
-{ 
-	return( m_sVal ); 
+LPCTSTR CVarDefContStr::GetValStr() const
+{
+	return(m_sVal);
 }
 
 inline INT64 CVarDefContStr::GetValNum() const
@@ -131,32 +131,90 @@ inline INT64 CVarDefContStr::GetValNum() const
 	return Exp_GetLLVal(pszStr);
 }
 
-void CVarDefContStr::SetValStr( LPCTSTR pszVal ) 
+void CVarDefContStr::SetValStr(LPCTSTR pszVal)
 {
-	if (strlen(pszVal) <= SCRIPT_MAX_LINE_LEN/2)
-		m_sVal.Copy( pszVal );
+	if (strlen(pszVal) <= SCRIPT_MAX_LINE_LEN / 2)
+		m_sVal.Copy(pszVal);
 	else
-		g_Log.EventWarn("Setting max length of %d was exceeded on (VAR,TAG,LOCAL).%s \r", SCRIPT_MAX_LINE_LEN/2, GetKey() );
+		g_Log.EventWarn("Setting max length of %d was exceeded on (VAR,TAG,LOCAL).%s \r", SCRIPT_MAX_LINE_LEN / 2, GetKey());
 }
 
 
-bool CVarDefContStr::r_LoadVal( CScript & s )
+bool CVarDefContStr::r_LoadVal(CScript& s)
 {
-	SetValStr( s.GetArgStr());
-	return( true );
+	SetValStr(s.GetArgStr());
+	return(true);
 }
 
-bool CVarDefContStr::r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc = NULL )
+bool CVarDefContStr::r_WriteVal(LPCTSTR pKey, CGString& sVal, CTextConsole* pSrc = NULL)
 {
 	UNREFERENCED_PARAMETER(pKey);
 	UNREFERENCED_PARAMETER(pSrc);
 	sVal = GetValStr();
-	return( true );
+	return(true);
 }
 
-CVarDefCont * CVarDefContStr::CopySelf() const 
-{ 
-	return new CVarDefContStr( GetKey(), m_sVal ); 
+CVarDefCont* CVarDefContStr::CopySelf() const
+{
+	return new CVarDefContStr(GetKey(), m_sVal);
+}
+
+/***************************************************************************
+*
+*
+*	class CVarDefContStr		Variable implementation (String)
+*
+*
+***************************************************************************/
+
+CVarDefContRef::CVarDefContRef(LPCTSTR pszKey, CScriptObj *pRef) : CVarDefCont(pszKey), m_pRef(pRef)
+{
+}
+
+CVarDefContRef::CVarDefContRef(LPCTSTR pszKey) : CVarDefCont(pszKey)
+{
+}
+
+CVarDefContRef::~CVarDefContRef()
+{
+}
+
+CScriptObj* CVarDefContRef::GetValRef() const
+{
+	return(m_pRef);
+}
+
+void CVarDefContRef::SetValRef(CScriptObj* pRef)
+{
+	m_pRef = pRef;
+}
+
+LPCTSTR CVarDefContRef::GetValStr() const
+{
+	return("");
+}
+
+inline INT64 CVarDefContRef::GetValNum() const
+{
+	return 0;
+}
+
+
+bool CVarDefContRef::r_LoadVal(CScript& s)
+{
+	return(false);
+}
+
+bool CVarDefContRef::r_WriteVal(LPCTSTR pKey, CGString& sVal, CTextConsole* pSrc = NULL)
+{
+	UNREFERENCED_PARAMETER(pKey);
+	UNREFERENCED_PARAMETER(pSrc);
+	return(false);
+}
+
+CVarDefCont* CVarDefContRef::CopySelf() const
+{
+	return new CVarDefContRef(GetKey(), m_pRef);
 }
 
 /***************************************************************************
@@ -592,6 +650,69 @@ int CVarDefMap::SetStr( LPCTSTR pszName, bool fQuoted, LPCTSTR pszVal, bool fZer
 		return SetStrOverride( pszName, pszVal );
 	}
 	return static_cast<int>(std::distance(m_Container.begin(), iResult) );
+}
+
+int CVarDefMap::SetRefNew(LPCTSTR pszName, CScriptObj *pRef)
+{
+	ADDTOCALLSTACK("CVarDefMap::SetRefNew");
+	CVarDefCont* pVarRef = new CVarDefContRef(pszName, pRef);
+	if (!pVarRef)
+		return(-1);
+
+	DefPairResult res = m_Container.insert(pVarRef);
+	if (res.second)
+		return static_cast<int>(std::distance(m_Container.begin(), res.first));
+	else
+		return -1;
+}
+
+int CVarDefMap::SetRefOverride(LPCTSTR pszKey, CScriptObj *pRef)
+{
+	ADDTOCALLSTACK("CVarDefMap::SetRefOverride");
+	DeleteAtKey(pszKey);
+	return SetRefNew(pszKey, pRef);
+}
+
+int CVarDefMap::SetRef(LPCTSTR pszName, CScriptObj *pRef, bool fZero)
+{
+	ADDTOCALLSTACK("CVarDefMap::SetRef");
+	// ASSUME: This has been clipped of unwanted beginning and trailing spaces.
+	if (!pszName || !pszName[0])
+		return -1;
+
+	if (pRef == NULL)
+	{
+		DeleteAtKey(pszName);
+		return(-1);
+	}
+
+	CVarDefContTest* pVarSearch = new CVarDefContTest(pszName);
+	DefSet::iterator iResult = m_Container.find(pVarSearch);
+	delete pVarSearch;
+
+	CVarDefCont* pVarBase = NULL;
+	if (iResult != m_Container.end())
+		pVarBase = (*iResult);
+
+	if (!pVarBase)
+	{
+		return SetRefNew(pszName, pRef);
+	}
+
+	CVarDefContRef* pVarRef = dynamic_cast <CVarDefContRef*>(pVarBase);
+	if (pVarRef)
+	{
+		pVarRef->SetValRef(pRef);
+	}
+	else
+	{
+		if (g_Serv.IsLoading())
+		{
+			DEBUG_ERR(("Replace existing VarNum '%s' with %d\n", pVarBase->GetKey(), pRef));
+		}
+		return SetRefOverride(pszName, pRef);
+	}
+	return static_cast<int>(std::distance(m_Container.begin(), iResult));
 }
 
 CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTextConsole* pSrc ) const

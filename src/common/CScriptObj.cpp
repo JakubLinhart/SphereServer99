@@ -1710,6 +1710,42 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc);
 			if (pDef)
 			{
+				if (*pszKey == '.')
+				{
+					INT64 num = pDef->GetValNum();
+					if (num > 0)
+					{
+						RES_TYPE resType = static_cast<RES_TYPE>(RES_GET_TYPE(num));
+						RESOURCE_ID resId(resType, RES_GET_INDEX(num));
+						switch (resType)
+						{
+							case RES_ITEMDEF:
+							{
+								CItemBase* itemBase = CItemBase::FindItemBase(static_cast<ITEMID_TYPE>(RES_GET_INDEX(num)));
+								if (itemBase)
+								{
+									pszKey++;
+									return itemBase->r_WriteVal(pszKey, sVal, pSrc, pArgs);
+								}
+								break;
+							}
+							case RES_SKILL:
+							{
+								CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
+								if (pDef)
+								{
+									CSkillDef* pSkillDef = g_Cfg.GetSkillDef(static_cast<SKILL_TYPE>(resId.GetResIndex()));
+									if (pSkillDef)
+									{
+										pszKey++;
+										return pSkillDef->r_WriteVal(pszKey, sVal, pSrc);
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
 				sVal = pDef->GetValStr();
 				return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
 			}

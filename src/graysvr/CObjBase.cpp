@@ -778,6 +778,9 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		case OC_DAMPOISON:
 			sVal.FormatVal(m_DamPoison);
 			break;
+		case OC_ID:
+			sVal = g_Cfg.ResourceGetName(Base_GetDef()->GetResourceID());
+			break;
 		case OC_INCREASEDAM:
 			sVal.FormatVal(m_DamIncrease);
 			break;
