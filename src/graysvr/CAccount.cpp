@@ -461,8 +461,6 @@ bool CAccount::NameStrip(TCHAR *pszNameOut, LPCTSTR pszNameIn)
 
 	if ( Str_GetBare(pszNameOut, pszNameIn, MAX_ACCOUNT_NAME_ENTRY, ACCOUNT_NAME_INVALID_CHARS) <= 0 )		// check length
 		return false;
-	if ( IsStrNumeric(pszNameOut) )		// check numeric characters
-		return false;
 	if ( strchr(pszNameOut, 0xA) || strchr(pszNameOut, 0xC) || strchr(pszNameOut, 0xD) )		// check newline characters
 		return false;
 	if ( !strcmpi(pszNameOut, "EOF") || !strcmpi(pszNameOut, "ACCOUNT") )	// check invalid names
