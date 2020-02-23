@@ -2081,6 +2081,31 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			sVal.FormatLLVal(iResult);
 			return true;
 		}
+		case SSC_StrCmpI:
+		{
+			int iResult = 0;
+			TCHAR* ppArgs[2];
+			size_t iCount = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs), ",");
+			if (iCount < 2)
+				iResult = 1;
+			else
+			{
+				if (*ppArgs[0] == '"')
+				{
+					ppArgs[0]++;
+					ppArgs[0] = Str_TrimEnd(ppArgs[0], "\"");
+				}
+				ppArgs[1] = Str_TrimEnd(ppArgs[1], ")");
+				if (*ppArgs[1] == '"')
+				{
+					ppArgs[1]++;
+					ppArgs[1] = Str_TrimEnd(ppArgs[1], "\"");
+				}
+				iResult = strcmpi(ppArgs[0], ppArgs[1]);
+			}
+			sVal.FormatLLVal(iResult);
+			return true;
+		}
 		case SSC_StrEat:
 		{
 			GETNONWHITESPACE(pszKey);
