@@ -617,7 +617,10 @@ int CVarDefMap::SetStr( LPCTSTR pszName, bool fQuoted, LPCTSTR pszVal, bool fZer
 		return( -1 );
 	}
 
-	if ( !fQuoted && IsSimpleNumberString(pszVal))
+	if (*pszVal == ')')
+		return SetStrNew(pszName, "");
+
+	if ( !fQuoted && IsSimpleNumberString(pszVal) )
 	{
 		// Just store the number and not the string.
 		return SetNum( pszName, Exp_GetLLVal( pszVal ), fZero);

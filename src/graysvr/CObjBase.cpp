@@ -678,6 +678,8 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		// RES_FUNCTION call
 		// Is it a function returning a value ? Parse args ?
 		LPCTSTR pszArgs = strchr(pszKey, ' ');
+		if (!pszArgs)
+			pszArgs = strchr(pszKey, '(');
 		if ( pszArgs != NULL )
 		{
 			++pszArgs;
@@ -1500,11 +1502,16 @@ bool CObjBase::r_LoadVal(CScript &s)
 					LPCTSTR pszVarName = s.GetKey() + 4;
 					LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
 
-					TemporaryString pszBuffer;
-					strcpy(pszBuffer, sVal);
-					strcat(pszBuffer, arg2 + 1);
-					int iValue = Exp_GetVal(pszBuffer);
-					m_TagDefs.SetNum(pszVarName, iValue, false);
+					if (strlen(sVal) > 0)
+					{
+						TemporaryString pszBuffer;
+						strcpy(pszBuffer, sVal);
+						strcat(pszBuffer, arg2 + 1);
+						int iValue = Exp_GetVal(pszBuffer);
+						m_TagDefs.SetNum(pszVarName, iValue, false);
+					}
+					else
+						m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
 				}
 				else
 				{
