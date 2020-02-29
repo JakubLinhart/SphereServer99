@@ -1524,36 +1524,6 @@ bool CObjBase::r_LoadVal(CScript &s)
 			return true;
 		}
 	}
-	else if ( !stricmp(pszKey, "TAG") )
-	{
-		TCHAR* ppArgs[2];
-		size_t iCount;
-		iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",");
-		TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
-		if (*ppArgs[1] == '#')
-		{
-			LPCTSTR ppArgs2 = ppArgs[1] + 1;
-			if (!IsStrNumeric(ppArgs2))
-			{
-				LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
-
-				TemporaryString pszBuffer;
-				strcpy(pszBuffer, sVal);
-				strcat(pszBuffer, ppArgs[1] + 1);
-				int iValue = Exp_GetVal(pszBuffer);
-				m_TagDefs.SetNum(pszVarName, iValue, false);
-			}
-			else
-			{
-				m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
-			}
-		}
-		else
-		{
-			m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
-		}
-		return true;
-	}
 	else if ( s.IsKeyHead("TAG0.", 5) )
 	{
 		bool fQuoted = false;
@@ -2002,8 +1972,61 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 	else
 	{
 		index = FindTableSorted(pszKey, sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
-		if ( index < 0 )
+		if (index < 0)
+		{
+			if (!stricmp(pszKey, "TAG"))
+			{
+				TCHAR* ppArgs[2];
+				size_t iCount;
+				iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",");
+				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+				if (iCount > 1)
+				{
+					if (*ppArgs[1] == '#')
+					{
+						LPCTSTR ppArgs2 = ppArgs[1] + 1;
+						if (!IsStrNumeric(ppArgs2))
+						{
+							LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+
+							TemporaryString pszBuffer;
+							strcpy(pszBuffer, sVal);
+							strcat(pszBuffer, ppArgs[1] + 1);
+							int iValue = Exp_GetVal(pszBuffer);
+							m_TagDefs.SetNum(pszVarName, iValue, false);
+						}
+						else
+						{
+							m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
+						}
+					}
+					else
+					{
+						m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
+					}
+				}
+				else
+				{
+					TemporaryString varName;
+					LPCTSTR cmd = ppArgs[0];
+					Str_ParseArgumentList(cmd, varName);
+					Str_ParseArgumentEnd(cmd, true);
+					if (*cmd == '.')
+					{
+						cmd++;
+						CObjBase* pObj = static_cast<CGrayUID>(m_TagDefs.GetKeyNum(varName)).ObjFind();
+						if (pObj)
+						{
+							CScript subS(cmd);
+							return pObj->r_Verb(subS, pSrc, pArgs);
+						}
+					}
+				}
+				return true;
+			}
+
 			return CScriptObj::r_Verb(s, pSrc, pArgs);
+		}
 	}
 
 	CChar *pCharSrc = pSrc->GetChar();

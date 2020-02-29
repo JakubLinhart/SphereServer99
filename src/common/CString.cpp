@@ -729,9 +729,13 @@ bool Str_ParseChained(LPCTSTR& pszCmdLine, String& chainedPrefix)
 	LPCTSTR pszOrig = pszCmdLine;
 
 	SKIP_IDENTIFIERSTRING(pszCmdLine);
-	GETNONWHITESPACE(pszCmdLine);
-	Str_SkipArgumentList(pszCmdLine);
-	Str_SkipIndexerArgument(pszCmdLine);
+
+	if (*pszCmdLine == '(' || ISWHITESPACE(*pszCmdLine))
+	{
+		GETNONWHITESPACE(pszCmdLine);
+		Str_SkipArgumentList(pszCmdLine);
+		Str_SkipIndexerArgument(pszCmdLine);
+	}
 
 	if (*pszCmdLine != '.')
 	{

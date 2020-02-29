@@ -1473,77 +1473,6 @@ bool CScriptObj::r_LoadVal(CScript &s)
 
 	switch ( index )
 	{
-		case SSC_VAR:
-		{
-			if (*(pszKey + 3) == '.')
-			{
-				bool fQuoted = false;
-				TCHAR* args = s.GetArgStr(&fQuoted);
-				if (*args == '#')
-				{
-					TemporaryString pszBuffer;
-					strcpy(pszBuffer, pszKey + 4);
-					strcat(pszBuffer, args + 1);
-					int iValue = Exp_GetVal(pszBuffer);
-					g_Exp.m_VarGlobals.SetNum(pszKey + 4, iValue, false);
-				}
-				else
-				{
-					g_Exp.m_VarGlobals.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false);
-				}
-				return true;
-			}
-			else
-			{
-				TCHAR* ppArgs[2];
-				size_t iCount;
-				iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
-				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
-				if (iCount > 1)
-				{
-					if (*ppArgs[1] == '#')
-					{
-						LPCTSTR ppArgs1 = ppArgs[1] + 1;
-						if (!IsStrNumeric(ppArgs1))
-						{
-							LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName);
-
-							TemporaryString pszBuffer;
-							strcpy(pszBuffer, sVal);
-							strcat(pszBuffer, ppArgs[1] + 1);
-							int iValue = Exp_GetVal(pszBuffer);
-							g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
-						}
-						else
-						{
-							g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
-						}
-					}
-					else
-					{
-						g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
-					}
-				}
-				else
-				{
-					TemporaryString varName;
-					LPCTSTR cmd = ppArgs[0];
-					Str_ParseArgumentList(cmd, varName);
-					Str_ParseArgumentEnd(cmd, true);
-					if (*cmd == '.')
-					{
-						cmd++;
-						CObjBase* pObj = static_cast<CGrayUID>(g_Exp.m_VarGlobals.GetKeyNum(varName)).ObjFind();
-						if (pObj)
-						{
-							CScript subS(cmd);
-							return pObj->r_LoadVal(subS);
-						}
-					}
-				}
-				return true;
-			}
-		}
 		case SSC_VAR0:
 		{
 			bool fQuoted = false;
@@ -2595,7 +2524,81 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 			break;
 		}
 		default:
+		{
+			if (!strnicmp(pszKey, "VAR", 3))
+			{
+				if (*(pszKey + 3) == '.')
+				{
+					bool fQuoted = false;
+					TCHAR* args = s.GetArgStr(&fQuoted);
+					if (*args == '#')
+					{
+						TemporaryString pszBuffer;
+						strcpy(pszBuffer, pszKey + 4);
+						strcat(pszBuffer, args + 1);
+						int iValue = Exp_GetVal(pszBuffer);
+						g_Exp.m_VarGlobals.SetNum(pszKey + 4, iValue, false);
+					}
+					else
+					{
+						g_Exp.m_VarGlobals.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false);
+					}
+					return true;
+				}
+				else
+				{
+					TCHAR* ppArgs[2];
+					size_t iCount;
+					iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
+					TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+					if (iCount > 1)
+					{
+						if (*ppArgs[1] == '#')
+						{
+							LPCTSTR ppArgs1 = ppArgs[1] + 1;
+							if (!IsStrNumeric(ppArgs1))
+							{
+								LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName);
+
+								TemporaryString pszBuffer;
+								strcpy(pszBuffer, sVal);
+								strcat(pszBuffer, ppArgs[1] + 1);
+								int iValue = Exp_GetVal(pszBuffer);
+								g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
+							}
+							else
+							{
+								g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+							}
+						}
+						else
+						{
+							g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+						}
+					}
+					else
+					{
+						TemporaryString varName;
+						LPCTSTR cmd = ppArgs[0];
+						Str_ParseArgumentList(cmd, varName);
+						Str_ParseArgumentEnd(cmd, true);
+						if (*cmd == '.')
+						{
+							cmd++;
+							CObjBase* pObj = static_cast<CGrayUID>(g_Exp.m_VarGlobals.GetKeyNum(varName)).ObjFind();
+							if (pObj)
+							{
+								CScript subS(cmd);
+								return pObj->r_Verb(subS, pSrc, pArgs);
+							}
+						}
+					}
+					return true;
+				}
+			}
+
 			return r_LoadVal(s);		// default to loading values
+		}
 	}
 	return true;
 	EXC_CATCH;
@@ -3065,6 +3068,20 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 	LPCTSTR pszKey = s.GetKey();
 	int index = -1;
 
+	TemporaryString chainedPrefix;
+	LPCTSTR pszOrigKey = pszKey;
+	if (Str_ParseChained(pszKey, chainedPrefix))
+	{
+		CObjBase* pObj = static_cast<CGrayUID>(m_VarsLocal.GetKeyNum(chainedPrefix)).ObjFind();
+		if (pObj)
+		{
+			pszKey++;
+			CScript subS(pszKey);
+			return pObj->r_Verb(subS, pSrc, pArgs);
+		}
+	}
+	pszKey = pszOrigKey;
+
 	if ( !strnicmp("FLOAT.", pszKey, 6) )
 		return m_VarsFloat.Insert(pszKey + 6, s.GetArgStr(), true);
 	else if ( !strnicmp("LOCAL.", pszKey, 6) )
@@ -3141,7 +3158,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 					if (pObj)
 					{
 						CScript subS(cmd);
-						return pObj->r_LoadVal(subS);
+						return pObj->r_Verb(subS, pSrc, pArgs);
 					}
 				}
 			}
