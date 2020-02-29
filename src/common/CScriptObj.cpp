@@ -159,7 +159,8 @@ TRIGRET_TYPE CScriptObj::OnTriggerForLoop(CScript &s, int iType, CTextConsole *p
 			strcpy(pszTemp, sOrig.GetPtr());
 			pszCond = pszTemp;
 			ParseText(pszCond, pSrc, 0, pArgs);
-			if ( !Exp_GetLLVal(pszCond) )
+			CExpression expr(pArgs, pSrc, this);
+			if ( !expr.GetVal(pszCond) )
 				break;
 
 			TRIGRET_TYPE iRet = OnTriggerRun(s, TRIGRUN_SECTION_TRUE, pSrc, pArgs, psResult);
