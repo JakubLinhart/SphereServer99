@@ -3090,6 +3090,33 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 		m_VarsLocal.SetStr(s.GetKey() + 6, fQuoted, s.GetArgStr(&fQuoted), false);
 		return true;
 	}
+	else if (!stricmp("argv", pszKey))
+	{
+		LPCTSTR pszOrigKey = pszKey;
+		pszKey = s.GetArgRaw();
+		TemporaryString argumentIndexStr;
+		Str_ParseArgumentList(pszKey, argumentIndexStr);
+		Str_ParseArgumentEnd(pszKey, true);
+		if (*pszKey == '.')
+		{
+			pszKey++;
+			CExpression expr(this, pSrc);
+			INT64 argumentIndex = expr.GetVal(argumentIndexStr);
+			LPCTSTR lpszArgumentValue = GetArgV(argumentIndex);
+			if (*lpszArgumentValue == '#')
+			{
+				lpszArgumentValue++;
+				CObjBase* pObj = static_cast<CGrayUID>(expr.GetVal(lpszArgumentValue)).ObjFind();
+				if (pObj)
+				{
+					CScript subS(pszKey);
+					return pObj->r_Verb(subS, pSrc, this);
+				}
+			}
+		}
+
+		pszKey = pszOrigKey;
+	}
 	else if (!stricmp("arg", pszKey) || !strnicmp("arg.", pszKey, 4))
 	{
 		if (*(pszKey + 3) == '.')
