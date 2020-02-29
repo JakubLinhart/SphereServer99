@@ -1240,6 +1240,15 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		case OC_NAME:
 			sVal = GetName();
 			break;
+		case OC_P_X:
+			sVal.FormatVal(GetTopPoint().m_x);
+			break;
+		case OC_P_Y:
+			sVal.FormatVal(GetTopPoint().m_y);
+			break;
+		case OC_P_Z:
+			sVal.FormatVal(GetTopPoint().m_z);
+			break;
 		case OC_P:
 		{
 			if ( pszKey[1] == '.' )
@@ -1752,6 +1761,9 @@ bool CObjBase::r_LoadVal(CScript &s)
 			SetName(static_cast<LPCTSTR>(s.GetArgStr()));
 			fSendUpdate = true;
 			break;
+		case OC_P_X:
+		case OC_P_Y:
+		case OC_P_Z:
 		case OC_P:
 			return false;	// must set the point via the CItem or CChar methods
 		case OC_RESCOLD:

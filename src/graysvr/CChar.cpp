@@ -2227,6 +2227,9 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 		case CHC_OSKIN:
 			sVal.FormatHex(m_prev_Hue);
 			break;
+		case CHC_P_X:
+		case CHC_P_Y:
+		case CHC_P_Z:
 		case CHC_P:
 			goto do_default;
 		case CHC_STONE:
@@ -2830,6 +2833,27 @@ bool CChar::r_LoadVal(CScript &s)
 		case CHC_OSKIN:
 			m_prev_Hue = static_cast<HUE_TYPE>(s.GetArgVal());
 			break;
+		case CHC_P_X:
+		{
+			CPointMap pt = GetTopPoint();
+			pt.m_x = s.GetArgVal();
+			MoveTo(pt);
+			break;
+		}
+		case CHC_P_Y:
+		{
+			CPointMap pt = GetTopPoint();
+			pt.m_y = s.GetArgVal();
+			MoveTo(pt);
+			break;
+		}
+		case CHC_P_Z:
+		{
+			CPointMap pt = GetTopPoint();
+			pt.m_z = s.GetArgVal();
+			MoveTo(pt);
+			break;
+		}
 		case CHC_P:
 		{
 			CPointMap pt;

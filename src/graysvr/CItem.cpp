@@ -2311,6 +2311,9 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 			sVal.FormatVal( m_itNormal.m_morep.m_z );
 			break;
 		case IC_P:
+		case IC_P_X:
+		case IC_P_Y:
+		case IC_P_Z:
 			fDoDefault = true;
 			break;
 		case IC_TYPE:
@@ -2733,6 +2736,33 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		case IC_MOREZ:
 			m_itNormal.m_morep.m_z = static_cast<signed char>(s.GetArgVal());
 			break;
+		case IC_P_X:
+		{
+			if (!IsDisconnected() && !IsItemInContainer())
+				return false;
+			CPointMap pt = this->GetTopPoint();
+			pt.m_x = s.GetArgVal();
+			SetUnkPoint(pt);
+			break;
+		}
+		case IC_P_Y:
+		{
+			if (!IsDisconnected() && !IsItemInContainer())
+				return false;
+			CPointMap pt = this->GetTopPoint();
+			pt.m_y = s.GetArgVal();
+			SetUnkPoint(pt);
+			break;
+		}
+		case IC_P_Z:
+		{
+			if (!IsDisconnected() && !IsItemInContainer())
+				return false;
+			CPointMap pt = this->GetTopPoint();
+			pt.m_z = s.GetArgVal();
+			SetUnkPoint(pt);
+			break;
+		}
 		case IC_P:
 			// Loading or import ONLY ! others use the r_Verb
 			if ( ! IsDisconnected() && ! IsItemInContainer())
