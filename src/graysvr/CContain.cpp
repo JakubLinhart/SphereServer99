@@ -475,6 +475,22 @@ bool CContainer::r_GetRefContainerNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTST
 			return true;
 		}
 	}
+	else if (!strnicmp(pszKey, "FINDCONT", 8))
+	{
+		pszKey += 8;
+		if (*pszKey == '\0')
+			pszKey = pszRawArgs;
+		TemporaryString pszArgs;
+		if (Str_ParseArgumentList(pszKey, pszArgs))
+		{
+			if (*pszKey == '.')
+				pszKey++;
+			CExpression expr(pArgs, pSrc, &g_Serv);
+			INT64 iKey = expr.GetVal(pszArgs);
+			pRef = (iKey >= 0) ? GetAt(static_cast<size_t>(iKey)) : NULL;
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -487,16 +503,7 @@ bool CContainer::r_GetRefContainer(LPCTSTR &pszKey, CScriptObj *&pRef)
 	if ( !strnicmp(pszKey, "FIND", 4) )				// FIND*
 	{
 		pszKey += 4;
-		if ( !strnicmp(pszKey, "CONT", 4) )	// FINDCONT
-		{
-			pszKey += 4;
-			SKIP_SEPARATORS(pszKey);
-			INT64 iKey = Exp_GetLLSingle(pszKey);
-			pRef = (iKey >= 0) ? GetAt(static_cast<size_t>(iKey)) : NULL;
-			SKIP_SEPARATORS(pszKey);
-			return true;
-		}
-		else if ( !strnicmp(pszKey, "TYPE", 4) )	// FINDTYPE
+		if ( !strnicmp(pszKey, "TYPE", 4) )	// FINDTYPE
 		{
 			pszKey += 4;
 			SKIP_SEPARATORS(pszKey);
