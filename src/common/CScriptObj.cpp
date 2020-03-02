@@ -1212,12 +1212,19 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 			EXC_SET("writeval");
 			CGString sVal;
-			fRes = r_WriteVal(pszKey, sVal, pSrc, pArgs);
-			if ( !fRes )
+			fRes = false;
+			if (pArgs && pArgs->r_WriteVarVal(pszKey, sVal, pSrc))
+				fRes = true;
+			
+			if (!fRes)
 			{
-				EXC_SET("writeval");
-				if ( pArgs && pArgs->r_WriteVal(pszKey, sVal, pSrc) )
-					fRes = true;
+				fRes = r_WriteVal(pszKey, sVal, pSrc, pArgs);
+				if (!fRes)
+				{
+					EXC_SET("writeval");
+					if (pArgs && pArgs->r_WriteVal(pszKey, sVal, pSrc))
+						fRes = true;
+				}
 			}
 
 			if ( !fRes )
@@ -1373,7 +1380,8 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 		CGString resName;
 		if (pArgs)
 		{
-			pArgs->r_WriteVal(arg2.toBuffer(), resName, pSrc);
+			if (!pArgs->r_WriteVarVal(arg2.toBuffer(), resName, pSrc))
+				pArgs->r_WriteVal(arg2.toBuffer(), resName, pSrc);
 			if (g_Cfg.r_GetRef(ppArgs[0], resName, pRef))
 			{
 				if (pRef)
@@ -2902,28 +2910,19 @@ LPCTSTR CScriptTriggerArgs::GetArgV(int iKey)
 	return m_v.GetAt(static_cast<size_t>(iKey));
 }
 
-bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc)
 {
-	ADDTOCALLSTACK("CScriptTriggerArgs::r_WriteVal");
-	EXC_TRY("WriteVal");
-	if ( IsSetEF(EF_Intrinsic_Locals) )
+	ADDTOCALLSTACK("CScriptTriggerArgs::r_WriteVarVal");
+	EXC_TRY("WriteVarVal");
+
+	CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
+	if (pVar)
 	{
-		EXC_SET("intrinsic");
-		CVarDefCont *pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
-		if ( pVar )
-		{
-			sVal = pVar->GetValStr();
-			return true;
-		}
-	}
-	else if ( !strnicmp("LOCAL.", pszKey, 6) )
-	{
-		EXC_SET("local");
-		pszKey += 6;
-		sVal = m_VarsLocal.GetKeyStr(pszKey, true);
+		sVal = pVar->GetValStr();
 		return true;
 	}
-	else if (!strnicmp("arg(", pszKey, 4) || !strnicmp("arg.", pszKey, 4))
+
+	if (!strnicmp("arg(", pszKey, 4) || !strnicmp("arg.", pszKey, 4))
 	{
 		EXC_SET("localarg");
 		pszKey += 3;
@@ -2950,7 +2949,28 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 			}
 		}
 	}
-	if ( !strnicmp("FLOAT.", pszKey, 6) )
+
+	return false;
+	EXC_CATCH;
+
+	EXC_DEBUG_START;
+	EXC_ADD_KEYRET(pSrc);
+	EXC_DEBUG_END;
+	return false;
+}
+
+bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
+{
+	ADDTOCALLSTACK("CScriptTriggerArgs::r_WriteVal");
+	EXC_TRY("WriteVal");
+	if ( !strnicmp("LOCAL.", pszKey, 6) )
+	{
+		EXC_SET("local");
+		pszKey += 6;
+		sVal = m_VarsLocal.GetKeyStr(pszKey, true);
+		return true;
+	}
+	else if ( !strnicmp("FLOAT.", pszKey, 6) )
 	{
 		EXC_SET("float");
 		pszKey += 6;
@@ -3005,8 +3025,11 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 		if (*pszKey == '(' || *pszKey == '.')
 			pszKey++;
 		GETNONWHITESPACE(pszKey);
-		if (!r_WriteVal(pszKey, sVal, pSrc))
-			sVal = "";
+		if (!r_WriteVarVal(pszKey, sVal, pSrc))
+		{
+			if (!r_WriteVal(pszKey, sVal, pSrc))
+				sVal = "";
+		}
 		return true;
 	}
 	else if (!strnicmp(pszKey, "ARGS", 4)) {

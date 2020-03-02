@@ -825,7 +825,10 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 			CGString sVal;
 
 			bool fRes = false;
-			if (m_pObj != NULL)
+			if (m_pArgs != NULL)
+				fRes = m_pArgs->r_WriteVarVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc);
+
+			if (!fRes && m_pObj != NULL)
 				fRes = m_pObj->r_WriteVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc, m_pArgs);
 
 			if (!fRes && m_pArgs != NULL)

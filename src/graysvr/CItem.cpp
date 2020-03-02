@@ -5205,6 +5205,9 @@ bool CItem::OnTick()
 			break;
 	}
 
+	if (IsAttr(ATTR_STATIC))
+			return true;
+
 	EXC_SET("default behaviour2");
 	if ( IsAttr(ATTR_DECAY) )
 		return false;
