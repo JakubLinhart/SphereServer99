@@ -1365,11 +1365,11 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 
 		LPCTSTR pszArg2Start = ppArgs[1];
 		LPCTSTR pszArg2End = pszArg2Start;
-		Str_SkipFunctionCall(pszArg2End);
+		Str_SkipArgumentList(pszArg2End);
 
 		TemporaryString arg2;
 		strncpy(arg2, pszArg2Start, pszArg2End - pszArg2Start);
-		arg2.setAt(pszArg2End - pszArg2Start, '\0');
+		arg2.setAt(pszArg2End - pszArg2Start - 1, '\0');
 
 		pszKey = pszArg2End;
 		if (*pszKey == ')')
@@ -1380,8 +1380,13 @@ bool CScriptObj::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawA
 		CGString resName;
 		if (pArgs)
 		{
-			if (!pArgs->r_WriteVarVal(arg2.toBuffer(), resName, pSrc))
-				pArgs->r_WriteVal(arg2.toBuffer(), resName, pSrc);
+			CExpression expr(pArgs, pSrc, this);
+			INT64 resId = expr.GetVal(arg2);
+			resName.FormatLLVal(resId);
+			pRef = g_Cfg.ResourceGetDefByName(ppArgs[0], resName);
+			if (pRef)
+				return true;
+
 			if (g_Cfg.r_GetRef(ppArgs[0], resName, pRef))
 			{
 				if (pRef)
@@ -1676,7 +1681,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 									if (pSkillDef)
 									{
 										pszKey++;
-										return pSkillDef->r_WriteVal(pszKey, sVal, pSrc);
+										return pSkillDef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 									}
 								}
 								break;
@@ -2582,6 +2587,11 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 						}
 						else
 						{
+							if (*ppArgs[1] == '"')
+							{
+								ppArgs[1]++;
+								ppArgs[1] = Str_TrimEnd(ppArgs[1], "\"");
+							}
 							g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
 						}
 					}
@@ -3172,6 +3182,12 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			{
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 				TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
+
+				if (*pszValue == '"')
+				{
+					pszValue++;
+					pszValue = Str_TrimEnd(pszValue, "\"");
+				}
 
 				if (*pszValue == '#')
 				{

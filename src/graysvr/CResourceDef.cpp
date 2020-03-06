@@ -244,7 +244,7 @@ CSkillDef::CSkillDef( SKILL_TYPE skill ) :
 	m_AdvRate.Init();
 }
 
-bool CSkillDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc )
+bool CSkillDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CSkillDef::r_WriteVal");
 	EXC_TRY("WriteVal");
@@ -262,7 +262,9 @@ bool CSkillDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 	case SKC_BONUS_STR: // "BONUS_STR"
 		sVal.FormatVal( m_StatBonus[STAT_STR] );
 		break;
-	// case SKC_DEFNAME: // "DEFNAME"
+	case SKC_DEFNAME:
+		sVal = m_pszDefName;
+		break;
 	case SKC_DELAY:
 		sVal = m_Delay.Write();
 		break;
@@ -339,7 +341,11 @@ bool CSkillDef::r_LoadVal( CScript &s )
 		m_StatBonus[STAT_STR] = static_cast<BYTE>(s.GetArgVal());
 		break;
 	case SKC_DEFNAME: // "DEFNAME"
-		return SetResourceName( s.GetArgStr());
+	{
+		LPCTSTR pszName = s.GetArgStr();
+		m_pszDefName = (new CGString(pszName))->GetPtr();
+		return SetResourceName(pszName);
+	}
 	case SKC_DELAY:
 		m_Delay.Load( s.GetArgStr());
 		break;
@@ -610,7 +616,7 @@ CSpellDef::CSpellDef( SPELL_TYPE id ) :
 
 
 
-bool CSpellDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc )
+bool CSpellDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CSpellDef::r_WriteVal");
 	EXC_TRY("WriteVal");

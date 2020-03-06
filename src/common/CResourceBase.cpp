@@ -295,6 +295,12 @@ int CResourceBase::ResourceGetIndexType(RES_TYPE restype, LPCTSTR pszName)
 	return -1;
 }
 
+CScriptObj* CResourceBase::ResourceGetDefByName(LPCTSTR pszResType, LPCTSTR pszName)
+{
+	RES_TYPE resType = static_cast<RES_TYPE>(FindTableSorted(pszResType, sm_szResourceBlocks, RES_QTY));
+	return ResourceGetDefByName(resType, pszName);
+}
+
 CResourceDef *CResourceBase::ResourceGetDef(RESOURCE_ID_BASE rid) const
 {
 	ADDTOCALLSTACK("CResourceBase::ResourceGetDef");

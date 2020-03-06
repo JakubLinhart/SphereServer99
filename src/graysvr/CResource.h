@@ -408,7 +408,7 @@ public:
 	}
 
 	bool r_LoadVal(CScript &s);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	bool GetPrimarySkill(int *piSkill = NULL, int *piQty = NULL) const;
 
@@ -605,7 +605,7 @@ public:
 
 public:
 	bool r_LoadVal(CScript &s);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	LPCTSTR GetKey() const
 	{

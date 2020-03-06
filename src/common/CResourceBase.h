@@ -441,6 +441,7 @@ private:
 
 protected:
 	const CVarDefContNum *m_pDefName;	// name of the resource (optional)
+	LPCTSTR m_pszDefName;
 
 public:
 	RESOURCE_ID GetResourceID() const
@@ -879,7 +880,8 @@ public:
 
 	int ResourceGetIndexType(RES_TYPE restype, LPCTSTR pszName);
 
-	virtual CResourceDef *ResourceGetDef(RESOURCE_ID_BASE rid) const;
+	virtual CResourceDef* ResourceGetDef(RESOURCE_ID_BASE rid) const;
+	CScriptObj* ResourceGetDefByName(LPCTSTR pszResType, LPCTSTR pszName);
 	CScriptObj *ResourceGetDefByName(RES_TYPE restype, LPCTSTR pszName)
 	{
 		// Resolve a name to the actual resource def

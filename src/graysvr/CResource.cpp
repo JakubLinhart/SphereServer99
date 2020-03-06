@@ -306,6 +306,10 @@ bool CResource::r_GetRef(LPCTSTR pszResType, LPCTSTR pszKey, CScriptObj*& pRef)
 	{
 		return r_GetItemDefRef(pszKey, pRef);
 	}
+	else if (iResType == RES_SKILL)
+	{
+		return SkillLookup(pszKey);
+	}
 
 	return false;
 }
