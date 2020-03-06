@@ -1743,6 +1743,24 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	}
 
 	pszKey += strlen(sm_szLoadKeys[index]);
+	GETNONWHITESPACE(pszKey);
+
+	switch (index)
+	{
+		case SSC_EVAL:
+		{
+			CExpression expr(pArgs, pSrc, this);
+			sVal.FormatLLVal(expr.GetVal(pszKey));
+			return true;
+		}
+		case SSC_HVAL:
+		{
+			CExpression expr(pArgs, pSrc, this);
+			sVal.FormatULLHex(expr.GetVal(pszKey));
+			return true;
+		}
+	}
+
 	SKIP_SEPARATORS(pszKey);
 	bool fZero = false;
 
@@ -1849,12 +1867,6 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		case SSC_DEFMSG:
 			sVal = g_Cfg.GetDefaultMsg(pszKey);
 			return true;
-		case SSC_EVAL:
-		{
-			CExpression expr(pArgs, pSrc, this);
-			sVal.FormatLLVal(expr.GetVal(pszKey));
-			return true;
-		}
 		case SSC_UVAL:
 			sVal.FormatULLVal(static_cast<unsigned long long>(Exp_GetLLVal(pszKey)));
 			return true;
@@ -1862,12 +1874,6 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		{
 			INT64 iVal = Exp_GetLLVal(pszKey);
 			sVal.Format("%lld.%lld", iVal / 10, llabs(iVal % 10));
-			return true;
-		}
-		case SSC_HVAL:
-		{
-			CExpression expr(pArgs, pSrc, this);
-			sVal.FormatULLHex(expr.GetVal(pszKey));
 			return true;
 		}
 		case SSC_FEVAL:		// Float EVAL
