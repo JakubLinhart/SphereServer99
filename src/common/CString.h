@@ -465,6 +465,8 @@ TCHAR * Str_TrimWhitespace(TCHAR * pStr);
 */
 int Str_IndexOf(TCHAR * pStr1, TCHAR * pStr2, int offset = 0);
 
+TCHAR* Str_TrimDoublequotes(TCHAR* pStr);
+
 TCHAR* Str_TrimEnd(TCHAR* pStr, LPCTSTR pszSep);
 /**
 * @brief Parse a simple argument from a list of arguments.

@@ -2191,6 +2191,69 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			g_Log.EventDebug("%s: process execution finished\n", sm_szLoadKeys[index]);
 			return true;
 		}
+		case SSC_StrMid:
+		{
+			TCHAR* ppArgs[3];
+			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
+			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
+			if (iQty < 3)
+				return false;
+
+			TCHAR* pStr = Str_TrimDoublequotes(ppArgs[0]);
+			CExpression expr(pArgs, pSrc, this);
+			int startIndex = expr.GetVal(ppArgs[1]);
+			if (startIndex < 0)
+				return true;
+
+			int subLength = expr.GetVal(ppArgs[2]);
+			int strLength = strlen(pStr);
+			if (startIndex + subLength > strLength)
+				subLength = strLength - startIndex;
+			if (subLength < 0)
+				return true;
+
+			sVal = (pStr + startIndex);
+			sVal.SetAt(subLength, '\0');
+
+			return true;
+		}
+		case SSC_StrGetTok:
+		{
+			TCHAR* ppArgs[3];
+			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
+			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
+			if (iQty < 3)
+				return false;
+			
+			TCHAR* pStr = Str_TrimDoublequotes(ppArgs[0]);
+			CExpression expr(pArgs, pSrc, this);
+			int index = expr.GetVal(ppArgs[1]);
+			TCHAR* pDelimiter = Str_TrimDoublequotes(ppArgs[2]);
+
+			TCHAR* token = strtok(pStr, pDelimiter);
+			if (!token)
+			{
+				sVal = pStr;
+				return true;
+			}
+
+			while (index > 0 && token)
+			{
+				index--;
+				token = strtok(NULL, pDelimiter);
+			}
+
+			if (index == 0)
+			{
+				if (token)
+					sVal = token;
+				else
+					sVal = "";
+				return true;
+			}
+
+			return false;
+		}
 		case SSC_EXPLODE:
 		{
 			GETNONWHITESPACE(pszKey);
@@ -2593,12 +2656,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 						}
 						else
 						{
-							if (*ppArgs[1] == '"')
-							{
-								ppArgs[1]++;
-								ppArgs[1] = Str_TrimEnd(ppArgs[1], "\"");
-							}
-							g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+							g_Exp.m_VarGlobals.SetStr(pszVarName, false, Str_TrimDoublequotes(ppArgs[1]), false);
 						}
 					}
 					else

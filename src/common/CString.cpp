@@ -509,6 +509,16 @@ TCHAR * Str_TrimEnd(TCHAR* pStr, LPCTSTR pszSep)
 	return (pStr);
 }
 
+TCHAR* Str_TrimDoublequotes(TCHAR* pStr)
+{
+	if (*pStr == '"')
+		pStr++;
+
+	pStr = Str_TrimEnd(pStr, "\"");
+
+	return pStr;
+}
+
 TCHAR * Str_TrimWhitespace(TCHAR * pStr)
 {
 	// TODO: WARNING! Possible Memory Lake here!
