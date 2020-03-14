@@ -597,6 +597,7 @@ TRIGRET_TYPE CObjBase::OnHearTrigger(CResourceLock &s, LPCTSTR pszCmd, CChar *pS
 
 enum OBR_TYPE
 {
+	OBR_DEF,
 	OBR_ROOM,
 	OBR_SECTOR,
 	OBR_SPAWNITEM,
@@ -607,6 +608,7 @@ enum OBR_TYPE
 
 LPCTSTR const CObjBase::sm_szRefKeys[OBR_QTY+1] =
 {
+	"DEF",
 	"ROOM",
 	"SECTOR",
 	"SPAWNITEM",
@@ -641,6 +643,7 @@ bool CObjBase::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 					break;
 				pRef = dynamic_cast<CObjBase *>(GetTopLevelObj());
 				return true;
+			case OBR_DEF:
 			case OBR_TYPEDEF:
 				pRef = Base_GetDef();
 				return true;
@@ -1988,12 +1991,21 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 		{
 			if (!stricmp(pszKey, "TAG"))
 			{
+				bool fQuoted = false;
 				TCHAR* ppArgs[2];
 				size_t iCount;
 				iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",");
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 				if (iCount > 1)
 				{
+					TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
+
+					if (*pszValue == '"')
+					{
+						pszValue++;
+						pszValue = Str_TrimEnd(pszValue, "\"");
+					}
+
 					if (*ppArgs[1] == '#')
 					{
 						LPCTSTR ppArgs2 = ppArgs[1] + 1;
@@ -2009,12 +2021,12 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 						}
 						else
 						{
-							m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
+							m_TagDefs.SetStr(pszVarName, false, pszValue, false);
 						}
 					}
 					else
 					{
-						m_TagDefs.SetStr(pszVarName, false, ppArgs[1], false);
+						m_TagDefs.SetStr(pszVarName, false, pszValue, false);
 					}
 				}
 				else
