@@ -682,7 +682,11 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		// Is it a function returning a value ? Parse args ?
 		LPCTSTR pszArgs = strchr(pszKey, ' ');
 		if (!pszArgs)
+		{
 			pszArgs = strchr(pszKey, '(');
+			if (pszArgs)
+				pszArgs = Str_TrimEnd(const_cast<TCHAR*>(pszArgs), ")");
+		}
 		if ( pszArgs != NULL )
 		{
 			++pszArgs;
