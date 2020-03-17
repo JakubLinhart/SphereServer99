@@ -2217,6 +2217,18 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 
 			return true;
 		}
+		case SSC_StrFirstCap:
+		{
+			TCHAR* ppArgs[1];
+			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
+			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
+			if (iQty < 1)
+				return false;
+			TCHAR* pArg = Str_TrimDoublequotes(ppArgs[0]);
+			*pArg = toupper(*pArg);
+			sVal = pArg;
+			return true;
+		}
 		case SSC_StrGetTok:
 		{
 			TCHAR* ppArgs[3];
