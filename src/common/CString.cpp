@@ -547,12 +547,24 @@ bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep)
 	TCHAR ch;
 	bool bQuotes = false;
 	bool bBracket = false;
+	int macroLevel = 0;
+	bool ignoreMacros = strchr(pszSep, '<');
 	for (; ; pLine++)
 	{
 		ch = *pLine;
 		if (ch == '"')	// quoted argument
 		{
 			bQuotes = !bQuotes;
+			continue;
+		}
+		if (!ignoreMacros && ch == '<' && !bQuotes)
+		{
+			macroLevel++;
+			continue;
+		}
+		if (!ignoreMacros && ch == '>' && !bQuotes)
+		{
+			macroLevel++;
 			continue;
 		}
 		if (ch == '\0')	// no args i guess.
@@ -563,7 +575,7 @@ bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep)
 			}
 			return false;
 		}
-		if (strchr(pszSep, ch) && (bQuotes == false))
+		if (strchr(pszSep, ch) && (bQuotes == false) && !macroLevel)
 		{
 			if (ch == '(')
 				bBracket = true;
