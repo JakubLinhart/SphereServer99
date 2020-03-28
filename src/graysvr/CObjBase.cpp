@@ -685,7 +685,14 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 		{
 			pszArgs = strchr(pszKey, '(');
 			if (pszArgs)
-				pszArgs = Str_TrimEnd(const_cast<TCHAR*>(pszArgs), ")");
+			{
+				LPCTSTR pszArgsStart = pszArgs;
+				Str_SkipArgumentList(pszArgs);
+				TemporaryString sArgsTmp;
+				strncpy(sArgsTmp, pszArgsStart, pszArgs - pszArgsStart - 1);
+				sArgsTmp.setAt(pszArgs - pszArgsStart - 1, '\0');
+				pszArgs = sArgsTmp;
+			}
 		}
 		if ( pszArgs != NULL )
 		{
