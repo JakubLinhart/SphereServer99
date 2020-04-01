@@ -317,7 +317,7 @@ bool CServerDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			{
 				if (*pszArgs == '(')
 				{
-					LPCTSTR pszArgsEnd = strchr(pszArgs, ')');
+					LPCTSTR pszArgsEnd = strrchr(pszArgs, ')');
 					if (pszArgsEnd)
 					{
 						strcpylen(pszBuffer, pszArgs + 1, pszArgsEnd - pszArgs);

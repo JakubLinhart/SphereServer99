@@ -2806,10 +2806,6 @@ void CScriptTriggerArgs::Init(LPCTSTR pszStr)
 	if (*pszStr == '(')
 	{
 		fParentheses = true;
-		++pszStr;
-		//TCHAR* str = const_cast<TCHAR*>(strrchr(pszStr, ')'));
-		//if (str)
-		//	*str = '\0';
 	}
 
 	// Raw is left untouched for now - it'll be split the 1st time argv is accessed
