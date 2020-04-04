@@ -1086,6 +1086,12 @@ bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 		SKIP_SEPARATORS(pszKey);
 		return pGMPage->r_WriteVal(pszKey, sVal, pSrc);
 	}
+	else if (!strnicmp(pszKey, "RTIMETEXT", 9))
+	{
+		CGTime currentTime = CGTime::GetCurrentTime();
+		sVal.Format("%d/%02d/%02d %02d\:%02d\:%02d", currentTime.GetYear(), currentTime.GetMonth(), currentTime.GetDay(), currentTime.GetHour(), currentTime.GetMinute(), currentTime.GetSeconds());
+		return true;
+	}
 
 	if ( g_Cfg.r_WriteVal(pszKey, sVal, pSrc) )
 		return true;
@@ -1129,6 +1135,7 @@ enum SV_TYPE
 	SV_RESTOCK,
 	SV_RESTORE,
 	SV_RESYNC,
+	SV_RTIMETEXT,
 	SV_SAVE,
 	SV_SAVECOUNT,	//read only
 	SV_SAVESTATICS,
@@ -1167,6 +1174,7 @@ LPCTSTR const CServer::sm_szVerbKeys[SV_QTY + 1] =
 	"RESTOCK",
 	"RESTORE",
 	"RESYNC",
+	"RTIMETEXT",
 	"SAVE",
 	"SAVECOUNT",	// read only
 	"SAVESTATICS",
@@ -1266,6 +1274,7 @@ bool CServer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 		case SV_ITEMS:
 		case SV_SAVECOUNT:
 		case SV_TIME:
+		case SV_RTIMETEXT:
 			return false;
 		case SV_ACCOUNT:
 			return g_Accounts.Account_OnCmd(s.GetArgRaw(), pSrc);

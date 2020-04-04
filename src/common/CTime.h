@@ -67,6 +67,10 @@ public:
 	{
 		return GetLocalTm()->tm_min;
 	}
+	int GetSeconds() const
+	{
+		return GetLocalTm()->tm_sec;
+	}
 	int GetDaysTotal() const
 	{
 		// Needs to be more consistent than accurate, just for compare

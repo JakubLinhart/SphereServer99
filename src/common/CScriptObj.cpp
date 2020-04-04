@@ -2229,6 +2229,26 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			sVal = pArg;
 			return true;
 		}
+		case SSC_StrGetAscii:
+		{
+			TCHAR* ppArgs[2];
+			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
+			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
+			if (iQty < 2)
+				return false;
+			TCHAR* pStr = Str_TrimDoublequotes(ppArgs[0]);
+			CExpression expr(pArgs, pSrc, this);
+			int index = expr.GetVal(ppArgs[1]);
+
+			if (index < 0 || index > strlen(pStr))
+			{
+				sVal.FormatLLVal(0);
+				return true;
+			}
+
+			sVal.FormatLLVal(*(pStr + index));
+			return true;
+		}
 		case SSC_StrGetTok:
 		{
 			TCHAR* ppArgs[3];
