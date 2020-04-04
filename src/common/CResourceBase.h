@@ -788,9 +788,9 @@ public:
 		LPCTSTR objStr = pObj->GetName();
 		if ( fNoSpaces )
 		{
-			const char *p = strchr(pszID, ' ');
+			const char *p = strchr(pszID, '(');
 			if ( !p )
-				p = strchr(pszID, '(');
+				p = strchr(pszID, ' ');
 			if ( !p )
 				p = strchr(pszID, '.');
 			if ( p )
