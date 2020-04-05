@@ -1,0 +1,41 @@
+[function test_safe]
+serv.smsg "test_safe\n"
+
+serv.smsg "      testing incorrect scripts....\n"
+safe asdf
+safe #$%@#$(())
+
+safe arg(a1,123)
+ShouldBeSameString("without parentheses",123,<arg(a1)>)
+safe(arg(a2,111))
+ShouldBeSameString("with parentheses",111,<arg(a2)>)
+safe.arg(a3,321)
+ShouldBeSameString("with dot",321,<arg(a3)>)
+
+arg(a4,321)
+ShouldBeSamestring("local variable from macro",321,<safe arg(a4)>)
+ShouldBeSamestring("local variable from macro, safe with dot",321,<safe.arg(a4)>)
+ShouldBeSamestring("local variable from macro, safe with parentheses",321,<safe(arg(a4))>)
+
+var(v4,123)
+ShouldBeSamestring("global variable from macro",123,<safe var(v4)>)
+ShouldBeSamestring("global variable from macro, safe with dot",123,<safe.var(v4)>)
+ShouldBeSamestring("global variable from macro, safe with parentheses",123,<safe(var(v4))>)
+
+ShouldBeSamestring("non-existing variable from macro","","<safe var(nonexistingvar)>")
+ShouldBeSamestring("failure from macro","",<safe thisisafailure>)
+
+if (<safe this_is_a_failure>)
+    tst_fail("safe in condition")
+else
+    tst_success("safe in condition")
+endif
+
+arg(prefix,"findres(skill,")
+arg(suffix,"+5).defname")
+arg(number,"1")
+
+ShouldBeSameString("r_verb macro with safe",SKILL_Begging,<safe <arg(prefix)><arg(number)><arg(suffix)>>)
+
+
+serv.smsg "\n"

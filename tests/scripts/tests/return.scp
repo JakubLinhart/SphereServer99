@@ -1,0 +1,43 @@
+[function test_return_sharped_number]
+return#012A
+
+[function test_return_number_in_parenthesis]
+return(123)
+
+[function test_return_doublequoted_string]
+return"asdf"
+
+[function test_return_doublequoted_string_in_parentheses]
+return("asdf")
+
+[function test_return_macro]
+return<args>
+
+[function test_return_macro_in_parentheses]
+return(<args>)
+
+[function test_return_constant_expression]
+return(1+1)
+
+[function test_return_expression]
+arg(x,2)
+return(3*arg(x))
+
+[function test_return]
+serv.smsg "test_return\n"
+
+ShouldBeSameString("number in parenthesis","123",<test_return_number_in_parenthesis>)
+ShouldBeSameString("sharped number","#012A",<test_return_sharped_number>)
+ShouldBeSameString("doublequoted string","asdf",<test_return_doublequoted_string>)
+ShouldBeSameString("macro","asdf",<test_return_macro(asdf)>)
+
+// TODO:
+// ShouldBeSameString("expression",2,<test_return_constant_expression>)
+// ShouldBeSameString("constant expression (doesn't expand variables)","(3*arg(x))",<test_return_expression>)
+// ShouldBeSameString("macro with expression",2,<test_return_macro_in_parentheses("1+1")>)
+
+// Doesn't work on Sphere99
+// ShouldBeSameString("doublequoted string in parentheses","asdf",<test_return_doublequoted_string_in_parentheses>)
+// ShouldBeSameString("macro","asdf",<test_return_macro_in_parentheses(asdf)>)
+
+serv.smsg "\n"

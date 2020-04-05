@@ -1,0 +1,57 @@
+[function macrofun]
+var(macrofunindex,#+1)
+return <var(macrofunindex)>
+
+[function test_macro]
+serv.smsg "test_macro\n"
+
+var(macrofunindex,0)
+ShouldBeSameString("evaluation order - from left to right","123","<macrofun><macrofun><macrofun>")
+
+var(macrofunindex,0)
+ShouldBeSameString("evaluation order - nested first","134","<macrofun><macrofun(<macrofun>)><macrofun>")
+
+var(macrofunindex,0)
+ShouldBeSameString("escaped","1",<?macrofun?>)
+
+var(macrofunindex,0)
+ShouldBeSameString("escaped - multiple","123",<?macrofun?><?macrofun?><?macrofun?>)
+
+var(macrofunindex,0)
+ShouldBeSameString("escaped - nested","145",<?macrofun?><?macrofun(<?macrofun(<?macrofun?>)?>)?><?macrofun?>)
+
+arg(localvar1,"f_was_function")
+var(function_was_called,no)
+<arg(localvar1)>_call
+ShouldBeSameString("macro r_verb - without args - start","yes",<var(function_was_called)>)
+
+arg(localvar1,"function")
+var(function_was_called,no)
+f_was_<arg(localvar1)>_call
+ShouldBeSameString("macro r_verb - without args - middle","yes",<var(function_was_called)>)
+
+arg(localvar1,"function_call")
+var(function_was_called,no)
+f_was_<arg(localvar1)>
+ShouldBeSameString("macro r_verb - without args - end","yes",<var(function_was_called)>)
+
+arg(localvar1,"f_was_function")
+var(function_was_called,no)
+<arg(localvar1)>_call("yesyes")
+ShouldBeSameString("macro r_verb - with args - start","yesyes",<var(function_was_called)>)
+
+arg(localvar1,"function")
+var(function_was_called,no)
+f_was_<arg(localvar1)>_call("yesyes")
+ShouldBeSameString("macro r_verb - with args - middle","yesyes",<var(function_was_called)>)
+
+arg(localvar1,"function_call")
+var(function_was_called,no)
+f_was_<arg(localvar1)>("yesyes")
+ShouldBeSameString("macro r_verb - with args - end","yesyes",<var(function_was_called)>)
+
+// Doesn't work on Sphere99
+// var(macrofunindex,0)
+// ShouldBeSameString("escaped - nested, combined","267",<?macrofun(<macrofun>)?><?macrofun(<?macrofun(<macrofun(<?macrofun?>)>)?>)?><?macrofun?>)
+
+serv.smsg "\n"

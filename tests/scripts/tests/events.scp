@@ -1,0 +1,73 @@
+[function test_events]
+serv.smsg "test_events\n"
+
+ShouldBeSameString("no event on char",0,<finduid(010000).isevent(e_testevent)>)
+finduid(010000).events +e_testevent
+ShouldBeSameString("event on char",1,<finduid(010000).isevent(e_testevent)>)
+ShouldBeSameString("event on char without parentheses",1,<finduid(010000).isevent e_testevent>)
+
+var(customTriggerVar,0)
+finduid(010000).trigger @customTrigger
+ShouldBeSameString("triggers custom trigger on event - without parentheses",customTriggerExecuted,<var(customTriggerVar)>)
+finduid(010000).trigger(@customTrigger2)
+ShouldBeSameString("triggers custom trigger on event - without parentheses",customTrigger2Executed,<var(customTriggerVar)>)
+
+finduid(010000).events -e_testevent
+ShouldBeSameString("removed event on char",0,<finduid(010000).isevent(e_testevent)>)
+
+finduid(010000).events(+e_testevent)
+ShouldBeSameString("event on char - subscribe with parentheses",1,<finduid(010000).isevent(e_testevent)>)
+finduid(010000).events(-e_testevent)
+ShouldBeSameString("event on char - unsubscribe with parentheses",0,<finduid(010000).isevent(e_testevent)>)
+
+finduid(010000).events(+e_testevent)
+finduid(010000).trigger(@triggerexplicit)
+finduid(010000).events(-e_testevent)
+
+finduid(010000).newitem(i_event_test)
+finduid(010000).equip(<lastnew>)
+lastnew.remove
+
+serv.smsg "\n"
+
+[events e_testevent]
+on=@skillstart
+on=@customTrigger
+var(customTriggerVar,customTriggerExecuted)
+
+on=@customTrigger2
+var(customTriggerVar,customTrigger2Executed)
+
+on=@triggerexplicit
+arg(local1,123)
+ShouldBeSameString("local variables in explicit trigger",123,<arg(local1)>)
+
+[ITEMDEF 0f51]
+DEFNAME=i_event_test
+TYPE=T_WEAPON_FENCE
+FLIP=1
+DAM=3
+//SPEED=80
+SKILL=fencing
+REQSTR=1
+TWOHANDS=0
+LAYER=1
+//MATERIAL=20
+WEIGHT=30
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Dagger
+SKILLMAKE=BLACKSMITHING 26.7
+DUPELIST=0f52
+
+on=@equip
+arg(local1,123)
+ShouldBeSameString("local variables in implicit trigger",123,<arg(local1)>)
+
+[events e_allplayers]
+on=@login
+if (finduid(<src>).isChar)
+    tst_success("@login - src set: <src>")
+else
+    tst_fail("@login - src not set!")
+endif

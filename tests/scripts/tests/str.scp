@@ -1,0 +1,59 @@
+[function test_str]
+test_strgettok
+test_strmid
+test_strfirstcap
+test_strgetascii
+
+[function test_strmid]
+serv.smsg "test_strmid\n"
+
+ShouldBeSameString("in the middle",dfqw,<strmid("asdfqwer",2,4)>)
+ShouldBeSameString("from start to middle",asdf,<strmid("asdfqwer",0,4)>)
+ShouldBeSameString("from middle to end",qwer,<strmid("asdfqwer",4,4)>)
+ShouldBeSameString("from start to end",asdfqwer,<strmid("asdfqwer",0,8)>)
+ShouldBeSameString("from start to out of range",asdfqwer,<strmid("asdfqwer",0,10)>)
+ShouldBeSameString("negative start","",<strmid("asdfqwer",-2,4)>)
+
+// Doesn't work on Sphere99
+// ShouldBeSameString("whole substring before start","",<strmid("asdfqwer",-100,4)>)
+
+ShouldBeSameString("start out of range","",<strmid("asdfqwer",100,4)>)
+
+serv.smsg "\n"
+
+[function test_strgettok]
+serv.smsg "test_strgettok\n"
+
+ShouldBeSameString("first",qwer,"<strgettok("qwer,asdf,zxcv",0,",")>")
+ShouldBeSameString("second",asdf,"<strgettok("qwer,asdf,zxcv",1,",")>")
+ShouldBeSameString("third",zxcv,"<strgettok("qwer,asdf,zxcv",2,",")>")
+ShouldBeSameString("out of range","","<strgettok("qwer,asdf,zxcv",3,",")>")
+ShouldBeSameString("no separator",qwerasdfzxcv,"<strgettok("qwerasdfzxcv",0,",")>")
+ShouldBeSameString("empty string","","<strgettok("",0,",")>")
+
+serv.smsg "\n"
+
+[function test_strfirstcap]
+serv.smsg "test_strfirstcap\n"
+
+ShouldBeSameString("lower case",Asdf,<StrFirstCap("asdf")>)
+ShouldBeSameString("upper case",ASDF,<StrFirstCap("ASDF")>)
+
+serv.smsg "\n"
+
+[function test_strgetascii]
+serv.smsg "test_strgetascii\n"
+
+ShouldBeSameString("first letter",65,<strgetascii(ABC,0)>)
+ShouldBeSameString("first digit",49,<strgetascii(123,0)>)
+ShouldBeSameString("last letter",67,<strgetascii(ABC,2)>)
+ShouldBeSameString("last digit",51,<strgetascii(123,2)>)
+ShouldBeSameString("doublequoted - first letter",65,<strgetascii("ABC",0)>)
+ShouldBeSameString("doublequoted - first digit",49,<strgetascii("123",0)>)
+ShouldBeSameString("doublequoted - last letter",67,<strgetascii("ABC",2)>)
+ShouldBeSameString("doublequoted - last digit",51,<strgetascii("123",2)>)
+
+ShouldBeSameString("negative index",0,<strgetascii("123",-1)>)
+ShouldBeSameString("index out of range",0,<strgetascii("123",10)>)
+
+serv.smsg "\n"

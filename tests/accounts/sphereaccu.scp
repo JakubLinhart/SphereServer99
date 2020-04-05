@@ -1,0 +1,20 @@
+\\ Sphere Erebor accounts file
+\\ NOTE: This file cannot be edited while the server is running.
+\\ Any file changes must be made to sphereaccu.scp. This is read in at save time.
+
+[drzhor]
+PrivFlags=04
+Password=password
+TotalConnectTime=111694
+LastConnectTime=32
+LastCharUID=010000
+CharUID=010000
+Email="dr@zhor.cz"
+FirstConnectDate="2017/02/16 23:08:38"
+FirstIP="127.0.0.1"
+LastConnectDate="2019/12/03 14:06:20"
+LastIP="127.0.0.1"
+ChatName=zhor
+Tag.comment="some comment"
+
+[EOF]

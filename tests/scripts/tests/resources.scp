@@ -1,0 +1,50 @@
+[function test_resources]
+serv.smsg "test_resources\n"
+
+i_resources_test.id=3
+ShouldBeSameString("read and write item properties",03,<i_resources_test.id>)
+ShouldBeSameString("read skill properties","Alchemist",<skill_alchemy.title>)
+ShouldBeSameString("read skill properties - case insensitivity","Alchemist",<SKILL_ALCHEMY.title>)
+ShouldBeSameString("changed itemdef id","014EF",<i_deed_GUILDSTONE.id>)
+
+i_ankh.weight=123
+ShouldBeSameString("set weight",12.3,<i_ankh.weight>)
+i_ankh.weight=12.3
+ShouldBeSameString("set drcimal weight",12.3,<i_ankh.weight>)
+
+arg(defname,"i_ankh.weight")
+arg(value,321)
+<arg(defname)>=<arg(value)>
+ShouldBeSameString("set weight by macros",32.1,<i_ankh.weight>)
+
+finduid(010000).newitem(i_dagger)
+ShouldBeSameString("access to item definition from item",i_dagger,"<lastnew.def.dispid>")
+lastnew.remove
+
+serv.smsg "\n"
+
+[ITEMDEF 02]
+DEFNAME=i_ankh
+CATEGORY=Decoration - Miscellaneous
+SUBSECTION=Statues
+DESCRIPTION=Ankh (w) 1/2
+DUPELIST=03,04,05
+
+[ITEMDEF 03]
+DUPEITEM=02
+DESCRIPTION=Ankh (w) 2/2
+
+[ITEMDEF i_resources_test]
+id=2
+
+[ITEMDEF 014ef]
+DEFNAME=i_deed
+
+[ITEMDEF 04230]
+DEFNAME=i_deed_GUILDSTONE
+NAME=Deed to a Guildstone
+ID=i_deed
+
+[ITEMDEF 09ec]
+DEFNAME=i_jar_honey
+RESOURCES3=1 I_HONEY, 1 I_JAR

@@ -1,0 +1,33 @@
+[function test_findlayer]
+serv.smsg "test_findlayer\n"
+
+finduid(010000).newitem(i_dagger)
+finduid(010000).equip(<lastnew>)
+ShouldBeSameString("find equiped item",i_dagger,<finduid(010000).findlayer(1).id>)
+ShouldBeSameString("find equiped item direct return value",<lastnew>,<finduid(010000).findlayer(1)>)
+
+arg(layer,1)
+ShouldBeSameString("variable argument",i_dagger,<finduid(010000).findlayer(arg(layer)).id>)
+
+arg(layer,0)
+ShouldBeSameString("expression argument",i_dagger,<finduid(010000).findlayer(arg(layer)+1).id>)
+
+finduid(010000).test_findlayer_chained
+
+lastnew.remove
+
+ShouldBeSameString("empty string when not found","",<finduid(010000).findlayer(1)>)
+
+serv.smsg "\n"
+
+[function test_findlayer_chained]
+findlayer(layer_hand1).test_findlayer_chained_dagger
+
+if (findlayer(layer_hand1))
+  tst_success("in if condition chained")
+else
+  tst_fail("in if condition chained")
+endif
+
+[function test_findlayer_chained_dagger]
+ShouldBeSameString("chained findlayer",i_dagger,<id>)

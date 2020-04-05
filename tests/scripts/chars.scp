@@ -1,0 +1,25 @@
+[CHARDEF 0190]
+DEFNAME=c_man
+Name=Man
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+RESOURCES=
+FOODTYPE=
+BLOODCOLOR=0
+attack=4
+ARMOR=0
+
+DESCRIPTION=Man
+SUBSECTION=Miscellaneous
+CATEGORY=Vendori
+
+ON=@Create
+NPC=brain_human
+COLOR=colors_skin
+str=100
+dex=100
+int=100
+
+allskills=0
+
+ITEMnewbie=i_monster_create

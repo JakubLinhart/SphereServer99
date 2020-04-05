@@ -1,0 +1,20 @@
+[function test_finduid]
+serv.smsg "test_finduid\n"
+
+ShouldBeSameString("constant, direct return value","#010000",<finduid(010000)>)
+ShouldBeSameString("constant chained","DrZhor",<finduid(010000).name>)
+ShouldBeSameString("expression chained","DrZhor",<finduid(00FFFF+1).name>)
+arg(x1,010000)
+ShouldBeSamestring("finduid argument without macro chained","DrZhor",<finduid(arg(x1)).name>)
+
+test_finduid_args(010000)
+
+// doesen't work on Sphere99
+//ShouldBeSameString("chained constant chained","DrZhor",<finduid.010000.name>)
+// doesen't work on Sphere99
+//ShouldBeSameString("chained constant chained","DrZhor",<finduid=010000.name>)
+
+serv.smsg "\n"
+
+[function test_finduid_args]
+ShouldBeSameString("args","DrZhor",<finduid(args).name>)

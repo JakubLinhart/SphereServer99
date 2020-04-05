@@ -1,0 +1,73 @@
+[ITEMDEF 01bdd]
+DEFNAME=i_log
+NAME=log%s
+VALUE=10
+TYPE=t_log
+WEIGHT=1.0
+CATEGORY=Items by Professions
+SUBSECTION=Archers/Bowyers
+DESCRIPTION=Log (SE)
+DUPELIST=01bde,01bdf,01be0,01be1,01be2
+
+[ITEMDEF 02106]
+DEFNAME=i_pet_man
+NAME=Man
+TYPE=T_FIGURINE
+TDATA3=c_man
+
+[ITEMDEF 0edd]//guildstone
+DEFNAME=i_grave_stone_5
+TYPE=T_SIGN_GUMP
+TDATA2=066
+FLIP=1
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Graves & Gravestones
+DESCRIPTION=GraveStone
+DUPELIST=0ede
+
+[ITEMDEF i_guildstone]
+//gravestone = Guildstone
+id=i_grave_stone_5
+TYPE=T_multi
+VALUE=100000
+FLIP=1
+DUPELIST=0ede
+name="guildstone"
+
+on=@create
+tag.abbrev=<name>
+
+on=@timer
+return 1
+
+//
+[typedef t_guild]
+on=@dropon_ground
+array_add(var.guilds,<uid>)
+on=@pickup_ground
+array_findremove(var.guilds,<uid>)
+on=@destroy
+array_findremove(var.guilds,<uid>)
+
+on=@userdclick
+return <openguild>
+
+[ITEMDEF 0f51]
+DEFNAME=i_dagger
+TYPE=T_WEAPON_FENCE
+FLIP=1
+DAM=3
+//SPEED=80
+SKILL=fencing
+REQSTR=1
+TWOHANDS=0
+LAYER=1
+//MATERIAL=20
+WEIGHT=30
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Dagger
+SKILLMAKE=BLACKSMITHING 26.7
+DUPELIST=0f52
+
+[EOF]

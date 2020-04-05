@@ -1,0 +1,44 @@
+[function test_equip]
+serv.smsg "test_equip\n"
+
+finduid(010000).newitem(i_dagger)
+finduid(010000).equip(lastnew)
+ShouldBeSameString("equip without macro",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newitem(i_dagger)
+finduid(010000).equip(<lastnew>)
+ShouldBeSameString("equip",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newitem(i_dagger)
+finduid(010000).equip <lastnew>
+ShouldBeSameString("equip without parentheses, with macro",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newitem(i_dagger)
+finduid(010000).equip <lastnew>
+ShouldBeSameString("equip without parentheses, without macro",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newequip(i_dagger)
+ShouldBeSameString("newequip without macro",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newequip(i_dagger)
+ShouldBeSameString("newequip without macro",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newequip(<i_dagger>)
+ShouldBeSameString("newequip with macro",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newequip i_dagger
+ShouldBeSameString("newequip without macro and parentheses",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+finduid(010000).newequip <i_dagger>
+ShouldBeSameString("newequip with macro, without parentheses",i_dagger,<finduid(010000).findlayer(1).id>)
+lastnew.remove
+
+serv.smsg "\n"

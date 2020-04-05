@@ -1,0 +1,75 @@
+[function test_intrinsics]
+
+serv.smsg "test_intrinsics\n"
+
+test_intrinsics_strcmp
+test_intrinsics_strlen
+test_strcmpi
+
+serv.smsg "\n"
+
+[function test_strcmpi]
+ShouldBeSameString("strcmpi - same quoted string",0,<strcmpi("asdf","asdf")>)
+ShouldBeSameString("strcmpi - same quoted string, different casing",0,<strcmpi("asdf","ASDF")>)
+ShouldBeSameString("strcmpi - same string",0,<strcmpi(asdf,asdf)>)
+ShouldBeSameString("strcmpi - same string, different casing",0,<strcmpi(asdf,ASDF)>)
+
+if (<strcmpi(asdf,qwer)>)
+  tst_success("strcmpi - different strings")
+else
+  tst_fail("strcmpi - different strings")
+endif
+
+ShouldBeSameString("strcmpi - eval - same quoted string",0,<eval strcmpi("asdf","asdf")>)
+ShouldBeSameString("strcmpi - eval - same quoted string, different casing",0,<eval strcmpi("asdf","ASDF")>)
+ShouldBeSameString("strcmpi - eval - same string",0,<eval strcmpi(asdf,asdf)>)
+ShouldBeSameString("strcmpi - eval - same string, different casing",0,<eval strcmpi(asdf,ASDF)>)
+
+if (<eval strcmpi(asdf,qwer)>)
+  tst_success("strcmpi - eval - different strings")
+else
+  tst_fail("strcmpi - eval - different strings")
+endif
+
+[function test_intrinsics_strcmp]
+// Cannot use ShouldBeSameString, because ShouldBeSameString depends on strcmp functionality.
+// If stcmp is broken, then ShouldBeSameString is broken also and may not detect any problem.
+if (strcmp("asdf","asdf"))
+  tst_fail("strcmp - returns false when equals quoted arguments")
+else
+  tst_success("strcmp - returns false when equals quoted arguments")
+endif
+
+if (strcmp("asdf",asdf))
+  tst_fail("strcmp - returns false when equals for quoted and unquoted arguments")
+else
+  tst_success("strcmp - returns false when equals for quoted and unquoted arguments")
+endif
+
+if (strcmp(asdf,asdf))
+  tst_fail("strcmp - returns false when equals for unquoted arguments")
+else
+  tst_success("strcmp - returns false when equals for unquoted arguments")
+endif
+
+if (strcmp("asdf","qwer"))
+  tst_success("strcmp - returns true when not equals")
+else
+  tst_fail("strcmp - returns true when not equals")
+endif
+
+ShouldBeSameString("strcmp outside eval - returns 0 when equals quoted arguments",0,<strcmp("asdf","asdf")>)
+ShouldBeSameString("strcmp outside eval - returns 0 when equals for quoted and unquoted arguments",0,<strcmp("asdf",asdf)>)
+ShouldBeSameString("strcmp outside eval - returns 0 when equals for unquoted arguments",0,<strcmp(asdf,asdf)>)
+ShouldBeSameString("strcmp outside eval - returns -1 when not equals",-1,<strcmp("asdf","qwer")>)
+
+[function test_intrinsics_strlen]
+ShouldBeSameString("strlen - length of empty string is 0",0,<eval strlen()>)
+ShouldBeSameString("strlen - length of quoted empty string is 0",0,<eval strlen("")>)
+ShouldBeSameString("strlen - quoted argument",4,<eval strlen("qwer")>)
+ShouldBeSameString("strlen - unquoted argument",4,<eval strlen(qwer)>)
+
+ShouldBeSameString("strlen outside eval - length of empty string is 0",0,<strlen()>)
+ShouldBeSameString("strlen outside eval - length of quoted empty string is 0",0,<strlen("")>)
+ShouldBeSameString("strlen outside eval - quoted argument",4,<strlen("qwer")>)
+ShouldBeSameString("strlen outside eval - unquoted argument",4,<strlen(qwer)>)

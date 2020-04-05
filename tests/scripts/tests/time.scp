@@ -1,0 +1,13 @@
+[function test_time]
+test_rtimetext
+
+[function test_rtimetext]
+serv.smsg "test_rtimetext\n"
+
+if (strlen(<serv.rtimetext>) > 0)
+    tst_success("rtimetext <serv.rtimetext>")
+else
+    tst_fail("rtimetext")
+endif
+
+serv.smsg "\n"

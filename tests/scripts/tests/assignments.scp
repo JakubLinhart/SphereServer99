@@ -1,0 +1,21 @@
+[function test_assignments]
+serv.smsg "test_assignments\n"
+
+src=finduid(010000)
+ShouldBeSameString("assign to src",<finduid(010000)>,<src>)
+
+var(test_assignments_player,<finduid(010000)>)
+var(test_assignments_player).hits=123
+ShouldBeSameString("assign to chained global var",123,<var(test_assignments_player).hits>)
+
+arg(test_assignments_player_arg,<finduid(010000)>)
+arg(test_assignments_player_arg).hits=321
+ShouldBeSameString("assign to chained local var",321,<arg(test_assignments_player_arg).hits>)
+
+test_assignments_arguments(<finduid(010000)>)
+
+serv.smsg "\n"
+
+[function test_assignments_arguments]
+argv(0).hits=111
+ShouldBeSameString("assign to chained argumnet",111,<argv(0).hits>)

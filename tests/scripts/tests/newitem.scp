@@ -1,0 +1,29 @@
+[function test_newitem]
+serv.smsg "test_newitem\n"
+
+finduid(010000).newitem(i_log)
+ShouldBeSameString("call with parentheses","i_log",<lastnew.Id>)
+lastnew.remove
+
+finduid(010000).newitem=i_log
+ShouldBeSameString("call with assignment","i_log",<lastnew.Id>)
+ShouldBeSameString("lastnew eval",<lastnew.Uid>,<lastnew>)
+ShouldBeSameString("act",<lastnew.Uid>,<finduid(010000).act>)
+lastnew.test_lastnew_chained_call(010000)
+
+lastnew.remove
+
+finduid(010000).test_newitem_chained_function(i_log)
+
+serv.smsg "\n"
+
+[function test_newitem_chained_function]
+newitem(<hval args>)
+ShouldBeSameString("lastnew eval in chained function",<lastnew.Uid>,<lastnew>)
+ShouldBeSameString("act in chained function",<lastnew.Uid>,<finduid(010000).act>)
+lastnew.remove
+
+[function test_lastnew_chained_call]
+ShouldBeSameString("function call chained on lastnew - lastnew/uid equivalence",<lastnew>,<uid>)
+ShouldBeSameString("function call chained on lastnew - args",010000,<args>)
+ShouldBeSameString("function call chained on lastnew - findiud",#010000,<finduid(args)>)

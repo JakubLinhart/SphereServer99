@@ -1,0 +1,35 @@
+[function test_bracket_call_arguments]
+serv.smsg "test_bracket_call_arguments\n"
+
+ShouldBeSameString("no arguments","0;;;;","<callArgumentsFun>")
+ShouldBeSameString("1 argument","1;1;1;;","<callArgumentsFun(1)>")
+ShouldBeSameString("2 arguments","2;1,2;1;2;","<callArgumentsFun(1,2)>")
+ShouldBeSameString("3 arguments","3;1,2,3;1;2;3","<callArgumentsFun(1,2,3)>")
+ShouldBeSameString("3 str arguments","3;s1,s2,s3;s1;s2;s3","<callArgumentsFun(s1,s2,s3)>")
+
+ShouldBeSameString("1 unquoted string argument","1;arg1;arg1;;","<callArgumentsFun(arg1)>")
+ShouldBeSameString("2 unquoted string arguments","2;arg1,arg2;arg1;arg2;","<callArgumentsFun(arg1,arg2)>")
+
+ShouldBeSameString("2 argument in parentheses","1;(asdf);;",<callPartialArgumentsFun((asdf))>)
+ShouldBeSameString("2 argument in parentheses, second argument with a space","2;(asdf);asdf aaaa;",<callPartialArgumentsFun((asdf),"asdf aaaa")>)
+finduid(010000).test_bracket_call_arguments_chained
+
+arg(result,<callArgumentsFun("arg1")>)
+ShouldBeSameString("1 quoted string argument","1;arg1;arg1;;","<arg(result)>")
+
+// Doesn't work on Sphere99
+// arg(result,<callArgumentsFun("arg1","arg2")>)
+// ShouldBeSameString("2 quoted string arguments (invalid on Sphere 0.99)","2;arg1;arg1;arg2;","<arg(result)>")
+
+ShouldBeSameString("empty string","","")
+
+serv.smsg "\n"
+
+[function callArgumentsFun]
+return"<argvcount>;<args>;<argv(0)>;<argv(1)>;<argv(2)>"
+
+[function callPartialArgumentsFun]
+return"<argvcount>;<argv(0)>;<argv(1)>;<argv(2)>"
+
+[function test_bracket_call_arguments_chained]
+ShouldBeSameString("2 argument in parentheses, second argument with a space, chained","2;(asdf);asdf aaaa;",<callPartialArgumentsFun((asdf),"asdf aaaa")>)

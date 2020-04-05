@@ -1,0 +1,16 @@
+[function test_while]
+serv.smsg "test_while\n"
+
+arg(localVar,1)
+while (arg(localVar) < 5)
+    arg(localVar,#+1)
+endwhile
+ShouldBeSameString("ends loop when condition is met",5,<arg(localVar)>)
+
+arg(localVar,1)
+while 6 < 5
+    arg(localVar,#+1)
+endwhile
+ShouldBeSameString("doesn't execute body when condition is met",1,<arg(localVar)>)
+
+serv.smsg "\n"

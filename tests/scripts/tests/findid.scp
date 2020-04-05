@@ -1,0 +1,31 @@
+[function test_findid]
+serv.smsg "test_findid\n"
+
+finduid(010000).newitem(i_dagger)
+finduid(010000).equip(<lastnew>)
+ShouldBeSameString("find equiped item",i_dagger,<finduid(010000).findid(i_dagger).id>)
+ShouldBeSameString("find equiped item chained direct result",<lastnew>,<finduid(010000).findid(i_dagger)>)
+
+// Doesn't work on 0.99:
+// arg(type,i_dagger)
+// ShouldBeSameString("variable argument",i_dagger,<finduid(010000).findlayer(arg(type)).id>)
+
+finduid(010000).test_findid_chained
+
+lastnew.remove
+
+ShouldBeSameString("empty string when not found","",<finduid(010000).findid(i_dagger)>)
+
+serv.smsg "\n"
+
+[function test_findid_chained]
+findid(i_dagger).test_findid_chained_dagger
+
+if (findid(i_dagger))
+  tst_success("in if condition in chained function")
+else
+  tst_fail("in if condition in chained function")
+endif
+
+[function test_findid_chained_dagger]
+ShouldBeSameString("find equiped item in chained function",i_dagger,<id>)

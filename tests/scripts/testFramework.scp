@@ -1,0 +1,52 @@
+[function tst_error]
+if (!strcmp("<serv.version>","0.99z8"))
+    serv.smsg "<args>\n"
+else
+    serv.error("<args>")
+endif
+
+[function ShouldBeSameString]
+if (!strcmp("<argv(1)>","<argv(2)>"))
+    tst_success(<argv(0)>)
+else
+    tst_fail("<argv(0)>, expected: <argv(1)>, result: <argv(2)>")
+endif
+
+[function ShouldBeEmpty]
+if (safe strlen(<argv(0)>) > 0)
+    tst_fail("<argv(0)>, '<argv(1)>' should be empty")
+else
+    tst_success(<argv(0)>)
+endif
+
+[function ShouldNotBeEmpty]
+if (safe strlen(<argv(0)>) == 0)
+    tst_fail("<argv(0)>, '<argv(1)>' should not be empty")
+else
+    tst_success(<argv(0)>)
+endif
+
+[function tst_fail]
+tst_error("      failed    - <args>")
+if (!strlen(<var(tst_failed_tests)>))
+    var(tst_failed_tests,0)
+endif
+var(tst_failed_tests,#+1)
+
+[function tst_success]
+serv.smsg("      succeeded - <args>\n")
+if (!strlen(<var(tst_succeeded_tests)>))
+    var(tst_succeeded_tests,0)
+endif
+var(tst_succeeded_tests,#+1)
+
+[function tst_start_suite]
+var(tst_succeeded_tests,0)
+var(tst_failed_tests,0)
+
+serv.smsg("\nstarting test suite...\n")
+
+[function tst_end_suite]
+serv.smsg("\ntest suite finished\n")
+serv.smsg("      failed:    <var(tst_failed_tests)>\n")
+serv.smsg("      succeeded: <var(tst_succeeded_tests)>\n")

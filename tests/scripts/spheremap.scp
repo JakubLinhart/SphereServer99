@@ -1,0 +1,30 @@
+﻿////////////////// vzor sriptu uzemi a jeho vyklad - co je na co ///////////////
+//[AREA cave]                 /// nazev lokace, urci nazev runy - "cave", .kde (Jsem v "cave" + souradnice)
+//CLASS=13                    /// tak tohle nevim a zajimalo by me, to co to definuje 
+//TITLE=JESKYNE               /// jmeno regionu - nevim kde se ukaze (TITLE REGION)
+//FLAGS=080                   /// flag uzemi
+//RECT=2373,900,2395,928      /// vyznaceni uzemi odbelnikem 2373,900 (levy horni roh) 2395,928 (pravy dolni)
+//RECT=2391,903,2409,919      /// uzemi se muze skladat z vice obdelniku - i pres sebe presahujicich    
+//GUARDOWNER=GUARDS TITLE     /// Podle me to je nazev spravce strazi lokality - treba straz Lorda Britishe (GUARD OWNER TITLE)
+////RAINCHANCE 80             /// procento pravdeppdobnosti deste a vetru (vubec nemusi byt, potom to bere % z server.ini)
+//COLDCHANCE 50               /lastnewnpc.tag(experience,<src.tag(experience)>)// procento pravdepodobnosti snezeni (vubec nemusi byt, potom to bere % z server.ini)
+//P=2367,942                  /// teleportacni bod pro GM a prikaz .xgo (TELEPORT POINT)
+//GROUP=Mines & Caves         /// nazev skupiny, pod kterou se zobrazuji v Axisu (Axis specifikation)
+//EVENTS=r_hobitin            /// udalost
+
+
+
+///////////////////////// Definice cel‚ mapy - z kladn¡ lokace NEMAZAT !!!!! /////////
+
+[AREA Stredozeme] // %SERVNAME% = doplni nazev podle win.ini (pokud bude nazev serveru Moria, budou vsechna mista, ktera nejsou definovana jinym skriptem, mit jmeno "Moria" pri marku runy a prikazu .where.
+CLASS=11
+RECT=1,1,6143,4096
+P=1323,1624,55,255
+DEFNAME=a_world
+GROUP=ALLMAP
+tag.realm=3
+RAINCHANCE=25
+COLDCHANCE=20
+
+[EOF]
+

@@ -1,0 +1,34 @@
+[defnames]
+defname_text[0] value1
+defname_text[1] value2
+defname_text[2] value3
+
+player #010000
+playerindexed[1] #010000
+
+[function test_defnames]
+serv.smsg "test_defnames\n"
+
+ShouldBeSameString("constant index","value1",<defname_text[0]>)
+
+arg(index,1)
+ShouldBeSameString("variable index","value2",<defname_text[arg(index)]>)
+ShouldBeSameString("expression index","value3",<defname_text[arg(index)+1]>)
+
+ShouldBeSameString("chained call on def","DrZhor",<player.name>)
+
+player.tag(playerTag,123)
+ShouldBeSameString("get/set chained tag value",123,<player.tag(playerTag)>)
+
+var(function_was_called,0)
+player.f_was_function_call
+ShouldBeSameString("chained defname parameterless call",yes,<var(function_was_called)>)
+
+// i_dagger.layer = 1
+arg(defname,i_dagger)
+ShouldBeSameString("defname with chained argument",value2,<defname_text[<arg(defname)>.layer]>)
+
+// Doesn't work on Sphere99
+// ShouldBeSameString("chained call on indexed def","DrZhor",<playerindexed[1].name>)
+
+serv.smsg "\n"

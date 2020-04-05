@@ -1,0 +1,65 @@
+[function test_tags]
+serv.smsg "test_tags\n"
+
+finduid(010000).tag(tag1,123)
+ShouldBeSameString("tag's numeric value","123",<finduid(010000).tag(tag1)>)
+finduid(010000).tag(tag1,stringValue)
+ShouldBeSameString("tag's unquoted string value",stringValue,<finduid(010000).tag(tag1))>)
+
+finduid(010000).tag(tag1,"quoted string value")
+ShouldBeSameString("tag's quoted string value","quoted string value",<finduid(010000).tag(tag1)>)
+finduid(010000).tag(tag2     ,1)
+ShouldBeSameString("ignores whitespace after tag name in assignment",1,<finduid(010000).tag(tag2)>)
+finduid(010000).tag(tag2,123)
+ShouldBeSameString("ignores whitespace before and after tag name",123,<finduid(010000).tag(   tag2   )>)
+finduid(010000).tag(tag2,#+1)
+ShouldBeSameString("evaluates sharp replacement expression for tag",124,<finduid(010000).tag(tag2)>)
+finduid(010000).tag(tag2,1+#)
+ShouldBeSameString("no evaluation for tag when sharp not on first index","1+#",<finduid(010000).tag(tag2)>)
+finduid(010000).tag.tag2=321
+ShouldBeSameString("chained tag assignment and read",321,<finduid(010000).tag.tag2>)
+finduid(010000).tag.tag2=#+1
+ShouldBeSameString("chained tag sharp replacement",322,<finduid(010000).tag.tag2>)
+
+finduid(010000).tag(tag2,"asdf")
+ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<finduid(010000).tag(tag2)><finduid(010000).tag(tag2)><finduid(010000).tag(tag2)>)
+
+finduid(010000).tag(tag3,#010000)
+ShouldBeSameString("chained call on tag","DrZhor",<finduid(010000).tag(tag3).name>)
+
+finduid(010000).tag(tag4,123)
+finduid(010000).tag.remove(tag4)
+ShouldBeSameString("remove tag",0,<eval strlen(<finduid(010000).tag(tag4)>)>)
+
+ShouldBeSameString("invalid tag value","",<finduid(010000).tag(npc_knockback)>)
+
+finduid(010000).tag.remove(nonexistingtag)
+finduid(010000).tag.nonexistingtag=#+1
+ShouldBeSameString("increment of nonexisting tag","#+1",<finduid(010000).tag(nonexistingtag)>)
+
+var(function_was_called,0)
+finduid(010000).tag(localTag,#010000)
+finduid(010000).tag(localTag).f_was_function_call
+ShouldBeSameString("chained tag parameterless call",yes,<var(function_was_called)>)
+
+finduid(010000).test_tags_nonchained
+
+// Doesn't work on Sphere99
+// finduid(010000).tag(tag3,#010000)
+// ShouldBeSameString("chained call on tag","DrZhor",<finduid(010000).tag3.name>)
+
+serv.smsg "\n"
+
+[function test_tags_nonchained]
+tag(localTag2,#010000)
+tag(localTag2).f_was_function_call
+ShouldBeSameString("r_verb - chained tag parameterless call",yes,<var(function_was_called)>)
+
+tag(experience,123)
+ShouldBeSameString("r_verb - tag in eval",123,<eval tag(experience)>)
+
+var(function_was_called,no)
+tag(localTag,"f_was_function")
+src=<finduid(010000)>
+<src.tag(localTag)>_call
+ShouldBeSameString("tag in macro r_verb",yes,<var(function_was_called)>)

@@ -1,0 +1,170 @@
+[function test_if]
+serv.smsg "test_if\n"
+
+if 1
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("when 1 then is executed","then",<arg(result)>)
+
+if 0
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("when 0 else is executed","else",<arg(result)>)
+
+arg(cond,1)
+if arg(cond)
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("condition without macro","then",<arg(result)>)
+
+arg(cond,0)
+if arg(cond)+1
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("condition with expression without macro","then",<arg(result)>)
+
+if ()
+  tst_fail("empty condition")
+else
+  tst_success("empty condition")
+endif
+
+if (test_if_fun)
+  tst_success("custom function in parenthesis")
+else
+  tst_fail("custom function in parenthesis")
+endif
+
+if test_if_fun
+  tst_success("custom function")
+else
+  tst_fail("custom function")
+endif
+
+if test_if_fun(0)
+  tst_fail("custom function with arguments")
+else
+  tst_success("custom function with arguments")
+endif
+
+if (test_if_fun(1))
+  tst_success("custom function with arguments in parenthesis")
+else
+  tst_fail("custom function with arguments in parenthesis")
+endif
+
+arg(local1,1)
+if (<arg(local1)>)
+  tst_success("local variable with macro")
+else
+  tst_fail("local variable with macro")
+endif
+
+if (arg(local1))
+  tst_success("local variable without macro")
+else
+  tst_fail("local variable with macro")
+endif
+
+finduid(010000).test_chained_if
+test_if_argv(1,1,2)
+
+serv.smsg "\n"
+
+[function test_if_fun]
+if (strlen(<args>))
+  return<args>
+else
+  return 123
+endif
+
+[function test_if_argv]
+if (<argv(0)>==<argv(1)>)
+  tst_success("argument equality with macro")
+else
+  tst_fail("argument equality with macro")
+endif
+
+if (argv(0) < argv(2))
+  tst_success("argument inequality without macro")
+else
+  tst_fail("argument inequality without macro")
+endif
+
+[function test_chained_if]
+if (uid==010000)
+  tst_success("in chained function - comparison of property without macro with hex number")
+else
+  tst_fail("in chained function - comparison of property without macro with hex number")
+endif
+
+if (body==c_man)
+  tst_success("in chained function - equality of chained call result and item def name without macro")
+else
+  tst_fail("in chained function - equality of chained call result and item def name without macro")
+endif
+
+if ((body==c_man) )
+  tst_success("in chained function - equality of chained call result and item def name without macro with a whitespace")
+else
+  tst_fail("in chained function - equality of chained call result and item def name without macro with a whitespace")
+endif
+
+if (body==i_log)
+  tst_fail("in chained function - inequality of chained call result and item def name without macro")
+else
+  tst_success("in chained function - inequality of chained call result and item def name without macro")
+endif
+
+if (body==c_man) && (0!=color)
+  tst_success("in chained function - logical and 3 results without macro")
+else
+  tst_fail("in chained function - logical and 3 results without macro")
+endif
+
+[function test_elseif]
+serv.smsg "test_elseif\n"
+
+if 0
+elseif 1
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("when 1 then is executed","then",<arg(result)>)
+
+if 0
+elseif 0
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("when 0 else is executed","else",<arg(result)>)
+
+arg(cond,1)
+if 0
+elseif arg(cond)
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("condition without macro","then",<arg(result)>)
+
+arg(cond,0)
+if 0
+elseif arg(cond)+1
+  arg(result,"then")
+else
+  arg(result,"else")
+endif
+ShouldBeSameString("condition with expression without macro","then",<arg(result)>)
+
+serv.smsg "\n"

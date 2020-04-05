@@ -1,0 +1,28 @@
+[DEFNAMES CAN_FLAGS]
+// Monster "Can" type flags.
+MT_NONMOVER		00000
+MT_GHOST		00001
+MT_SWIM			00002
+MT_WALK			00014
+MT_CLIMB		00010
+MT_FIRE_IMMUNE		00020
+MT_FLY			00080
+MT_EQUIP		00100
+MT_USEHANDS		00200
+MT_MALE			00000
+MT_FEMALE		00800
+MT_NONHUM		01000
+MT_RUN			02000
+
+[TYPEDEFS]
+t_weapon_fence		14 	// can't be used to chop trees. (make kindling)
+t_log				43 	// = make into furniture etc. lumberlogs
+t_multi				47 	// = multi part object like house or ship.
+t_sign_gump			56 	// = Things like grave stones and sign plaques
+
+[DEFNAMES LAYERS]
+layer_hand1		1
+layer_hand2		2
+
+
+[EOF]

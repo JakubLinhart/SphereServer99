@@ -1,0 +1,57 @@
+[function test_expressions]
+serv.smsg "test_expressions\n"
+
+ShouldBeSameString("zero prefixed eval",0,0<var.nonexistentvariable>)
+var(variable1,2)
+ShouldBeSameString("number containing eval",123,1<var.variable1>3)
+ShouldBeSameString("expression containing number with eval",125,<eval 1+1<var(variable1)>3+1>)
+
+ShouldBeSameString("expression with var without macro at last position",5,<eval 3+var(variable1)>)
+arg(localvar1,4)
+ShouldBeSameString("expression with arg without macro at first position",7,<eval arg(localvar1)+3>)
+
+ShouldBeSameString("function call",3,<eval test_expressions_identity(3)>)
+ShouldBeSameString("expression with function call",5,<eval 2+test_expressions_identity(3)>)
+ShouldBeSameString("no operator precedence, evaluation from right to left",9,<eval 3*2+1>)
+
+ShouldBeSameString("hval constant expression",0a,<hval 2*5>)
+ShouldBeSameString("hval variable expression",0a,<hval 6+arg(localvar1)>)
+
+ShouldBeSameString("hex/dec numbers equal",1,<eval 10==00a>)
+ShouldBeSameString("hex/dec numbers not equal",0,<eval 10==00b>)
+
+arg(arg1,00a)
+ShouldBeSameString("hex variable value/dec number equal",1,<eval arg(arg1)==10>)
+ShouldBeSameString("hex variable value/dec number not equal",0,<eval arg(arg1)==11>)
+
+ShouldBeSameString("empty parentheses",0,<eval()>)
+ShouldBeSameString("empty parentheses with whitespace",0,<eval()>)
+
+ShouldBeSameString("parentheses - add",5,<eval(2+3)>)
+ShouldBeSameString("parentheses - mult",6,<eval(2*3)>)
+ShouldBeSameString("nested parentheses - priority - mult",10,<eval((2+3)*(5-3))>)
+ShouldBeSameString("nested parentheses - nested",15,<eval(1+(2+(3+(4+5))))>)
+
+arg(arg1,2)
+ShouldBeSameString("parentheses, local variables - add",5,<eval(arg(arg1)+3)>)
+ShouldBeSameString("parentheses, local variables - mult",6,<eval(arg(arg1)*3)>)
+ShouldBeSameString("nested parentheses, local variables - priority",10,<eval((arg(arg1)+3)*(5-3))>)
+ShouldBeSameString("nested parentheses, local variables - nested",15,<eval(1+(arg(arg1)+(3+(4+5))))>)
+
+ShouldBeSameString("decimal point - add",33,<eval(1.1+2.2)>)
+ShouldBeSameString("decimal point - sub",-11,<eval(1.1-2.2)>)
+ShouldBeSameString("decimal point - mult",242,<eval(1.1*2.2)>)
+
+test_expressions_with_arguments(10)
+
+// Doesn't work on Sphere99.
+// ShouldBeSameString("constant expression with sharp",10,<eval #05+#05>)
+
+[function test_expressions_with_arguments]
+ShouldBeSameString("eval with argument without macro",10,<eval argv(0)>)
+ShouldBeSameString("hval with argument without macro",0a,<hval argv(0)>)
+
+serv.smsg "\n"
+
+[function test_expressions_identity]
+return<args>

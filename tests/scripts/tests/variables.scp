@@ -1,0 +1,122 @@
+[function test_variables]
+
+test_variables_local
+test_variables_global
+
+[function test_variables_local]
+serv.smsg "test_variables_local\n"
+
+arg(localVariable1,123)
+ShouldBeSameString("local variable's numeric value","123",<arg(localVariable1)>)
+arg(localVariable1,stringValue)
+ShouldBeSameString("local variable's unquoted string value",stringValue,<arg(localVariable1)>)
+arg(localVariable1,"quoted string value")
+ShouldBeSameString("local variable's quoted string value","quoted string value",<arg(localVariable1)>)
+arg(localVariable2     ,1)
+ShouldBeSameString("ignores whitespace after local variable name in assignment",1,<arg(localVariable2)>)
+arg(localVariable2,123)
+ShouldBeSameString("ignores whitespace before and after local variable name",123,<arg(   localVariable2   )>)
+arg(localVariable2,#+1)
+ShouldBeSameString("evaluates sharp replacement expression for local variable",124,<arg(localVariable2)>)
+arg(localVariable2,1+#)
+ShouldBeSameString("no evaluation for local variable when sharp not on first index","1+#",<arg(localVariable2)>)
+arg.localVariable2=321
+ShouldBeSameString("chained local variable assignment and read",321,<arg.localVariable2>)
+arg.localVariable2=#+1
+ShouldBeSameString("chained local variable sharp replacement",322,<arg.localVariable2>)
+arg.localVariable2=asdf
+ShouldBeSameString("unspecified local variable read","asdf",<localVariable2>)
+arg(localVariable[2],asdf)
+ShouldBeSameString("indexed local variable with expression index",asdf,<arg(localVariable[1+1])>)
+arg(localVariable2,"asdf")
+ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<arg(localVariable2)><arg(localVariable2)><arg(localVariable2)>)
+arg.localVariable2="asdf"
+ShouldBeSameString("no doublequotes for doublequoted value - chained assignment",asdfasdfasdf,<arg(localVariable2)><arg(localVariable2)><arg(localVariable2)>)
+
+// globalSavedVariable has to be stored in save file
+ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
+
+arg(localVariable2,#010000)
+ShouldBeSameString("local variable chained call",DrZhor,<arg(localVariable2).name>)
+arg(localVariable[1],#010000)
+ShouldBeSameString("indexed local variable chained call",DrZhor,<arg(localVariable[1]).name>)
+
+var(function_was_called,0)
+arg(localVar2,#010000)
+arg(localVar2).f_was_function_call
+ShouldBeSameString("chained local variable parameterless call",yes,<var(function_was_called)>)
+
+var(function_was_called,0)
+arg(localVar2,#010000)
+localVar2.f_was_function_call
+ShouldBeSameString("direct chained local variable parameterless call",yes,<var(function_was_called)>)
+
+var(localVar3,321)
+arg(localVar3,123)
+ShouldBeSameString("local variable has higher priority than global variable",123,<localVar3>)
+
+serv.smsg "\n"
+
+[function test_variables_global]
+serv.smsg "test_variables_local\n"
+
+var(variable1,123)
+ShouldBeSameString("global variable's numeric value","123",<var(variable1)>)
+var(variable1,stringValue)
+ShouldBeSameString("global variable's unquoted string value",stringValue,<var(variable1)>)
+var(variable1,"quoted string value")
+ShouldBeSameString("global variable's quoted string value","quoted string value",<var(variable1)>)
+var(variable2     ,1)
+ShouldBeSameString("ignores whitespace after global variable name in assignment",1,<var(variable2)>)
+var(variable2,123)
+ShouldBeSameString("ignores whitespace before and after global variable name",123,<var(   variable2   )>)
+var(variable2,#+1)
+ShouldBeSameString("evaluates sharp replacement expression for global variable",124,<var(variable2)>)
+var(variable2,1+#)
+ShouldBeSameString("no evaluation for global variable when sharp not on first index","1+#",<var(variable2)>)
+var.variable2=321
+ShouldBeSameString("chained global variable assignment and read",321,<var.variable2>)
+var.variable2=#+1
+ShouldBeSameString("chained global variable sharp replacement",322,<var.variable2>)
+var.variable2=asdf
+ShouldBeSameString("unspecified global variable sharp read",asdf,<variable2>)
+var.variable[2]=asdf
+ShouldBeSameString("indexed variable with expression index",asdf,<variable[1+1]>)
+var(variable2,"asdf")
+ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<var(variable2)><var(variable2)><var(variable2)>)
+var.variable2="asdf"
+ShouldBeSameString("no doublequotes for doublequoted value - chained assignment",asdfasdfasdf,<var(variable2)><var(variable2)><var(variable2)>)
+
+var(variable2,#010000)
+ShouldBeSameString("global variable chained call",DrZhor,<var(variable2).name>)
+ShouldBeSameString("global variable unspecified chained call",DrZhor,<variable2.name>)
+
+var(variable[2],#010000)
+ShouldBeSameString("indexed global variable chained access",DrZhor,<var(variable[2]).name>)
+
+var(function_was_called,0)
+var(variable2,#010000)
+var(variable2).f_was_function_call
+ShouldBeSameString("chained global variable parameterless call",yes,<var(function_was_called)>)
+
+var(function_was_called,0)
+var(variable2,#010000)
+variable2.f_was_function_call
+ShouldBeSameString("direct chained global variable parameterless call",yes,<var(function_was_called)>)
+
+// globalSavedVariable has to be stored in save file
+ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
+
+// Doesn't work on Sphere99
+// var(variable3,123)
+// var.remove.variable3
+// ShouldBeSameString("remove global variable",00,<eval strlen(<var(variable3)>)>)
+
+// Doesn't work on Sphere99
+// ShouldBeSameString("indexed global variable unspecified chained call",DrZhor,<variable[2].name>)
+
+// Doesn't work on Sphere99
+// var(variable2,"#010000")
+// ShouldBeSameString("chained call",DrZhor,<var(variable2).name>)
+
+serv.smsg "\n"

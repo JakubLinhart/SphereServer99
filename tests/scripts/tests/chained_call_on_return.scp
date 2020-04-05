@@ -1,0 +1,14 @@
+[function test_chained_call_on_return_core]
+if (strlen(<args>) > 0)
+  return<args>
+else
+  return#010000
+endif
+
+[function test_chained_call_on_return]
+serv.smsg "test_chained_call_on_return\n"
+
+ShouldBeSameString("chained call on return value","DrZhor",<test_chained_call_on_return_core.name>)
+ShouldBeSameString("chained call with arguments on return value","DrZhor",<test_chained_call_on_return_core(#010000).name>)
+
+serv.smsg "\n"

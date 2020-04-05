@@ -1,0 +1,44 @@
+[function test_all]
+tst_start_suite
+
+test_macro
+test_bracket_call_arguments
+test_chained_call_on_return
+test_variables
+test_arguments
+test_tags
+test_expressions
+test_intrinsics
+test_str
+test_time
+
+test_assignments
+test_events
+test_resources
+
+test_if
+test_elseif
+test_return
+test_while
+
+test_safe
+test_findres
+test_finduid
+test_newitem
+test_findid
+test_findlayer
+test_findcont
+test_equip
+test_defnames
+
+tst_end_suite
+
+[function f_was_function_call]
+if (strlen(<args>))
+    var(function_was_called,<args>)
+else
+    var(function_was_called,yes)
+endif
+
+[function f_identity_args]
+return<args>
