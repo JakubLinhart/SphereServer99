@@ -871,7 +871,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 				else
 				{
 					pszKey += 6;
-					psResult->Copy(pszKey);
+					psResult->Copy(Str_TrimDoublequotes(const_cast<TCHAR*>(pszKey)));
 					return TRIGRET_RET_TRUE;
 				}
 			}
@@ -1756,7 +1756,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		case SSC_HVAL:
 		{
 			CExpression expr(pArgs, pSrc, this);
-			sVal.FormatULLHex(expr.GetVal(pszKey));
+			sVal.FormatULLLowerHex(expr.GetVal(pszKey));
 			return true;
 		}
 	}

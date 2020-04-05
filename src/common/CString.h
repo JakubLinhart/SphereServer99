@@ -174,6 +174,7 @@ public:
 	* @param iVal value to print.
 	*/
 	void FormatULLHex(unsigned long long dwVal);
+	void FormatULLLowerHex(unsigned long long dwVal);
 
 	/**
 	* @brief Compares the CGString to string pStr (strcmp wrapper).

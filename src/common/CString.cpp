@@ -272,6 +272,11 @@ void CGString::FormatHex(DWORD dwVal)
 
 void CGString::FormatULLHex(unsigned long long dwVal)
 {
+	Format("0%llX", dwVal);
+}
+
+void CGString::FormatULLLowerHex(unsigned long long dwVal)
+{
 	Format("0%llx", dwVal);
 }
 
