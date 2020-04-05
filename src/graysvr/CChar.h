@@ -297,6 +297,7 @@ enum CTRIG_TYPE
 	CTRIG_SpellSuccess,			// Char succeeded an spell cast
 	CTRIG_SpellTargetCancel,	// Char cancelled spell target
 	CTRIG_StatChange,			// Char stats got changed (STR/hits, INT/mana, DEX/stam, food)
+	CTRIG_Step,
 	CTRIG_StepStealth,			// Char is walking/running while hidden
 	CTRIG_Targon_Cancel,		// Char cancelled current TARGETF
 	CTRIG_ToggleFlying,			// Char toggled flying mode (gargoyle only)

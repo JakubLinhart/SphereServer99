@@ -77,7 +77,7 @@ bool CClient::Cmd_Use_Item(CItem *pItem, bool fTestTouch, bool fScript)
 
 	if ( IsTrigUsed(TRIGGER_DCLICK) || IsTrigUsed(TRIGGER_ITEMDCLICK) )
 	{
-		if ( pItem->OnTrigger(ITRIG_DCLICK, m_pChar) == TRIGRET_RET_TRUE )
+		if ( pItem->OnTrigger(ITRIG_USERDCLICK, m_pChar) == TRIGRET_RET_TRUE )
 			return true;
 	}
 

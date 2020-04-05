@@ -3025,6 +3025,13 @@ TRIGRET_TYPE CChar::CheckLocation(bool fStanding)
 	if ( fStanding || fStepCancel )
 		return TRIGRET_RET_FALSE;
 
+	if (IsTrigUsed(TRIGGER_STEP))
+	{
+		CScriptTriggerArgs Args(fStanding ? 1 : 0);
+		if (OnTrigger(CTRIG_Step, this, &Args) == TRIGRET_RET_TRUE)
+			return TRIGRET_RET_FALSE;
+	}
+
 	// Check if there's any map teleporter here
 	const CPointMap &pt = GetTopPoint();
 	CSector *pSector = pt.GetSector();

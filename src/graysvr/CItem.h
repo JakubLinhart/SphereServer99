@@ -17,7 +17,6 @@ enum ITRIG_TYPE
 	ITRIG_ContextMenuSelect,
 	ITRIG_Create,				// Item got created (not placed in the world yet)
 	ITRIG_DAMAGE,				// Item have been damaged
-	ITRIG_DCLICK,				// Item got double clicked by someone
 	ITRIG_DESTROY,				// Item got destroyed (removed)
 	ITRIG_DROPON_CHAR,			// Item got dropped over an char
 	ITRIG_DROPON_GROUND,		// Item got dropped on ground
@@ -42,6 +41,7 @@ enum ITRIG_TYPE
 	ITRIG_TIMER,				// Item timer got expired
 	ITRIG_ToolTip,				// Item tooltip got requested by someone
 	ITRIG_UNEQUIP,				// Item got unequipped
+	ITRIG_USERDCLICK,				// Item got double clicked by someone
 	ITRIG_QTY
 };
 
