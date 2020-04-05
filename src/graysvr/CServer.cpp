@@ -1089,7 +1089,7 @@ bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 	else if (!strnicmp(pszKey, "RTIMETEXT", 9))
 	{
 		CGTime currentTime = CGTime::GetCurrentTime();
-		sVal.Format("%d/%02d/%02d %02d\:%02d\:%02d", currentTime.GetYear(), currentTime.GetMonth(), currentTime.GetDay(), currentTime.GetHour(), currentTime.GetMinute(), currentTime.GetSeconds());
+		sVal.Format("%d/%02d/%02d %02d:%02d:%02d", currentTime.GetYear(), currentTime.GetMonth(), currentTime.GetDay(), currentTime.GetHour(), currentTime.GetMinute(), currentTime.GetSeconds());
 		return true;
 	}
 
