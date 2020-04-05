@@ -1161,7 +1161,7 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 				sVal.Format("%" FMTDWORD, GetMakeValue(0));
 			break;
 		case IBC_WEIGHT:
-			sVal.FormatVal(m_weight / WEIGHT_UNITS);
+			sVal.Format("%d.%d", m_weight / WEIGHT_UNITS, m_weight % WEIGHT_UNITS);
 			break;
 		default:
 			return CBaseBaseDef::r_WriteVal(pszKey, sVal, pSrc, pArgs);
@@ -1561,8 +1561,6 @@ bool CItemBase::r_LoadVal(CScript &s)
 			break;
 		case IBC_WEIGHT:
 			m_weight = static_cast<WORD>(s.GetArgVal());
-			if ( strchr(s.GetArgStr(), '.') )
-				m_weight *= WEIGHT_UNITS;
 			break;
 		default:
 			return CBaseBaseDef::r_LoadVal(s);
