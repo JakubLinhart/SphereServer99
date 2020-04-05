@@ -680,25 +680,24 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 	{
 		// RES_FUNCTION call
 		// Is it a function returning a value ? Parse args ?
-		LPCTSTR pszArgs = strchr(pszKey, ' ');
-		if (!pszArgs)
+		LPCTSTR pszArgs = strchr(pszKey, '(');
+		if (pszArgs)
 		{
-			pszArgs = strchr(pszKey, '(');
+			LPCTSTR pszArgsStart = pszArgs;
+			Str_SkipArgumentList(pszArgs);
+			TemporaryString sArgsTmp;
+			strncpy(sArgsTmp, pszArgsStart, pszArgs - pszArgsStart - 1);
+			sArgsTmp.setAt(pszArgs - pszArgsStart - 1, '\0');
+			pszArgs = sArgsTmp;
+			pszArgs++;
+		}
+		else
+		{
+			pszArgs = strchr(pszKey, ' ');
 			if (pszArgs)
-			{
-				LPCTSTR pszArgsStart = pszArgs;
-				Str_SkipArgumentList(pszArgs);
-				TemporaryString sArgsTmp;
-				strncpy(sArgsTmp, pszArgsStart, pszArgs - pszArgsStart - 1);
-				sArgsTmp.setAt(pszArgs - pszArgsStart - 1, '\0');
-				pszArgs = sArgsTmp;
-			}
+				SKIP_SEPARATORS(pszArgs);
 		}
-		if ( pszArgs != NULL )
-		{
-			++pszArgs;
-			SKIP_SEPARATORS(pszArgs);
-		}
+
 
 		CScriptTriggerArgs Args(pszArgs ? pszArgs : "");
 		if ( r_Call(pszKey, pSrc, &Args, &sVal) )
