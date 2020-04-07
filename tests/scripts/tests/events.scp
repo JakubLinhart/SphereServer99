@@ -71,3 +71,24 @@ if (finduid(<src>).isChar)
 else
     tst_fail("@login - src not set!")
 endif
+
+on=@userdclick
+if (finduid(<src>).isChar)
+    tst_success("@userdclick - src set: <src>")
+else
+    tst_fail("@userdclick - src set: <src>")
+endif
+
+on=@userclick
+if (finduid(<src>).isChar)
+    tst_success("@userclick - src set: <src>")
+else
+    tst_fail("@userclick - src set: <src>")
+endif
+
+on=@step
+if (finduid(<src>).isChar)
+    tst_success("@step - src set: <src>")
+else
+    tst_fail("@step - src set: <src>")
+endif

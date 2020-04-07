@@ -172,7 +172,6 @@ enum CTRIG_TYPE
 	CTRIG_charContextMenuSelect,
 	CTRIG_charDClick,
 	CTRIG_charTradeAccepted,
-	CTRIG_Click,				// Char got single clicked by someone
 	CTRIG_ClientTooltip,		// Char tooltip got requested by someone
 	CTRIG_CombatAdd,			// Char added someone on attacker list
 	CTRIG_CombatDelete,			// Char deleted someone from attacker list
@@ -182,7 +181,6 @@ enum CTRIG_TYPE
 	CTRIG_ContextMenuSelect,
 	CTRIG_Create,				// Char got created (not placed in the world yet)
 	CTRIG_Criminal,				// Char got flagged criminal for someone
-	CTRIG_DClick,				// Char got double clicked by someone
 	CTRIG_Death,				// Char got killed
 	CTRIG_DeathCorpse,			// Char dead corpse is being created
 	CTRIG_Destroy,				// Char got destroyed (removed)
@@ -307,6 +305,8 @@ enum CTRIG_TYPE
 	CTRIG_TradeCreate,			// Char created a trade window
 	CTRIG_UserBugReport,
 	CTRIG_UserChatButton,
+	CTRIG_UserClick,			// Char got single clicked by someone
+	CTRIG_UserDClick,			// Char got double clicked by someone
 	CTRIG_UserExtCmd,
 	CTRIG_UserExWalkLimit,
 	CTRIG_UserGuildButton,

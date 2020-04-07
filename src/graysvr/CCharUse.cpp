@@ -1244,7 +1244,7 @@ int CChar::Do_Use_Item(CItem *pItem, bool fLink)
 	if ( !pItem )
 		return false;
 
-	if ( m_pNPC && (IsTrigUsed(TRIGGER_DCLICK) || IsTrigUsed(TRIGGER_ITEMDCLICK)) )	// for players, DClick was called before this function
+	if ( m_pNPC && (IsTrigUsed(TRIGGER_USERDCLICK) || IsTrigUsed(TRIGGER_ITEMDCLICK)) )	// for players, DClick was called before this function
 	{
 		if ( pItem->OnTrigger(ITRIG_USERDCLICK, this) == TRIGRET_RET_TRUE )
 			return false;

@@ -1865,9 +1865,9 @@ bool CClient::Event_DoubleClick(CGrayUID uid, bool fMacro, bool fTestTouch, bool
 		return Cmd_Use_Item(pItem, fTestTouch, fScript);
 
 	CChar *pChar = static_cast<CChar *>(pObj);
-	if ( IsTrigUsed(TRIGGER_DCLICK) || IsTrigUsed(TRIGGER_CHARDCLICK) )
+	if ( IsTrigUsed(TRIGGER_USERDCLICK) || IsTrigUsed(TRIGGER_CHARDCLICK) )
 	{
-		if ( pChar->OnTrigger(CTRIG_DClick, m_pChar) == TRIGRET_RET_TRUE )
+		if ( pChar->OnTrigger(CTRIG_UserDClick, m_pChar) == TRIGRET_RET_TRUE )
 			return true;
 	}
 
@@ -1931,10 +1931,10 @@ void CClient::Event_SingleClick(CGrayUID uid)
 		return;
 	}
 
-	if ( IsTrigUsed(TRIGGER_CLICK) || (IsTrigUsed(TRIGGER_ITEMCLICK) && pObj->IsItem()) || (IsTrigUsed(TRIGGER_CHARCLICK) && pObj->IsChar()) )
+	if ( IsTrigUsed(TRIGGER_USERCLICK) || (IsTrigUsed(TRIGGER_ITEMCLICK) && pObj->IsItem()) || (IsTrigUsed(TRIGGER_CHARCLICK) && pObj->IsChar()) )
 	{
 		CScriptTriggerArgs Args(this);
-		if ( pObj->OnTrigger("@Click", m_pChar, &Args) == TRIGRET_RET_TRUE )	// CTRIG_Click, ITRIG_Click
+		if ( pObj->OnTrigger("@UserClick", m_pChar, &Args) == TRIGRET_RET_TRUE )	// CTRIG_Click, ITRIG_Click
 			return;
 	}
 

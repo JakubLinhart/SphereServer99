@@ -11,7 +11,6 @@ enum ITRIG_TYPE
 	// XTRIG_UNKNOWN = some named trigger not on this list
 	ITRIG_AfterClick = 1,
 	ITRIG_Buy,					// Item got bought from a vendor
-	ITRIG_Click,				// Item got single clicked by someone
 	ITRIG_CLIENTTOOLTIP,		// Item tooltip got requested by someone
 	ITRIG_ContextMenuRequest,
 	ITRIG_ContextMenuSelect,
@@ -41,6 +40,7 @@ enum ITRIG_TYPE
 	ITRIG_TIMER,				// Item timer got expired
 	ITRIG_ToolTip,				// Item tooltip got requested by someone
 	ITRIG_UNEQUIP,				// Item got unequipped
+	ITRIG_UserClick,				// Item got single clicked by someone
 	ITRIG_USERDCLICK,				// Item got double clicked by someone
 	ITRIG_QTY
 };
