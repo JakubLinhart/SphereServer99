@@ -37,5 +37,24 @@ arg(number,"1")
 
 ShouldBeSameString("r_verb macro with safe",SKILL_Begging,<safe <arg(prefix)><arg(number)><arg(suffix)>>)
 
+finduid(010000).test_safe_chained
 
 serv.smsg "\n"
+
+[function test_safe_chained]
+ShouldBeSamestring("r_write object property","5398","<safe p_x>")
+
+[function xxx]
+finduid(010000).yyy
+if (#010)
+    serv.smsg "#010 true\n"
+endif
+if (#010==020)
+    serv.smsg "#010==020 true\n"
+endif
+if (#010==010)
+    serv.smsg "#010==010 true\n"
+endif
+
+[function yyy]
+serv.smsg "<safe p_x>\n"

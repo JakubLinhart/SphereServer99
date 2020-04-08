@@ -37,10 +37,34 @@ else
   tst_success("empty condition")
 endif
 
+if()
+  tst_fail("empty condition - no whitespace after if")
+else
+  tst_success("empty condition - no whitespace after if")
+endif
+
+if (#010==010)
+  tst_success("sharp prefixed number comparison - true")
+else
+  tst_fail("sharp prefixed number comparison - true")
+endif
+
+if (#010==020)
+  tst_fail("sharp prefixed number comparison - false")
+else
+  tst_success("sharp prefixed number comparison - false")
+endif
+
 if (test_if_fun)
   tst_success("custom function in parenthesis")
 else
   tst_fail("custom function in parenthesis")
+endif
+
+if(test_if_fun)
+  tst_success("custom function in parenthesis - no whitespace after if")
+else
+  tst_fail("custom function in parenthesis - no whitespace after if")
 endif
 
 if test_if_fun
@@ -72,6 +96,12 @@ if (arg(local1))
   tst_success("local variable without macro")
 else
   tst_fail("local variable with macro")
+endif
+
+if(arg(local1))
+  tst_success("local variable without macro - no whitespace after if")
+else
+  tst_fail("local variable with macro - no whitespace after if")
 endif
 
 finduid(010000).test_chained_if
