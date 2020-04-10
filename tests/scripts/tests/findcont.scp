@@ -17,11 +17,28 @@ ShouldBeSameString("findcont - local variable",i_dagger,<finduid(010000).findcon
 
 var(globalVar1,0)
 ShouldBeSameString("findcont - global variable",i_dagger,<finduid(010000).findcont(arg(globalVar1)).id>)
-ShouldBeSameString("findcont - function call",i_dagger,<finduid(010000).findcont(test_findcont_return(0)).id>)
+ShouldBeSameString("findcont - function call - char",i_dagger,<finduid(010000).findcont(test_findcont_return(0)).id>)
 
 lastnew.remove
+
+finduid(010000).newitem(i_backpack)
+finduid(010000).equip(<lastnew>)
+arg(backpack,<lastnew>)
+finduid(010000).newitem(i_dagger)
+lastnew.cont=<arg(backpack)>
+arg(backpack).test_findcont_chained
+lastnew.remove
+arg(backpack).remove
 
 serv.smsg "\n"
 
 [function test_findcont_return]
 return<args>
+
+[function test_findcont_return_id]
+return<id>
+
+[function test_findcont_chained]
+var(function_was_called,no)
+findcont(0).f_was_function_call
+ShouldBeSameString("findcont - function call - item",yes,<var(function_was_called)>)

@@ -15,6 +15,7 @@ MT_NONHUM		01000
 MT_RUN			02000
 
 [TYPEDEFS]
+t_container			1	// any unlocked container or corpse. CContainer based
 t_weapon_fence		14 	// can't be used to chop trees. (make kindling)
 t_log				43 	// = make into furniture etc. lumberlogs
 t_multi				47 	// = multi part object like house or ship.

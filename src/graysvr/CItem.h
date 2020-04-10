@@ -1160,6 +1160,7 @@ public:
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
+	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 	virtual int GetWeight(WORD wAmount = 0) const
 	{
