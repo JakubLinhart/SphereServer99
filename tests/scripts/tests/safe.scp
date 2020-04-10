@@ -43,18 +43,6 @@ serv.smsg "\n"
 
 [function test_safe_chained]
 ShouldBeSamestring("r_write object property","5398","<safe p_x>")
-
-[function xxx]
-finduid(010000).yyy
-if (#010)
-    serv.smsg "#010 true\n"
-endif
-if (#010==020)
-    serv.smsg "#010==020 true\n"
-endif
-if (#010==010)
-    serv.smsg "#010==010 true\n"
-endif
-
-[function yyy]
-serv.smsg "<safe p_x>\n"
+ShouldBeSamestring("r_write object property - with parentheses","5398","<safe(p_x)>")
+ShouldBeSamestring("r_write object property - with dot","5398","<safe.p_x>")
+ShouldBeSamestring("r_write object property failed","","<safe blabla>")

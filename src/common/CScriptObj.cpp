@@ -1213,6 +1213,27 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 			EXC_SET("writeval");
 			CGString sVal;
 			fRes = false;
+
+			bool fSafe = false;
+			TemporaryString* safeArguments = NULL;
+			if (!strnicmp(pszKey, "safe", 4))
+			{
+				pszKey += 4;
+				if (*pszKey == ' ' || *pszKey == '.')
+				{
+					pszKey++;
+					fSafe = true;
+				}
+				else if (*pszKey == '(')
+				{
+					safeArguments = new TemporaryString();
+					Str_ParseArgumentList(pszKey, *safeArguments);
+					pszKey = *safeArguments;
+				}
+				else
+					pszKey -= 4;
+			}
+
 			if (pArgs && pArgs->r_WriteVarVal(pszKey, sVal, pSrc))
 				fRes = true;
 			
@@ -1227,12 +1248,14 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 				}
 			}
 
-			if ( !fRes )
+			if (!fRes && !fSafe)
 			{
 				DEBUG_ERR(("Can't resolve <%s>\n", pszKey));
 				// Just in case this really is a <= operator?
 				pszResponse[i] = chEnd;
 			}
+			if (safeArguments != NULL)
+				delete safeArguments;
 
 			if ( sVal.IsEmpty() && fHTML )
 				sVal = "&nbsp";
