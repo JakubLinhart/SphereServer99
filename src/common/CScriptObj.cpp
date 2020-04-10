@@ -3145,18 +3145,6 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 		}
 		return r_WriteValChained(pszKey, sVal, pSrc, this);
 	}
-	else if (!strnicmp(pszKey, "SAFE", 4)) {
-		pszKey += 4;
-		if (*pszKey == '(' || *pszKey == '.')
-			pszKey++;
-		GETNONWHITESPACE(pszKey);
-		if (!r_WriteVarVal(pszKey, sVal, pSrc))
-		{
-			if (!r_WriteVal(pszKey, sVal, pSrc))
-				sVal = "";
-		}
-		return true;
-	}
 	else if (!strnicmp(pszKey, "ARGS", 4)) {
 		sVal = m_s1;
 		pszKey += 4;
