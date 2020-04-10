@@ -75,6 +75,11 @@ public:
 		return m_pszArg[0] ? true : false;
 	}
 
+	void SetArgRaw(TCHAR* pszArg)
+	{
+		m_pszArg = pszArg;
+	}
+
 	TCHAR *GetArgRaw() const
 	{
 		ASSERT(m_pszArg);
@@ -181,7 +186,7 @@ public:
 
 	// Read the sections keys
 	bool ReadKey(bool fRemoveBlanks = true);
-	bool ReadKeyParse();
+	bool ReadKeyParse(bool readNext = true);
 
 	// Write stuff out to a script file
 	bool _cdecl WriteSection(LPCTSTR pszSection, ...) __printfargs(2, 3);

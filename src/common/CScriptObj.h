@@ -117,7 +117,7 @@ public:
 	size_t ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags = 0, CScriptTriggerArgs *pArgs = NULL);
 
 	virtual bool r_GetRef(LPCTSTR& pszKey, CScriptObj*& pRef);
-	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs = NULL, CScriptTriggerArgs* pArgs = NULL, CTextConsole* pSrc = NULL);
+	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_LoadVal(CScript &s);
 	virtual bool r_Load(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);

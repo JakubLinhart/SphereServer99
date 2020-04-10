@@ -617,6 +617,9 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 	if ( !pArgs )
 		pArgs = &argsEmpty;
 
+	int keyLength = 0;
+	TemporaryString tempKey;
+
 	// Script execution is always not threaded action
 	EXC_TRY("TriggerRun");
 
@@ -625,16 +628,51 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 		goto jump_in;
 
 	EXC_SET("parsing");
-	while ( s.ReadKeyParse() )
+	while (s.ReadKey())
 	{
 		// Hit the end of the next trigger
 		if ( s.IsKeyHead("ON", 2) )		// done with this section
 			break;
+		LPCTSTR peekedKey = s.GetKey();
+		GETNONWHITESPACE(peekedKey);
+		SKIP_IDENTIFIERSTRING(peekedKey);
+		if (*peekedKey == '(')
+		{
+			keyLength = peekedKey - s.GetKey();
+		}
+		else
+		{
+			keyLength = 0;
+			s.ReadKeyParse(false);
+		}
 
 	jump_in:
 		TRIGRET_TYPE iRet = TRIGRET_RET_DEFAULT;
 
-		SK_TYPE index = static_cast<SK_TYPE>(FindTableSorted(s.GetKey(), sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
+		SK_TYPE index;
+
+		LPCTSTR pszKey = s.GetKey();
+		GETNONWHITESPACE(pszKey);
+		if (keyLength > 0)
+		{
+			index = static_cast<SK_TYPE>(FindTableHeadSorted(pszKey, sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
+			switch (index)
+			{
+				case SK_IF:
+				case SK_RETURN:
+					s.SetArgRaw(const_cast<TCHAR*>(peekedKey));
+					strncpy(tempKey, pszKey, keyLength);
+					tempKey.setAt(keyLength, '\0');
+					pszKey = tempKey;
+					break;
+				default:
+					s.ReadKeyParse(false);
+					break;
+			}
+		}
+		else
+			index = static_cast<SK_TYPE>(FindTableSorted(pszKey, sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
+
 		switch ( index )
 		{
 			case SK_ENDIF:
@@ -841,22 +879,22 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			{
 				// Parse out any variables in it (may act like a verb sometimes?)
 				EXC_SET("parsing");
-				if ( strchr(s.GetKey(), '<') )
+				if ( strchr(pszKey, '<') )
 				{
 					EXC_SET("parsing <> in a key");
 					TemporaryString pszBuffer;
-					strcpy(pszBuffer, s.GetKey());
+					strcpy(pszBuffer, pszKey);
 					strcat(pszBuffer, " ");
 					strcat(pszBuffer, s.GetArgRaw());
 					ParseText(pszBuffer, pSrc, 0, pArgs);
 					s.ParseKey(pszBuffer);
+					pszKey = s.GetKey();
 				}
 				else
 					ParseText(s.GetArgRaw(), pSrc, 0, pArgs);
 			}
 		}
 
-		LPCTSTR pszKey = s.GetKey();
 		if (!strnicmp(pszKey, "RETURN", 6))
 		{
 			EXC_SET("return");
@@ -865,7 +903,9 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 				LPCTSTR pszArgs = s.GetArgStr();
 				if (*pszArgs)
 				{
-					psResult->Copy(s.GetArgStr());
+					TemporaryString parsedArgs;
+					Str_ParseArgumentList(pszArgs, parsedArgs);
+					psResult->Copy(parsedArgs);
 					return TRIGRET_RET_TRUE;
 				}
 				else
@@ -956,7 +996,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 				if ( !pArgs->r_Verb(s, pSrc, pArgs) )
 				{
 					bool fRes;
-					if ( !strcmpi(s.GetKey(), "call") )
+					if ( !strcmpi(pszKey, "call") )
 					{
 						EXC_SET("call");
 						TCHAR *pszArgRaw = s.GetArgRaw();
@@ -1008,7 +1048,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 						else
 							fRes = false;
 					}
-					else if ( !strcmpi(s.GetKey(), "FullTrigger") )
+					else if ( !strcmpi(pszKey, "FullTrigger") )
 					{
 						EXC_SET("FullTrigger");
 						TCHAR *pszArgs = s.GetArgRaw();
@@ -1073,7 +1113,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 					}
 
 					if ( !fRes )
-						DEBUG_MSG(("WARNING: Trigger Bad Verb '%s','%s'\n", s.GetKey(), s.GetArgStr()));
+						DEBUG_MSG(("WARNING: Trigger Bad Verb '%s','%s'\n", pszKey, s.GetArgStr()));
 				}
 				break;
 			}

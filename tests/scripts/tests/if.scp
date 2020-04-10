@@ -8,6 +8,13 @@ else
 endif
 ShouldBeSameString("when 1 then is executed","then",<arg(result)>)
 
+  if 1
+    arg(result,"then")
+  else
+    arg(result,"else")
+  endif
+ShouldBeSameString("when 1 then is executed - if prefixed with whitespace","then",<arg(result)>)
+
 if 0
   arg(result,"then")
 else

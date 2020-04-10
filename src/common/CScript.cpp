@@ -387,16 +387,20 @@ bool CScript::ReadKey(bool fRemoveBlanks)
 	return true;
 }
 
-bool CScript::ReadKeyParse()
+bool CScript::ReadKeyParse(bool readNext)
 {
 	ADDTOCALLSTACK("CScript::ReadKeyParse");
 	EXC_TRY("ReadKeyParse");
-	EXC_SET("read");
-	if ( !ReadKey() )
+
+	if (readNext)
 	{
-		EXC_SET("init");
-		InitKey();
-		return false;	// end of section
+		EXC_SET("read");
+		if (!ReadKey())
+		{
+			EXC_SET("init");
+			InitKey();
+			return false;	// end of section
+		}
 	}
 
 	ASSERT(m_pszKey);
