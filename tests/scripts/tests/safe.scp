@@ -26,9 +26,34 @@ ShouldBeSamestring("non-existing variable from macro","","<safe var(nonexistingv
 ShouldBeSamestring("failure from macro","",<safe thisisafailure>)
 
 if (<safe this_is_a_failure>)
-    tst_fail("safe in condition")
+    tst_fail("safe in condition inside macro")
 else
-    tst_success("safe in condition")
+    tst_success("safe in condition inside macro")
+endif
+
+arg(number,"1")
+if (safe arg(number))
+    tst_success("safe in condition without macro")
+else
+    tst_fail("safe in condition without macro")
+endif
+
+if (safe this is a failure)
+    tst_fail("save in condition without macro - fail")
+else
+    tst_success("save in condition without macro - fail")
+endif
+
+if (safe(arg(number)))
+    tst_success("safe in condition with parentheses without macro")
+else
+    tst_fail("safe in condition with parentheses without macro")
+endif
+
+if (safe(this is a failure))
+    tst_fail("save in condition without macro with parentheses - fail")
+else
+    tst_success("save in condition without macro with parentheses - fail")
 endif
 
 arg(prefix,"findres(skill,")

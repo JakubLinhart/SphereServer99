@@ -824,15 +824,40 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 			int argsLen = strlen(tmpArgs);
 			CGString sVal;
 
+			LPCTSTR pszTmpArgs = tmpArgs;
+			bool fSafe = false;
+			TemporaryString* safeArguments = NULL;
+			if (!strnicmp(pszTmpArgs, "safe", 4))
+			{
+				pszTmpArgs += 4;
+				if (*pszTmpArgs == ' ' || *pszTmpArgs == '.')
+				{
+					pszTmpArgs++;
+					fSafe = true;
+				}
+				else if (*pszTmpArgs == '(')
+				{
+					safeArguments = new TemporaryString();
+					Str_ParseArgumentList(pszTmpArgs, *safeArguments);
+					pszTmpArgs = *safeArguments;
+					fSafe = true;
+				}
+				else
+					pszTmpArgs -= 4;
+			}
+
 			bool fRes = false;
 			if (m_pArgs != NULL)
-				fRes = m_pArgs->r_WriteVarVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc);
+				fRes = m_pArgs->r_WriteVarVal(Str_TrimEnd(const_cast<TCHAR*>(pszTmpArgs), " \t"), sVal, m_pSrc);
 
 			if (!fRes && m_pObj != NULL)
-				fRes = m_pObj->r_WriteVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc, m_pArgs);
+				fRes = m_pObj->r_WriteVal(Str_TrimEnd(const_cast<TCHAR*>(pszTmpArgs), " \t"), sVal, m_pSrc, m_pArgs);
 
 			if (!fRes && m_pArgs != NULL)
-				fRes = m_pArgs->r_WriteVal(Str_TrimEnd(tmpArgs, " \t"), sVal, m_pSrc);
+				fRes = m_pArgs->r_WriteVal(Str_TrimEnd(const_cast<TCHAR*>(pszTmpArgs), " \t"), sVal, m_pSrc);
+
+			if (safeArguments != NULL)
+				delete safeArguments;
 
 			if (fRes)
 			{
@@ -840,6 +865,12 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 				LPCTSTR pszVal = sVal.GetPtr();
 				INT64 iVal = GetSingle(pszVal);
 				return iVal;
+			}
+
+			if (fSafe)
+			{
+				pszArgs += argsLen;
+				return 0;
 			}
 		}
 
