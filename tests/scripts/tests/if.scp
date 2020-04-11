@@ -99,6 +99,27 @@ else
   tst_fail("local variable with macro")
 endif
 
+arg(local1,1)
+if(<arg(local1)>)
+  tst_success("local variable with macro - no whitespace after if")
+else
+  tst_fail("local variable with macro - no whitespace after if")
+endif
+
+arg(local1,1)
+  if(<arg(local1)>)
+    tst_success("local variable with macro - no whitespace after if, whitespace before if")
+  else
+    tst_fail("local variable with macro - no whitespace after if, whitespace before if")
+  endif
+
+arg(local1,1)
+  if (<arg(local1)>)
+    tst_success("local variable with macro - whitespace after if, whitespace before if")
+  else
+    tst_fail("local variable with macro - whitespace after if, whitespace before if")
+  endif
+
 if (arg(local1))
   tst_success("local variable without macro")
 else
@@ -110,6 +131,12 @@ if(arg(local1))
 else
   tst_fail("local variable with macro - no whitespace after if")
 endif
+
+  if(arg(local1))
+    tst_success("local variable without macro - no whitespace after if, whitespace before if")
+  else
+    tst_fail("local variable without macro - no whitespace after if, whitespace before if")
+  endif
 
 finduid(010000).test_chained_if
 test_if_argv(1,1,2)
@@ -170,6 +197,7 @@ endif
 [function test_elseif]
 serv.smsg "test_elseif\n"
 
+arg(result,"")
 if 0
 elseif 1
   arg(result,"then")
@@ -178,6 +206,16 @@ else
 endif
 ShouldBeSameString("when 1 then is executed","then",<arg(result)>)
 
+arg(result,"")
+  if 0
+  elseif 1
+    arg(result,"then")
+  else
+    arg(result,"else")
+  endif
+ShouldBeSameString("when 1 else is executed - prefixed with whitespace","then",<arg(result)>)
+
+arg(result,"")
 if 0
 elseif 0
   arg(result,"then")
@@ -186,6 +224,7 @@ else
 endif
 ShouldBeSameString("when 0 else is executed","else",<arg(result)>)
 
+arg(result,"")
 arg(cond,1)
 if 0
 elseif arg(cond)
@@ -195,6 +234,7 @@ else
 endif
 ShouldBeSameString("condition without macro","then",<arg(result)>)
 
+arg(result,"")
 arg(cond,0)
 if 0
 elseif arg(cond)+1

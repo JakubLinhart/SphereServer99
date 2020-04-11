@@ -635,10 +635,11 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			break;
 		LPCTSTR peekedKey = s.GetKey();
 		GETNONWHITESPACE(peekedKey);
+		LPCTSTR peekedKeyWithoutWhiteSpace = peekedKey;
 		SKIP_IDENTIFIERSTRING(peekedKey);
 		if (*peekedKey == '(')
 		{
-			keyLength = peekedKey - s.GetKey();
+			keyLength = peekedKey - peekedKeyWithoutWhiteSpace;
 		}
 		else
 		{
