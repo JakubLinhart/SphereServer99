@@ -1,0 +1,11 @@
+[function test_memory]
+serv.smsg "test_memory\n"
+
+serv.smsg "\n"
+
+[function test_memory_client]
+serv.smsg "test_memory_client\n"
+
+ShouldBeSameString("ismypet",1,<finduid(0D728A).ismypet>)
+
+serv.smsg "\n"
