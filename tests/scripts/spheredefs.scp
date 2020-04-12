@@ -27,7 +27,4 @@ layer_hand1     		 1
 layer_hand2              2
 layer_special			30	// Can be multiple of these. memories
 
-[plevel 1]
-test_memory_client
-
 [EOF]

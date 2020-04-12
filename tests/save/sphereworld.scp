@@ -64,6 +64,16 @@ MORE2=0490C408D
 Layer=30
 Cont=0D728A
 
+[WorldItem i_memory]
+Serial=04004D672
+Color=02
+Age=05E066F
+Link=010000
+Attr_Newbie=1
+MORE2=047B21B83
+Layer=30
+Cont=0D728A
+
 [Sector 0,0]
 RainChance=25
 ColdChance=20

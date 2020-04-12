@@ -6,6 +6,7 @@ chars.scp
 tests/
 tests/events/
 testFramework.scp
+cmds.scp
 
 [MAP 0]
 // This is the default map0.mul file.
