@@ -23,3 +23,15 @@ int=100
 allskills=0
 
 ITEMnewbie=i_monster_create
+
+[CHARDEF 0D9]
+//Dog
+DEFNAME=c_dog
+NAME=Pes
+CAN=MT_WALK|MT_RUN
+ANIM=017ff
+
+attack=8
+ARMOR=12
+moverate=3
+

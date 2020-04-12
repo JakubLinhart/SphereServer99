@@ -21,6 +21,18 @@ finduid(010000).newitem(i_dagger)
 ShouldBeSameString("access to item definition from item",i_dagger,"<lastnew.def.dispid>")
 lastnew.remove
 
+if (#0A2000F51 == <i_dagger>)
+    tst_success("item resource index value")
+else
+    tst_fail("item resource index value")
+endif
+
+if (#08E000190 == <c_man>)
+    tst_success("char resource index value")
+else
+    tst_error("char resource index value")
+endif
+
 serv.smsg "\n"
 
 [ITEMDEF 02]

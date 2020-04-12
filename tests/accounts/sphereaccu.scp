@@ -3,7 +3,8 @@
 \\ Any file changes must be made to sphereaccu.scp. This is read in at save time.
 
 [drzhor]
-PrivFlags=04
+PLevel=Owner
+PrivFlags=0A
 Password=password
 TotalConnectTime=111694
 LastConnectTime=32

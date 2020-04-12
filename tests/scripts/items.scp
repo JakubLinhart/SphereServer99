@@ -108,4 +108,10 @@ DUPEITEM=02053
 [ITEMDEF 0205a]
 DUPEITEM=02053
 
+[ITEMDEF 02007]
+// used as a memory object
+DEFNAME=i_memory
+TYPE=T_EQ_MEMORY_OBJ
+LAYER=layer_special
+
 [EOF]

@@ -20,10 +20,14 @@ t_weapon_fence		14 	// can't be used to chop trees. (make kindling)
 t_log				43 	// = make into furniture etc. lumberlogs
 t_multi				47 	// = multi part object like house or ship.
 t_sign_gump			56 	// = Things like grave stones and sign plaques
+t_eq_memory_obj		74 	// = A Char has a memory link to some object. (I am fighting with someone. This records the fight.)
 
 [DEFNAMES LAYERS]
-layer_hand1		1
-layer_hand2		2
+layer_hand1     		 1
+layer_hand2              2
+layer_special			30	// Can be multiple of these. memories
 
+[plevel 1]
+test_memory_client
 
 [EOF]
