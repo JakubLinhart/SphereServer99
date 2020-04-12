@@ -14,6 +14,7 @@ enum RES_TYPE	// all the script resource blocks we know how to deal with
 	RES_AREA,			// Complex region (w/ extra tags)
 	RES_BLOCKIP,		// (SL) List of IP's to block
 	RES_BOOK,			// A book or a page from a book
+	RES_BUNK1,
 	RES_CHARDEF,		// Define a char type
 	RES_COMMENT,		// A commented out block type
 	RES_DEFNAME,		// (SL) Just add a bunch of new defs and equivs str/values
@@ -23,6 +24,7 @@ enum RES_TYPE	// all the script resource blocks we know how to deal with
 	RES_FAME,
 	RES_FUNCTION,		// Define a new command verb script that applies to a char
 	RES_GMPAGE,			// A GM page (SAVED in World)
+	RES_GUNK2,
 	RES_ITEMDEF,		// Define an item type
 	RES_KARMA,
 	RES_KRDIALOGLIST,	// List of KR dialog ID's

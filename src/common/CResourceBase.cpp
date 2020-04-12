@@ -12,6 +12,7 @@ LPCTSTR const CResourceBase::sm_szResourceBlocks[RES_QTY] =	// static
 	"AREA",				// Complex region (w/ extra tags)
 	"BLOCKIP",			// (SL) List of IP's to block
 	"BOOK",				// A book or a page from a book
+	"BUNK1",
 	"CHARDEF",			// Define a char type
 	"COMMENT",			// A commented out block type
 	"DEFNAME",			// (SL) Just add a bunch of new defs and equivs str/values
@@ -21,6 +22,7 @@ LPCTSTR const CResourceBase::sm_szResourceBlocks[RES_QTY] =	// static
 	"FAME",
 	"FUNCTION",			// Define a new command verb script that applies to a char
 	"GMPAGE",			// A GM page (SAVED in World)
+	"GUNK2",
 	"ITEMDEF",			// Define an item type
 	"KARMA",
 	"KRDIALOGLIST",		// List of KR dialog ID's
