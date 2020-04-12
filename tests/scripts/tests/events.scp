@@ -72,6 +72,22 @@ else
     tst_fail("@login - src not set!")
 endif
 
+if (isChar)
+    tst_success("@login - current object is char")
+else
+    tst_fail("@login - current object is char")
+endif
+
+if (<uid> == <src.uid>)
+    tst_success("@login - src and current object are same: <uid>, <src.uid>")
+else
+    tst_fail("@login - src and current object are same: <uid>, <src.uid>")
+endif
+
+tag(testTag1,12)
+tag(testTag2,4)
+ShouldBeSameString("@login - can eval char tags",20,<eval tag(testTag1)+<eval tag(testTag2)*2>>)
+
 on=@userdclick
 if (finduid(<src>).isChar)
     tst_success("@userdclick - src set: <src>")

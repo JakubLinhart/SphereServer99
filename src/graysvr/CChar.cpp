@@ -1347,9 +1347,6 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 {
 	ADDTOCALLSTACK("CChar::r_WriteVal");
 
-	if ( m_pClient && m_pClient->r_WriteVal(pszKey, sVal, pSrc, pArgs) )
-		return true;
-
 	EXC_TRY("WriteVal");
 
 	CCharBase *pCharDef = Char_GetDef();
