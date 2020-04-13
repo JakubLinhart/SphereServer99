@@ -142,6 +142,7 @@ enum SC_TYPE
 	SC_AGE,
 	SC_CHARS,
 	SC_CLIENTS,
+	SC_CLIENTVER,
 	SC_CLIENTVERSION,
 	SC_CREATE,
 	SC_GMPAGES,
@@ -153,6 +154,7 @@ enum SC_TYPE
 	SC_SERVIP,
 	SC_SERVNAME,
 	SC_SERVPORT,
+	SC_STATCLIENTS,
 	SC_TIMEZONE,
 	SC_URL,
 	SC_VERSION,
@@ -167,6 +169,7 @@ LPCTSTR const CServerDef::sm_szLoadKeys[SC_QTY + 1] =	// static
 	"AGE",
 	"CHARS",
 	"CLIENTS",
+	"CLIENTVER",
 	"CLIENTVERSION",
 	"CREATE",
 	"GMPAGES",
@@ -178,6 +181,7 @@ LPCTSTR const CServerDef::sm_szLoadKeys[SC_QTY + 1] =	// static
 	"SERVIP",
 	"SERVNAME",
 	"SERVPORT",
+	"STATCLIENTS",
 	"TIMEZONE",
 	"URL",
 	"VERSION",
@@ -226,6 +230,7 @@ bool CServerDef::r_LoadVal(CScript &s)
 		case SC_ACCOUNTS:
 		case SC_AGE:
 		case SC_CHARS:
+		case SC_STATCLIENTS:
 		case SC_CLIENTS:
 		case SC_CREATE:
 		case SC_ITEMS:
@@ -260,6 +265,7 @@ bool CServerDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		case SC_AGE:
 			sVal.FormatLLVal(GetAge());
 			break;
+		case SC_STATCLIENTS:
 		case SC_CHARS:
 			sVal.FormatUVal(StatGet(SERV_STAT_CHARS));
 			break;
