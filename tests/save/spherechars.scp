@@ -156,15 +156,4 @@ Stealth=50.0
 RemoveTrap=50.0
 Necromancy=30.0
 
-[WorldItem i_memory]
-Serial=040000001
-Color=04000
-Age=054D745
-Tag.Restore_color=04000
-Link=010000
-Attr_Newbie=1
-MORE2=040000000
-Layer=30
-Cont=010000
-
 [EOF]
