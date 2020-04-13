@@ -30,6 +30,7 @@ test_findlayer
 test_findcont
 test_equip
 test_defnames
+test_regions
 
 tst_end_suite
 

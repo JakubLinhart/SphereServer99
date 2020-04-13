@@ -270,15 +270,15 @@ public:
 	{	// non-inclusive
 		return( y >= m_top && y < m_bottom );
 	}
-	bool IsInside( int x, int y, int map ) const
+	bool IsInside( int x, int y ) const
 	{
 		// NON inclusive rect! Is the point in the rectangle ?
-		return( IsInsideX(x) &&	IsInsideY(y) && ( m_map == map ));
+		return( IsInsideX(x) &&	IsInsideY(y));
 	}
 	bool IsInside2d( const CPointBase & pt ) const
 	{
 		// NON inclusive rect! Is the point in the rectangle ?
-		return( IsInside( pt.m_x, pt.m_y, pt.m_map ) );
+		return( IsInside( pt.m_x, pt.m_y ) );
 	}
 
 	void UnionRect( const CGRect & rect )

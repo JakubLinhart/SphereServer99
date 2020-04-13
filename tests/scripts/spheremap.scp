@@ -19,12 +19,22 @@
 [AREA Stredozeme] // %SERVNAME% = doplni nazev podle win.ini (pokud bude nazev serveru Moria, budou vsechna mista, ktera nejsou definovana jinym skriptem, mit jmeno "Moria" pri marku runy a prikazu .where.
 CLASS=11
 RECT=1,1,6143,4096
-P=1323,1624,55,255
+P=1323,1624,55,0
 DEFNAME=a_world
 GROUP=ALLMAP
 tag.realm=3
 RAINCHANCE=25
 COLDCHANCE=20
+
+[AREA Moina Filya]
+GROUP=Dung Moina Filya
+P=5412,2556,15,10
+RECT=5370,2368,5538,2566
+MAPPLANE=10
+FLAGS=00812
+tag.realm=3
+RAINCHANCE=00
+COLDCHANCE=00
 
 [EOF]
 

@@ -1,2 +1,3 @@
 [plevel 1]
 test_memory_client
+test_regions

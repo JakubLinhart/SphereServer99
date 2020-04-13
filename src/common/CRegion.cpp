@@ -377,6 +377,7 @@ enum RC_TYPE
 	RC_ISEVENT,
 	RC_MAGIC,
 	RC_MAP,
+	RC_MAPPLANE,
 	RC_MARK,		// recall in teleport as well.
 	RC_NAME,
 	RC_NOBUILD,
@@ -418,6 +419,7 @@ LPCTSTR const CRegionBase::sm_szLoadKeys[RC_QTY+1] =	// static (Sorted)
 	"ISEVENT",
 	"MAGIC",
 	"MAP",
+	"MAPPLANE",
 	"MARK",		// recall in teleport as well.
 	"NAME",
 	"NOBUILD",
@@ -510,6 +512,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 			sVal.FormatVal( ! IsFlag(REGION_ANTIMAGIC_ALL));
 			break;
 		case RC_MAP:
+		case RC_MAPPLANE:
 			sVal.FormatVal( m_pt.m_map );
 			break;
 		case RC_MARK:
@@ -608,11 +611,24 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 			// fall through
 		case RC_TAG:	// "TAG" = get/set a local tag.
 			{	
-				if ( pszKey[3] != '.' )
-					return( false );
-				pszKey += 4;
-				sVal = m_TagDefs.GetKeyStr( pszKey, fZero );
-				return( true );
+				if (pszKey[3] == '.' || pszKey[3] == ' ')
+				{
+					pszKey += 4;
+					sVal = m_TagDefs.GetKeyStr(pszKey, fZero);
+					return true;
+				}
+				else if (pszKey[3] == '(')
+				{
+					pszKey += 3;
+					TemporaryString tagName;
+					if (Str_ParseArgumentList(pszKey, tagName))
+					{
+						sVal = m_TagDefs.GetKeyStr(tagName, fZero);
+						return true;
+					}
+				}
+
+				return true;
 			}
 		case RC_TYPE:
 			{
@@ -719,6 +735,7 @@ bool CRegionBase::r_LoadVal( CScript & s )
 			TogRegionFlags( REGION_ANTIMAGIC_ALL, ! s.GetArgVal());
 			break;
 		case RC_MAP:
+		case RC_MAPPLANE:
 			m_pt.m_map = static_cast<unsigned char>(s.GetArgVal());
 			break;
 		case RC_MARK:
@@ -952,6 +969,68 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 		index = FindTableSorted(s.GetKey(), CSector::sm_szVerbKeys, SEV_QTY);
 		if ( index >= 0 )
 			return SendSectorsVerb(s.GetKey(), s.GetArgRaw(), pSrc);
+	}
+	if (index < 0)
+	{
+		if (!stricmp(pszKey, "TAG"))
+		{
+			bool fQuoted = false;
+			TCHAR* ppArgs[2];
+			size_t iCount;
+			iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",");
+			TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+			if (iCount > 1)
+			{
+				TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
+
+				if (*pszValue == '"')
+				{
+					pszValue++;
+					pszValue = Str_TrimEnd(pszValue, "\"");
+				}
+
+				if (*ppArgs[1] == '#')
+				{
+					LPCTSTR ppArgs2 = ppArgs[1] + 1;
+					if (!IsStrNumeric(ppArgs2))
+					{
+						LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+
+						TemporaryString pszBuffer;
+						strcpy(pszBuffer, sVal);
+						strcat(pszBuffer, ppArgs[1] + 1);
+						int iValue = Exp_GetVal(pszBuffer);
+						m_TagDefs.SetNum(pszVarName, iValue, false);
+					}
+					else
+					{
+						m_TagDefs.SetStr(pszVarName, false, pszValue, false);
+					}
+				}
+				else
+				{
+					m_TagDefs.SetStr(pszVarName, false, pszValue, false);
+				}
+			}
+			else
+			{
+				TemporaryString varName;
+				LPCTSTR cmd = ppArgs[0];
+				Str_ParseArgumentList(cmd, varName);
+				Str_ParseArgumentEnd(cmd, true);
+				if (*cmd == '.')
+				{
+					cmd++;
+					CObjBase* pObj = static_cast<CGrayUID>(m_TagDefs.GetKeyNum(varName)).ObjFind();
+					if (pObj)
+					{
+						CScript subS(cmd);
+						return pObj->r_Verb(subS, pSrc, pArgs);
+					}
+				}
+			}
+			return true;
+		}
 	}
 
 	switch ( static_cast<RV_TYPE>(index) )
