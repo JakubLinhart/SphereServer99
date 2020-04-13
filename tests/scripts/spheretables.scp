@@ -4,7 +4,6 @@ skills.scp
 items.scp
 chars.scp
 tests/
-tests/events/
 testFramework.scp
 cmds.scp
 
