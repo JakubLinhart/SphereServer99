@@ -3187,9 +3187,14 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 		return r_WriteValChained(pszKey, sVal, pSrc, this);
 	}
 	else if (!strnicmp(pszKey, "ARGS", 4)) {
-		sVal = m_s1;
-		pszKey += 4;
-		return r_WriteValChained(pszKey, sVal, pSrc, this);
+		if (m_s1 && strlen(m_s1))
+		{
+			sVal = m_s1;
+			pszKey += 4;
+			return r_WriteValChained(pszKey, sVal, pSrc, this);
+		}
+		else
+			return true;
 	}
 
 	EXC_SET("generic");

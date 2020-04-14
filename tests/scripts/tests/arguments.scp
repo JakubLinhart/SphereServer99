@@ -75,12 +75,20 @@ serv.smsg "test_arguments\n"
 test_arguments_core(#010000)
 test_arguments_core_multiple("asdf","qwer",3,4,5,6)
 test_arguments_chained
+test_arguments_empty
 
 serv.smsg "\n"
 
 [function test_arguments_chained]
 ShouldBeSameString("chained arguments",3,<finduid(010000).test_arguments_chained_add(1,2)>)
 ShouldBeSameString("chained r_writeval on char",asdf,<finduid(010000).f_identity_args(asdf)>)
+
+[function test_arguments_empty]
+ShouldBeSameString("empty args - chained existing property","",<args.name>)
+ShouldBeSameString("empty args - chained nonexisting property","",<args.blabla>)
+ShouldBeSameString("empty argv(0) - chained","",<argv(0).name>)
+ShouldBeSameString("empty argv(1) - chained","",<argv(1).name>)
+ShouldBeSameString("empty argv(2) - chained","",<argv(2).name>)
 
 [function test_arguments_chained_add]
 return <eval <argv(0)>+<argv(1)>>
