@@ -370,6 +370,7 @@ enum RC_TYPE
 	RC_FLAG_ANTIMAGIC_TELEPORT,
 	RC_FLAG_NOBUILDING,
 	RC_FLAG_NODECAY,
+	RC_FLAG_UNDERGROUND,
 	RC_FLAGS,
 	RC_GATE,
 	RC_GROUP,
@@ -412,6 +413,7 @@ LPCTSTR const CRegionBase::sm_szLoadKeys[RC_QTY+1] =	// static (Sorted)
 	"FLAG_AntiMagic_Teleport",
 	"FLAG_NoBuilding",
 	"FLAG_NoDecay",
+	"FLAG_Underground",
 	"FLAGS",
 	"GATE",
 	"GROUP",
@@ -495,6 +497,9 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 			break;
 		case RC_FLAG_NODECAY:
 			sVal.FormatVal(IsFlag(REGION_FLAG_NODECAY));
+			break;
+		case RC_FLAG_UNDERGROUND:
+			sVal.FormatVal(IsFlag(REGION_FLAG_UNDERGROUND));
 			break;
 		case RC_FLAGS:
 			sVal.FormatHex( GetRegionFlags() );
@@ -628,7 +633,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 					}
 				}
 
-				return true;
+				return false;
 			}
 		case RC_TYPE:
 			{
