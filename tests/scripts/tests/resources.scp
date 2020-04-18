@@ -17,6 +17,24 @@ arg(value,321)
 <arg(defname)>=<arg(value)>
 ShouldBeSameString("set weight by macros",32.1,<i_ankh.weight>)
 
+ShouldBeSameString("itemdef - get tag value","itemdefTagValue",<i_ankh.tag itemdefTag>)
+ShouldBeSameString("itemdef - get tag value chained","itemdefTagValue",<i_ankh.tag.itemdefTag>)
+ShouldBeSameString("itemdef - get tag value with parentheses","itemdefTagValue",<i_ankh.tag(itemdefTag)>)
+i_ankh.tag.testTag="testTagValue"
+ShouldBeSameString("itemdef - set tag value chained","testTagValue",<i_ankh.tag.testTag>)
+i_ankh.tag(testTag,"testTagValue2")
+ShouldBeSameString("itemdef - set tag value with parentheses","testTagValue2",<i_ankh.tag.testTag>)
+
+finduid(010000).newitem(i_ankh)
+ShouldBeSameString("itemdef - typedef - get tag value","itemdefTagValue",<lastnew.typedef.tag itemdefTag>)
+ShouldBeSameString("itemdef - typedef - get tag value chained","itemdefTagValue",<lastnew.typedef.tag.itemdefTag>)
+ShouldBeSameString("itemdef - typedef = get tag value with parentheses","itemdefTagValue",<lastnew.typedef.tag(itemdefTag)>)
+lastnew.typedef.tag.testTag="testTagValue"
+ShouldBeSameString("itemdef - set tag value chained","testTagValue",<lastnew.typedef.tag.testTag>)
+lastnew.typedef.tag(testTag,"testTagValue2")
+ShouldBeSameString("itemdef - set tag value with parentheses","testTagValue2",<i_ankh.tag.testTag>)
+lastnew.remove
+
 finduid(010000).newitem(i_dagger)
 ShouldBeSameString("access to item definition from item",i_dagger,"<lastnew.def.dispid>")
 lastnew.remove
@@ -41,6 +59,7 @@ CATEGORY=Decoration - Miscellaneous
 SUBSECTION=Statues
 DESCRIPTION=Ankh (w) 1/2
 DUPELIST=03,04,05
+tag.itemdefTag=itemdefTagValue
 
 [ITEMDEF 03]
 DUPEITEM=02
