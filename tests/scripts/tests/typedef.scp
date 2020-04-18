@@ -1,0 +1,36 @@
+[function test_typedef]
+serv.smsg "test_typdef\n"
+
+serv.smsg "\n"
+
+[typedef t_test_typdef]
+on=@equip
+var(t_test_typedef_called,yes)
+
+[ITEMDEF 0f51]
+DEFNAME=i_test_typedef
+TYPE=t_test_typdef
+FLIP=1
+DAM=3
+//SPEED=80
+SKILL=fencing
+REQSTR=1
+TWOHANDS=0
+LAYER=1
+//MATERIAL=20
+WEIGHT=30
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Dagger
+SKILLMAKE=BLACKSMITHING 26.7
+DUPELIST=0f52
+
+[function xxx]
+var(t_test_typedef_called,no)
+finduid(010000).newitem(i_test_typedef)
+serv.smsg <lastnew.name>
+// finduid(010000).equip(lastnew)
+lastnew.remove
+
+
+ShouldBeSameString("typedef @equip call",yes,<var(t_test_typedef_called)>)
