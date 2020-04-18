@@ -1235,8 +1235,6 @@ enum CHR_TYPE
 {
 	CHR_ACCOUNT,
 	CHR_ACT,
-	CHR_MEMORYFIND,
-	CHR_MEMORYFINDTYPE,
 	CHR_OWNER,
 	CHR_REGION,
 	CHR_WEAPON,
@@ -1247,8 +1245,6 @@ const LPCTSTR CChar::sm_szRefKeys[CHR_QTY + 1] =
 {
 	"ACCOUNT",
 	"ACT",
-	"MEMORYFIND",
-	"MEMORYFINDTYPE",
 	"OWNER",
 	"REGION",
 	"WEAPON",
@@ -1273,6 +1269,21 @@ bool CChar::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, 
 			pRef = LayerFind(static_cast<LAYER_TYPE>(expr.GetVal(pszArg)));
 			return true;
 		}
+	}
+	else if (!strnicmp(pszKey, "memoryfindtype",14))
+	{
+		pszKey += 14;
+		pRef = Memory_FindTypes(static_cast<WORD>(Exp_GetLLSingle(pszKey)));
+		SKIP_SEPARATORS(pszKey);
+		return true;
+	}
+	else if (!strnicmp(pszKey, "memoryfind",10))
+	{
+		pszKey += 10;
+		CExpression expr(pArgs, pSrc, this);
+		pRef = Memory_FindObj(static_cast<CGrayUID>(expr.GetVal(pszKey)));
+		SKIP_SEPARATORS(pszKey);
+		return true;
 	}
 
 	if (r_GetRefContainerNew(pszKey, pRef, pszRawArgs, pArgs, pSrc))
@@ -1300,14 +1311,6 @@ bool CChar::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 				if ( pszKey[-1] != '.' )	// only used as a ref
 					break;
 				pRef = m_Act_Targ.ObjFind();
-				return true;
-			case CHR_MEMORYFINDTYPE:		// find a type of memory
-				pRef = Memory_FindTypes(static_cast<WORD>(Exp_GetLLSingle(pszKey)));
-				SKIP_SEPARATORS(pszKey);
-				return true;
-			case CHR_MEMORYFIND:			// find memory related to a given UID
-				pRef = Memory_FindObj(static_cast<CGrayUID>(Exp_GetLLSingle(pszKey)));
-				SKIP_SEPARATORS(pszKey);
 				return true;
 			case CHR_OWNER:
 				pRef = NPC_PetGetOwner();

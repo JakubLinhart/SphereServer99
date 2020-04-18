@@ -1,6 +1,15 @@
 [function test_memory]
 serv.smsg "test_memory\n"
 
+ShouldBeTrue("memoryfind - existing",finduid(0D728A).memoryfind(010000) == 04004d672)
+ShouldBeEmpty("memoryfind - nonexisting",<finduid(0D728A).memoryfind(0D728A)>)
+ShouldBeSameString("memoryfind - chaining","i_memory",<finduid(0D728A).memoryfind(010000).id>)
+
+var(linkid,010000)
+ShouldBeTrue("memoryfind - existing with variable",finduid(0D728A).memoryfind(linkid) == 04004d672)
+ShouldBeEmpty("memoryfind - nonexisting with expression",<finduid(0D728A).memoryfind(linkid+1)>)
+ShouldBeEmpty("memoryfind - nonexisting with property",<finduid(0D728A).memoryfind(uid)>)
+
 serv.smsg "\n"
 
 [function test_memory_client]

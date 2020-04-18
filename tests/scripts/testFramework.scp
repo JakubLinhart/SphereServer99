@@ -13,10 +13,18 @@ else
 endif
 
 [function ShouldBeEmpty]
-if (safe strlen(<argv(0)>) > 0)
+if (strlen(<argv(1)>) > 0)
     tst_fail("<argv(0)>, '<argv(1)>' should be empty")
 else
     tst_success(<argv(0)>)
+endif
+
+[function ShouldBeTrue]
+arg(result,<eval argv(1)>)
+if <arg(result)>
+    tst_success(<argv(0)>)
+else
+    tst_fail("<argv(0)> - '<argv(1)>' is zero but it is expected to be non zero")
 endif
 
 [function ShouldNotBeEmpty]
