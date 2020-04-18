@@ -41,6 +41,7 @@ LPCTSTR const CItem::sm_szTrigName[ITRIG_QTY+1] =	// static
 	"@TIMER",		// My timer has expired.
 	"@ToolTip",
 	"@UNEQUIP",		// i have been unequipped (or try to unequip)
+	"@userClick",
 	"@userDCLICK",			// I have been dclicked.
 	NULL
 };
