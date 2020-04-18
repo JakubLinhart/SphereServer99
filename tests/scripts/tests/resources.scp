@@ -7,6 +7,10 @@ ShouldBeSameString("read skill properties","Alchemist",<skill_alchemy.title>)
 ShouldBeSameString("read skill properties - case insensitivity","Alchemist",<SKILL_ALCHEMY.title>)
 ShouldBeSameString("changed itemdef id","014EF",<i_deed_GUILDSTONE.id>)
 
+c_man.name=Man2
+ShouldBeSameString("read and write char properties",Man2,<c_man.name>)
+c_man.name=Man
+
 i_ankh.weight=123
 ShouldBeSameString("set weight",12.3,<i_ankh.weight>)
 i_ankh.weight=12.3
@@ -79,3 +83,6 @@ ID=i_deed
 [ITEMDEF 09ec]
 DEFNAME=i_jar_honey
 RESOURCES3=1 I_HONEY, 1 I_JAR
+
+[function xxx]
+i_resources_test.id=3

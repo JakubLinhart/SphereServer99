@@ -1685,7 +1685,17 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		if ( pszKey[0] == '\0' )	// just testing the ref
 		{
 			pObj = dynamic_cast<CObjBase *>(pRef);
-			sVal.FormatUid(pObj ? static_cast<DWORD>(pObj->GetUID()) : 1);
+			if (pObj)
+				sVal.FormatUid(static_cast<DWORD>(pObj->GetUID()));
+			else
+			{
+				CResourceDef* pResDef = dynamic_cast<CResourceDef*>(pRef);
+				if (pResDef)
+					sVal.Format("%s", pResDef->GetResourceName());
+				else
+					sVal.FormatUid(1);
+			}
+
 			return true;
 		}
 		return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
@@ -1722,6 +1732,16 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 								{
 									pszKey++;
 									return itemBase->r_WriteVal(pszKey, sVal, pSrc, pArgs);
+								}
+								break;
+							}
+							case RES_CHARDEF:
+							{
+								CCharBase* charBase = CCharBase::FindCharBase(static_cast<CREID_TYPE>(RES_GET_INDEX(num)));
+								if (charBase)
+								{
+									pszKey++;
+									return charBase->r_WriteVal(pszKey, sVal, pSrc, pArgs);
 								}
 								break;
 							}
@@ -2533,6 +2553,17 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 									pszKey++;
 									CScript chainedScript(pszKey, s.GetArgStr());
 									return itemBase->r_Verb(chainedScript, pSrc, pArgs);
+								}
+								break;
+							}
+							case RES_CHARDEF:
+							{
+								CCharBase* charBase = CCharBase::FindCharBase(static_cast<CREID_TYPE>(RES_GET_INDEX(num)));
+								if (charBase)
+								{
+									pszKey++;
+									CScript chainedScript(pszKey, s.GetArgStr());
+									return charBase->r_Verb(chainedScript, pSrc, pArgs);
 								}
 								break;
 							}
