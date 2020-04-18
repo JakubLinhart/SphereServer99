@@ -1,6 +1,12 @@
 [function test_memory]
 serv.smsg "test_memory\n"
 
+test_memoryfind
+test_memoryfindtype
+
+serv.smsg "\n"
+
+[function test_memoryfind]
 ShouldBeTrue("memoryfind - existing",finduid(0D728A).memoryfind(010000) == 04004d672)
 ShouldBeEmpty("memoryfind - nonexisting",<finduid(0D728A).memoryfind(0D728A)>)
 ShouldBeSameString("memoryfind - chaining","i_memory",<finduid(0D728A).memoryfind(010000).id>)
@@ -10,7 +16,10 @@ ShouldBeTrue("memoryfind - existing with variable",finduid(0D728A).memoryfind(li
 ShouldBeEmpty("memoryfind - nonexisting with expression",<finduid(0D728A).memoryfind(linkid+1)>)
 ShouldBeEmpty("memoryfind - nonexisting with property",<finduid(0D728A).memoryfind(uid)>)
 
-serv.smsg "\n"
+[function test_memoryfindtype]
+ShouldBeTrue("memoryfindtype - existing",finduid(0D728A).memoryfindtype(MEMORY_FRIEND) == 040013F6C)
+ShouldBeEmpty("memoryfindtype - nonexisting",<finduid(0D728A).memoryfindtype(MEMORY_WAR_TARG)>)
+ShouldBeSameString("memoryfindtype - chaining",i_memory,<finduid(0D728A).memoryfindtype(MEMORY_FRIEND).id>)
 
 [function test_memory_client]
 serv.smsg "test_memory_client\n"

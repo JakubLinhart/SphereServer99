@@ -27,4 +27,8 @@ layer_hand1     		 1
 layer_hand2              2
 layer_special			30	// Can be multiple of these. memories
 
+[DEFNAMES MEM_FLAGS]
+MEMORY_WAR_TARG		02000	// This is one of my current war targets.
+MEMORY_FRIEND		04000   // It is my friend, it can control me.
+
 [EOF]

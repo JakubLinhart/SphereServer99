@@ -1273,7 +1273,8 @@ bool CChar::r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, 
 	else if (!strnicmp(pszKey, "memoryfindtype",14))
 	{
 		pszKey += 14;
-		pRef = Memory_FindTypes(static_cast<WORD>(Exp_GetLLSingle(pszKey)));
+		CExpression expr(pArgs, pSrc, this);
+		pRef = Memory_FindTypes(static_cast<WORD>(expr.GetVal(pszKey)));
 		SKIP_SEPARATORS(pszKey);
 		return true;
 	}
