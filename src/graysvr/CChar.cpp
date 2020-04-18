@@ -1357,6 +1357,8 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 	if ( index < 0 )
 	{
 	do_default:
+		if (m_pClient && m_pClient->r_WriteVal(pszKey, sVal, pSrc, pArgs))
+			return true;
 		if ( m_pPlayer && m_pPlayer->r_WriteVal(this, pszKey, sVal) )
 			return true;
 		if ( m_pNPC && m_pNPC->r_WriteVal(this, pszKey, sVal) )

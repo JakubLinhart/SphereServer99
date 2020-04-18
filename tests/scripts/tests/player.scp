@@ -1,0 +1,25 @@
+[function test_player_client]
+serv.smsg("test_player_client\n")
+
+src.tag(srcTag,"srcTagValue")
+ShouldBeSameString("set/get src tag value",srcTagValue,"<src.tag(srcTag)>")
+
+src.tag(srcTag1,1)
+src.tag(srcTag2,2)
+ShouldBeSameString("eval src tag value",3,"<eval src.tag(srcTag1)+src.tag(srcTag2)>")
+
+tag(tag1,"tagValue")
+ShouldBeSameString("set/get tag value",tagValue,"<tag(tag1)>")
+
+tag(tag1,1)
+tag(tag2,2)
+ShouldBeSameString("eval tag value",3,"<eval tag(tag1)+tag(tag2)>")
+
+tag(tag1,"value without src")
+ShouldBeSameString("src.tag/tag equaility proof","value without src","<src.tag(tag1)>")
+
+ShouldBeSameString("can access account name","drzhor","<src.account.name>")
+src.targ=<src>
+ShouldBeSameString("can set targ","DrZhor",<src.targ.name>)
+
+serv.smsg("\n")

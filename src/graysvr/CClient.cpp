@@ -604,6 +604,7 @@ LPCTSTR const CClient::sm_szRefKeys[CLIR_QTY + 1] =
 bool CClient::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 {
 	ADDTOCALLSTACK("CClient::r_GetRef");
+
 	int index = FindTableHeadSorted(pszKey, sm_szRefKeys, COUNTOF(sm_szRefKeys) - 1);
 	if ( index >= 0 )
 	{
@@ -675,6 +676,26 @@ LPCTSTR const CClient::sm_szVerbKeys[CV_QTY + 1] =	// static
 bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CClient::r_WriteVal");
+	CObjBase* pObj;
+	CScriptObj* pRef = NULL;
+
+	bool fGetRef = r_GetRef(pszKey, pRef);
+	if (fGetRef)
+	{
+		if (!pRef)	// good command but bad link
+		{
+			sVal.Empty();
+			return true;
+		}
+		if (pszKey[0] == '\0')	// just testing the ref
+		{
+			pObj = dynamic_cast<CObjBase*>(pRef);
+			sVal.FormatUid(pObj ? static_cast<DWORD>(pObj->GetUID()) : 1);
+			return true;
+		}
+		return pRef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
+	}
+
 	EXC_TRY("WriteVal");
 
 	if ( !strnicmp("CTAG.", pszKey, 5) )
@@ -805,7 +826,8 @@ bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 			sVal = m_Targ_Text;
 			break;
 		default:
-			return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
+			return false;
+			//return CScriptObj::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 	}
 	return true;
 	EXC_CATCH;
