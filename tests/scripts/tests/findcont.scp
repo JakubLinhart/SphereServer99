@@ -2,31 +2,29 @@
 
 serv.smsg "test_findcont\n"
 
-ShouldBeSameString("rescount - empty",0,<finduid(010000).rescount>)
-
-finduid(010000).newitem(i_dagger)
-finduid(010000).equip(lastnew)
-
-ShouldBeSameString("rescount",1,<finduid(010000).rescount>)
-ShouldBeSameString("findcont - constant",i_dagger,<finduid(010000).findcont(0).id>)
-ShouldBeSameString("findcont - expression",i_dagger,<finduid(010000).findcont(1-1).id>)
-ShouldBeSameString("findcont - out of range","",<finduid(010000).findcont(1)>)
-
-arg(localVar1,0)
-ShouldBeSameString("findcont - local variable",i_dagger,<finduid(010000).findcont(arg(localVar1)).id>)
-
-var(globalVar1,0)
-ShouldBeSameString("findcont - global variable",i_dagger,<finduid(010000).findcont(arg(globalVar1)).id>)
-ShouldBeSameString("findcont - function call - char",i_dagger,<finduid(010000).findcont(test_findcont_return(0)).id>)
-
-lastnew.remove
+ShouldBeSameString("rescount - on char",1,<finduid(010000).rescount>)
+ShouldBeSameString("findcont - on char",i_backpack,<finduid(010000).findcont(0).id>)
 
 finduid(010000).newitem(i_backpack)
-finduid(010000).equip(<lastnew>)
+lastnew.cont=<finduid(010000).findid(i_backpack)>
 arg(backpack,<lastnew>)
+ShouldBeSameString("rescount - empty",0,<arg(backpack).rescount>)
+
 finduid(010000).newitem(i_dagger)
 lastnew.cont=<arg(backpack)>
-arg(backpack).test_findcont_chained
+
+ShouldBeSameString("rescount",1,<arg(backpack).rescount>)
+ShouldBeSameString("findcont - constant",i_dagger,<arg(backpack).findcont(0).id>)
+ShouldBeSameString("findcont - expression",i_dagger,<arg(backpack).findcont(1-1).id>)
+ShouldBeSameString("findcont - out of range","",<arg(backpack).findcont(1)>)
+
+arg(localVar1,0)
+ShouldBeSameString("findcont - local variable",i_dagger,<arg(backpack).findcont(arg(localVar1)).id>)
+
+var(globalVar1,0)
+ShouldBeSameString("findcont - global variable",i_dagger,<arg(backpack).findcont(arg(globalVar1)).id>)
+ShouldBeSameString("findcont - function call - char",i_dagger,<arg(backpack).findcont(test_findcont_return(0)).id>)
+
 lastnew.remove
 arg(backpack).remove
 
