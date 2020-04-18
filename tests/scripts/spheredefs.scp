@@ -17,6 +17,8 @@ MT_RUN			02000
 [TYPEDEFS]
 t_container			1	// any unlocked container or corpse. CContainer based
 t_weapon_fence		14 	// can't be used to chop trees. (make kindling)
+t_spell				28 	// = magic spell effect.
+t_scroll		    32 	// = magic scroll
 t_log				43 	// = make into furniture etc. lumberlogs
 t_multi				47 	// = multi part object like house or ship.
 t_sign_gump			56 	// = Things like grave stones and sign plaques
@@ -30,5 +32,26 @@ layer_special			30	// Can be multiple of these. memories
 [DEFNAMES MEM_FLAGS]
 MEMORY_WAR_TARG		02000	// This is one of my current war targets.
 MEMORY_FRIEND		04000   // It is my friend, it can control me.
+
+[DEFNAMES SOUNDS]
+snd_SPELL_CLUMSY                     479
+
+[DEFNAMES SPELL_FLAGS]
+// spell flags.
+SPELLFLAG_DIR_ANIM		00001 // evoke type cast or directed. (animation)
+SPELLFLAG_TARG_OBJ		00002 // need to target an object?
+SPELLFLAG_TARG_CHAR		00004 // needs to target a living thing
+SPELLFLAG_TARG_XYZ		00008 // can just target a location.
+SPELLFLAG_HARM			00010 // the spell is in some way harmfull.
+SPELLFLAG_FX_BOLT		00020 // effect is a bolt to the target.
+SPELLFLAG_FX_TARG		00040 // effect is at the target.
+SPELLFLAG_FIELD			00080 // create a field of stuff. (fire,poison,wall)
+SPELLFLAG_SUMMON		00100 // summon a creature.
+SPELLFLAG_GOOD			00200 // the spell is a good spell. You intend to help to receiver.
+SPELLFLAG_RESIST		00400 // allowed to resist this.	
+spellflag_noLOS			00800//nepotrebuje LOS k efektu (snad)
+spellflag_SM			01000//vyse efektu zalezi na SM, jinak na magery a rozsah EFFECT
+spellflag_evil			02000//odrazi se
+spellflag_harmcaster		04000
 
 [EOF]

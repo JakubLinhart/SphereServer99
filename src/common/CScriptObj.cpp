@@ -1759,6 +1759,20 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 								}
 								break;
 							}
+							case RES_SPELL:
+							{
+								CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
+								if (pDef)
+								{
+									CSpellDef* pSpellDef = g_Cfg.GetSpellDef(static_cast<SPELL_TYPE>(resId.GetResIndex()));
+									if (pSpellDef)
+									{
+										pszKey++;
+										return pSpellDef->r_WriteVal(pszKey, sVal, pSrc, pArgs);
+									}
+								}
+								break;
+							}
 						}
 					}
 				}
@@ -2578,6 +2592,21 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 										pszKey++;
 										CScript chainedScript(pszKey, s.GetArgStr());
 										return pSkillDef->r_Verb(chainedScript, pSrc, pArgs);
+									}
+								}
+								break;
+							}
+							case RES_SPELL:
+							{
+								CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
+								if (pDef)
+								{
+									CSpellDef* pSpellDef = g_Cfg.GetSpellDef(static_cast<SPELL_TYPE>(resId.GetResIndex()));
+									if (pSpellDef)
+									{
+										pszKey++;
+										CScript chainedScript(pszKey, s.GetArgStr());
+										return pSpellDef->r_Verb(chainedScript, pSrc, pArgs);
 									}
 								}
 								break;

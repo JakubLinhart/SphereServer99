@@ -1,0 +1,16 @@
+[Spell 1]
+// NOTE: This spell at low levels is deadly and can stop a player from running at high level an annoyance at best
+DEFNAME=s_Clumsy
+NAME=Clumsy
+SOUND=snd_SPELL_CLUMSY
+RUNES=UJ
+CASTTIME=1.0
+//RESOURCES=i_reag_blood_moss,i_reag_nightshade
+RUNEITEM=i_rune_CLUMSY
+SCROLLITEM=i_scroll_CLUMSY
+FLAGS=SPELLFLAG_DIR_ANIM|SPELLFLAG_FX_TARG|spellflag_evil|spellflag_SM|spellflag_harm//SPELLFLAG_TARG_CHAR
+EFFECTID=i_fx_curse
+EFFECT=0,10
+DURATION=2*60.0,3*60.0
+MANAUSE=5
+SKILLREQ=MAGERY 10.0
