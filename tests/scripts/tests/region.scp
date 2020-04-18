@@ -1,4 +1,4 @@
-[function test_regions]
+[function test_regions_client]
 serv.smsg("test_regions\n")
 
 ShouldBeSameString("region - name","Moina Filya","<finduid(010000).region.name>")

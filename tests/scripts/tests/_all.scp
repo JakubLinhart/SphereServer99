@@ -1,3 +1,8 @@
+[function test_all_client]
+test_memory_client
+test_regions_client
+test_typedef_client
+
 [function test_all]
 tst_start_suite
 
@@ -14,6 +19,7 @@ test_time
 
 test_assignments
 test_events
+test_typedef
 test_resources
 
 test_if
@@ -30,7 +36,6 @@ test_findlayer
 test_findcont
 test_equip
 test_defnames
-test_regions
 
 tst_end_suite
 

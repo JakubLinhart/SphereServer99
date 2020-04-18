@@ -156,4 +156,13 @@ Stealth=50.0
 RemoveTrap=50.0
 Necromancy=30.0
 
+[WorldItem i_backpack]
+Serial=040000001
+Age=052767C9
+Changer=drzhor
+Attr_MoveNever=1
+Attr_Newbie=1
+Cont=010000
+
+
 [EOF]
