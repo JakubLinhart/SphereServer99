@@ -1164,8 +1164,6 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 	static bool sm_fBrackets = false;	// allowed to span multi lines
 
 	bool escaped = false;
-	bool fQvalCondition = false;
-	TCHAR chQval = '?';
 
 	if ( (iFlags & 2) == 0 )
 		sm_fBrackets = false;
@@ -1224,21 +1222,12 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 			i += iLen;
 			continue;
 		}
-		// QVAL fix
-		if ( ch == chQval )
-		{
-			if ( !strnicmp(static_cast<LPCTSTR>(pszResponse) + iBegin + 1, "QVAL", 4) )
-				fQvalCondition = true;
-		}
 
 		if ( ch == chEnd )
 		{
 			if (escaped && ch == '>' && *(pszResponse + i - 1) != '?')
 				continue;
 
-			if ( !strnicmp(static_cast<LPCTSTR>(pszResponse) + iBegin + 1, "QVAL", 4) && !fQvalCondition )
-				continue;
-			// QVAL fix end
 			sm_fBrackets = false;
 			if (escaped)
 			{
@@ -1951,14 +1940,18 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			break;
 		case SSC_QVAL:
 		{
-			// Statement <QVAL (condition) ? option1 : option2>
-			TCHAR *ppCmd[3];
-			ppCmd[0] = const_cast<TCHAR *>(pszKey);
-			Str_Parse(ppCmd[0], &ppCmd[1], "?");
-			Str_Parse(ppCmd[1], &ppCmd[2], ":");
-			sVal = ppCmd[Exp_GetVal(ppCmd[0]) ? 1 : 2];
-			if ( sVal.IsEmpty() )
-				sVal = "";
+			TCHAR * ppArgs[3];
+			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
+			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
+			if (iQty != 3)
+				return false;
+
+			CExpression expr(pArgs, pSrc, this);
+			INT64 conditionValue = expr.GetVal(ppArgs[0]);
+			if (conditionValue)
+				sVal = ppArgs[1];
+			else
+				sVal = ppArgs[2];
 			return true;
 		}
 		case SSC_ISBIT:

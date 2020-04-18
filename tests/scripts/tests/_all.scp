@@ -16,6 +16,7 @@ test_expressions
 test_intrinsics
 test_str
 test_time
+test_qval
 
 test_assignments
 test_events
