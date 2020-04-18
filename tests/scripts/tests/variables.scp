@@ -33,11 +33,10 @@ ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<arg(lo
 arg.localVariable2="asdf"
 ShouldBeSameString("no doublequotes for doublequoted value - chained assignment",asdfasdfasdf,<arg(localVariable2)><arg(localVariable2)><arg(localVariable2)>)
 
-// globalSavedVariable has to be stored in save file
-ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
-
 arg(localVariable2,#010000)
 ShouldBeSameString("local variable chained call",DrZhor,<arg(localVariable2).name>)
+ShouldBeSameString("unspecific local variable chained call",DrZhor,<localVariable2.name>)
+
 arg(localVariable[1],#010000)
 ShouldBeSameString("indexed local variable chained call",DrZhor,<arg(localVariable[1]).name>)
 

@@ -3074,12 +3074,18 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 	ADDTOCALLSTACK("CScriptTriggerArgs::r_WriteVarVal");
 	EXC_TRY("WriteVarVal");
 
-	CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
-	if (pVar)
+	TemporaryString varName;
+	LPCTSTR pszOriginalKey = pszKey;
+	if (Str_ParseVariableName(pszKey, varName))
 	{
-		sVal = pVar->GetValStr();
-		return true;
+		CVarDefCont* pVar = m_VarsLocal.GetKey(varName, this, pSrc);
+		if (pVar)
+		{
+			sVal = pVar->GetValStr();
+			return r_WriteValChained(pszKey, sVal, pSrc, this);
+		}
 	}
+	pszKey = pszOriginalKey;
 
 	if (!strnicmp("arg(", pszKey, 4) || !strnicmp("arg.", pszKey, 4))
 	{
