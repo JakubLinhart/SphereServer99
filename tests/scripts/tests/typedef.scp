@@ -1,36 +1,46 @@
 [function test_typedef]
 serv.smsg "test_typdef\n"
 
+var(t_test_typedef_equip_called,no)
+finduid(010000).newitem(i_test_typedef)
+lastnew.events +t_test_typedef
+finduid(010000).equip(lastnew)
+lastnew.remove
+
+ShouldBeSameString("typedef attached event - @equip call",yes,<var(t_test_typedef_equip_called)>)
+
 serv.smsg "\n"
 
-[typedef t_test_typdef]
-on=@equip
-var(t_test_typedef_called,yes)
+[function test_typedef_client]
+serv.smsg "test_typdef_client\n"
 
-[ITEMDEF 0f51]
-DEFNAME=i_test_typedef
-TYPE=t_test_typdef
-FLIP=1
-DAM=3
-//SPEED=80
-SKILL=fencing
-REQSTR=1
-TWOHANDS=0
-LAYER=1
-//MATERIAL=20
+var(t_test_typedef_equip_called,no)
+newitem(i_test_typedef_client)
+lastnew.bounce
+lastnew.dclick
+lastnew.remove
+
+ShouldBeSameString("typedef event - @userdclick call",yes,<var(t_test_typedef_userdclick_called)>)
+
+serv.smsg "\n"
+
+[typedef t_test_typedef]
+on=@equip
+var(t_test_typedef_equip_called,yes)
+
+on=@userdclick
+var(t_test_typedef_userdclick_called,yes)
+return 1
+
+[ITEMDEF i_test_typedef]
+NAME=typedef dagger
+ID=i_dagger
 WEIGHT=30
 CATEGORY=Provisions - Weapons
 SUBSECTION=Knives & Daggers
 DESCRIPTION=Dagger
-SKILLMAKE=BLACKSMITHING 26.7
-DUPELIST=0f52
 
-[function xxx]
-var(t_test_typedef_called,no)
-finduid(010000).newitem(i_test_typedef)
-serv.smsg <lastnew.name>
-// finduid(010000).equip(lastnew)
-lastnew.remove
-
-
-ShouldBeSameString("typedef @equip call",yes,<var(t_test_typedef_called)>)
+[ITEMDEF i_test_typedef_client]
+NAME=typedef log
+ID=i_log
+TYPE=t_test_typedef
