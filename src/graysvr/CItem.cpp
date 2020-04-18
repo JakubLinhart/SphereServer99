@@ -11,7 +11,6 @@ LPCTSTR const CItem::sm_szTrigName[ITRIG_QTY+1] =	// static
 	"@AAAUNUSED",
 	"@AfterClick",
 	"@Buy",
-	"@Click",
 	"@ClientTooltip",	// Sending tooltip to a client
 	"@ContextMenuRequest",
 	"@ContextMenuSelect",
