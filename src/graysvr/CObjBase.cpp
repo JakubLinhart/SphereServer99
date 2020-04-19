@@ -870,14 +870,24 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 
 		case OC_CANSEE:
 		case OC_CANSEELOS:
+		case OC_SRCCANSEELOS:
 		case OC_CANSEELOSFLAG:
 		{
 			CChar *pChar = pSrc->GetChar();
 			bool fCanSee = (index == OC_CANSEE);
 			bool fUseFlags = (index == OC_CANSEELOSFLAG);
+			bool fSrcCanSee = (index == OC_SRCCANSEELOS);
 			WORD wFlags = 0;
 
-			pszKey += fCanSee ? 6 : (fUseFlags ? 13 : 9);
+			if (fCanSee)
+				pszKey += 6;
+			else if (fUseFlags)
+				pszKey += 13;
+			else if (fSrcCanSee)
+				pszKey += 12;
+			else
+				pszKey += 9;
+
 			SKIP_SEPARATORS(pszKey);
 			GETNONWHITESPACE(pszKey);
 
