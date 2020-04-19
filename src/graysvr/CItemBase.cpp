@@ -983,10 +983,7 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 		case IBC_CANUSE:
 			sVal.FormatHex(m_CanUse);
 			break;
-		case IBC_CAN_PILE:
-		case IBC_CAN_REPLICATE:
-			sVal.FormatHex(0);
-			break;
+		case IBC_CAN_DYE:
 		case IBC_DYE:
 			sVal.FormatVal((m_Can & CAN_I_DYE) ? true : false);
 			break;
@@ -996,6 +993,7 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 		case IBC_EXCEPTIONAL:
 			sVal.FormatVal((m_Can & CAN_I_EXCEPTIONAL) ? true : false);
 			break;
+		case IBC_CAN_FLIP:
 		case IBC_FLIP:
 			sVal.FormatHex((m_Can & CAN_I_FLIP) ? true : false);
 			break;
@@ -1066,9 +1064,11 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 		case IBC_LAYER:
 			sVal.FormatVal(m_layer);
 			break;
+		case IBC_CAN_REPAIR:
 		case IBC_REPAIR:
 			sVal.FormatHex((m_Can & CAN_I_REPAIR) ? true : false);
 			break;
+		case IBC_CAN_REPLICATE:
 		case IBC_REPLICATE:
 			sVal.FormatHex((m_Can & CAN_I_REPLICATE) ? true : false);
 			break;
@@ -1341,9 +1341,6 @@ bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 		case IBC_CANUSE:
 			m_CanUse = s.GetArgVal();
 			break;
-		case IBC_CAN_PILE:
-		case IBC_CAN_REPLICATE:
-			break;
 		case IBC_DISPID:
 			return false;	// can't set this
 		case IBC_DUPEITEM:
@@ -1366,6 +1363,7 @@ bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 			}
 			break;
 		}
+		case IBC_CAN_DYE:
 		case IBC_DYE:
 			if ( !s.HasArgs() )
 				m_Can |= CAN_I_DYE;
@@ -1377,6 +1375,7 @@ bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 					m_Can &= ~CAN_I_DYE;
 			}
 			break;
+		case IBC_CAN_FLIP:
 		case IBC_FLIP:
 			if ( !s.HasArgs() )
 				m_Can |= CAN_I_FLIP;
@@ -1466,6 +1465,7 @@ bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 			}
 			break;
 		case IBC_REPAIR:
+		case IBC_CAN_REPAIR:
 			if ( !s.HasArgs() )
 				m_Can |= CAN_I_REPAIR;
 			else
@@ -1476,6 +1476,7 @@ bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 					m_Can &= ~CAN_I_REPAIR;
 			}
 			break;
+		case IBC_CAN_REPLICATE:
 		case IBC_REPLICATE:
 			if ( !s.HasArgs() )
 				m_Can |= CAN_I_REPLICATE;
@@ -1516,6 +1517,7 @@ bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 		case IBC_LAYER:
 			m_layer = static_cast<BYTE>(s.GetArgVal());
 			break;
+		case IBC_CAN_PILE:
 		case IBC_PILE:
 			break;
 		case IBC_REQSTR:
