@@ -322,7 +322,7 @@ bool CSkillDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 	return false;
 }
 
-bool CSkillDef::r_LoadVal( CScript &s )
+bool CSkillDef::r_LoadVal( CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CSkillDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -393,7 +393,7 @@ bool CSkillDef::r_LoadVal( CScript &s )
 		break;
 	
 	default:
-		return( CResourceDef::r_LoadVal( s ));
+		return( CResourceDef::r_LoadVal( s, pArgs, pSrc ));
 	}
 	return true;
 	EXC_CATCH;
@@ -487,7 +487,7 @@ bool CSkillClassDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole *
 }
 
 
-bool CSkillClassDef::r_LoadVal( CScript &s )
+bool CSkillClassDef::r_LoadVal( CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CSkillClassDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -521,7 +521,7 @@ bool CSkillClassDef::r_LoadVal( CScript &s )
 				break;
 			}
 		}
-		return( CResourceDef::r_LoadVal( s ));
+		return( CResourceDef::r_LoadVal( s, pArgs, pSrc));
 	}
 	return true;
 	EXC_CATCH;
@@ -736,7 +736,7 @@ bool CSpellDef::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 
 
 
-bool CSpellDef::r_LoadVal( CScript &s )
+bool CSpellDef::r_LoadVal( CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CSpellDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -801,7 +801,7 @@ bool CSpellDef::r_LoadVal( CScript &s )
 			m_wTithingUse = static_cast<WORD>(s.GetArgVal());
 			break;
 		default:
-			return( CResourceDef::r_LoadVal( s ) );
+			return( CResourceDef::r_LoadVal( s, pArgs, pSrc) );
 	}
 	return true;
 	EXC_CATCH;
@@ -871,7 +871,7 @@ int CRandGroupDef::CalcTotalWeight()
 	return( m_iTotalWeight = iTotal );
 }
 
-bool CRandGroupDef::r_LoadVal( CScript &s )
+bool CRandGroupDef::r_LoadVal( CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CRandGroupDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1157,7 +1157,7 @@ TRIGRET_TYPE CRegionResourceDef::OnTrigger( LPCTSTR pszTrigName, CTextConsole * 
 }
 
 
-bool CRegionResourceDef::r_LoadVal( CScript & s )
+bool CRegionResourceDef::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CRegionResourceDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1182,7 +1182,7 @@ bool CRegionResourceDef::r_LoadVal( CScript & s )
 			m_Skill.Load( s.GetArgRaw() );
 			break;
 		default:
-			return( CResourceDef::r_LoadVal( s ));
+			return( CResourceDef::r_LoadVal( s, pArgs, pSrc));
 	}
 	return true;
 	EXC_CATCH;

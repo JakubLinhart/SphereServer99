@@ -76,7 +76,7 @@ public:
 		return true;
 	}
 
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 private:

@@ -36,7 +36,7 @@ public:
 
 	void r_Write(CScript &s) const;
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 private:
 	CGMPage(const CGMPage &copy);

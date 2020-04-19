@@ -1493,7 +1493,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 	return false;
 }
 
-bool CObjBase::r_LoadVal(CScript &s)
+bool CObjBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CObjBase::r_LoadVal");
 	// load the basic stuff.
@@ -1555,7 +1555,7 @@ bool CObjBase::r_LoadVal(CScript &s)
 
 	int index = FindTableSorted(s.GetKey(), sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( index < 0 )
-		return CScriptObj::r_LoadVal(s);
+		return CScriptObj::r_LoadVal(s, pArgs, pSrc);
 
 	bool fSendUpdate = false;
 
@@ -1566,7 +1566,7 @@ bool CObjBase::r_LoadVal(CScript &s)
 		case OC_DAMDIRECT:
 		case OC_EXPANSION:
 		case OC_NAMELOC:
-			SetDefNum(s.GetKey(), s.GetArgVal(), false);
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this), false);
 			fSendUpdate = true;
 			break;
 
@@ -1580,7 +1580,7 @@ bool CObjBase::r_LoadVal(CScript &s)
 		case OC_REGENVALMANA:
 		case OC_COMBATBONUSSTAT:
 		case OC_COMBATBONUSPERCENT:
-			SetDefNum(s.GetKey(), s.GetArgVal());
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 
@@ -1606,91 +1606,91 @@ bool CObjBase::r_LoadVal(CScript &s)
 			break;
 		}
 		case OC_DAMCOLD:
-			m_DamCold = static_cast<int>(s.GetArgVal());
+			m_DamCold = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_DAMENERGY:
-			m_DamEnergy = static_cast<int>(s.GetArgVal());
+			m_DamEnergy = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_DAMFIRE:
-			m_DamFire = static_cast<int>(s.GetArgVal());
+			m_DamFire = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_DAMPHYSICAL:
-			m_DamPhysical = static_cast<int>(s.GetArgVal());
+			m_DamPhysical = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_DAMPOISON:
-			m_DamPoison = static_cast<int>(s.GetArgVal());
+			m_DamPoison = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_INCREASEDAM:
-			m_DamIncrease = static_cast<int>(s.GetArgVal());
+			m_DamIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_INCREASEDEFCHANCE:
-			m_DefChanceIncrease = static_cast<int>(s.GetArgVal());
+			m_DefChanceIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_INCREASEDEFCHANCEMAX:
-			m_DefChanceIncreaseMax = static_cast<int>(s.GetArgVal());
+			m_DefChanceIncreaseMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_INCREASEHITCHANCE:
-			m_HitChanceIncrease = static_cast<int>(s.GetArgVal());
+			m_HitChanceIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_INCREASESPELLDAM:
-			m_SpellDamIncrease = static_cast<int>(s.GetArgVal());
+			m_SpellDamIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_INCREASESWINGSPEED:
-			m_SwingSpeedIncrease = static_cast<int>(s.GetArgVal());
+			m_SwingSpeedIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_FASTERCASTING:
-			m_FasterCasting = static_cast<int>(s.GetArgVal());
+			m_FasterCasting = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_FASTERCASTRECOVERY:
-			m_FasterCastRecovery = static_cast<int>(s.GetArgVal());
+			m_FasterCastRecovery = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_HITLEECHLIFE:
-			m_HitLifeLeech = static_cast<int>(s.GetArgVal());
+			m_HitLifeLeech = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_HITLEECHMANA:
-			m_HitManaLeech = static_cast<int>(s.GetArgVal());
+			m_HitManaLeech = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_HITLEECHSTAM:
-			m_HitStaminaLeech = static_cast<int>(s.GetArgVal());
+			m_HitStaminaLeech = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_HITMANADRAIN:
-			m_HitManaDrain = static_cast<int>(s.GetArgVal());
+			m_HitManaDrain = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_LOWERMANACOST:
-			m_LowerManaCost = static_cast<int>(s.GetArgVal());
+			m_LowerManaCost = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_LOWERREAGENTCOST:
-			m_LowerReagentCost = static_cast<int>(s.GetArgVal());
+			m_LowerReagentCost = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_ENHANCEPOTIONS:
-			m_EnhancePotions = static_cast<int>(s.GetArgVal());
+			m_EnhancePotions = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_NIGHTSIGHT:
-			m_NightSight = static_cast<int>(s.GetArgVal());
+			m_NightSight = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_REFLECTPHYSICALDAM:
-			m_ReflectPhysicalDamage = static_cast<int>(s.GetArgVal());
+			m_ReflectPhysicalDamage = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RANGE:
@@ -1709,10 +1709,10 @@ bool CObjBase::r_LoadVal(CScript &s)
 			break;
 		}
 		case OC_CAN:
-			m_Can = static_cast<DWORD>(s.GetArgVal());
+			m_Can = static_cast<DWORD>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case OC_MODMAXWEIGHT:
-			m_ModMaxWeight = static_cast<int>(s.GetArgVal());
+			m_ModMaxWeight = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_COLOR:
@@ -1732,14 +1732,14 @@ bool CObjBase::r_LoadVal(CScript &s)
 				m_wHue = HUE_DEFAULT;
 				break;
 			}
-			SetHue(static_cast<HUE_TYPE>(s.GetArgVal()), false, &g_Serv);	// @Dye is called from @Create/.xcolor/script command here. Since we can not receive pSrc on this r_LoadVal function ARGO/SRC will be null
+			SetHue(static_cast<HUE_TYPE>(s.GetArgVal(pArgs, pSrc, this)), false, &g_Serv);	// @Dye is called from @Create/.xcolor/script command here. Since we can not receive pSrc on this r_LoadVal function ARGO/SRC will be null
 			Update();
 			break;
 		}
 		case OC_EVENTS:
 			return m_OEvents.r_LoadVal(s, RES_EVENTS);
 		case OC_LUCK:
-			m_Luck = static_cast<int>(s.GetArgVal());
+			m_Luck = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_MAP:
@@ -1750,7 +1750,7 @@ bool CObjBase::r_LoadVal(CScript &s)
 				return false;
 
 			CPointMap pt = GetTopPoint();
-			pt.m_map = static_cast<BYTE>(s.GetArgVal());
+			pt.m_map = static_cast<BYTE>(s.GetArgVal(pArgs, pSrc, this));
 
 			// Is the desired mapplane allowed?
 			if ( !g_MapList.IsMapSupported(pt.m_map) )
@@ -1763,7 +1763,7 @@ bool CObjBase::r_LoadVal(CScript &s)
 		}
 		case OC_MODAR:
 		{
-			m_ModAr = s.GetArgVal();
+			m_ModAr = s.GetArgVal(pArgs, pSrc, this);
 			CChar *pChar = dynamic_cast<CChar *>(this);
 			if ( pChar )
 				pChar->m_defense = pChar->CalcArmorDefense();
@@ -1780,63 +1780,63 @@ bool CObjBase::r_LoadVal(CScript &s)
 		case OC_P:
 			return false;	// must set the point via the CItem or CChar methods
 		case OC_RESCOLD:
-			m_ResCold = static_cast<int>(s.GetArgVal());
+			m_ResCold = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESCOLDMAX:
-			m_ResColdMax = static_cast<int>(s.GetArgVal());
+			m_ResColdMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESENERGY:
-			m_ResEnergy = static_cast<int>(s.GetArgVal());
+			m_ResEnergy = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESENERGYMAX:
-			m_ResEnergyMax = static_cast<int>(s.GetArgVal());
+			m_ResEnergyMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESFIRE:
-			m_ResFire = static_cast<int>(s.GetArgVal());
+			m_ResFire = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESFIREMAX:
-			m_ResFireMax = static_cast<int>(s.GetArgVal());
+			m_ResFireMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESPHYSICAL:
-			m_ResPhysical = static_cast<int>(s.GetArgVal());
+			m_ResPhysical = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESPHYSICALMAX:
-			m_ResPhysicalMax = static_cast<int>(s.GetArgVal());
+			m_ResPhysicalMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESPOISON:
-			m_ResPoison = static_cast<int>(s.GetArgVal());
+			m_ResPoison = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_RESPOISONMAX:
-			m_ResPoisonMax = static_cast<int>(s.GetArgVal());
+			m_ResPoisonMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			fSendUpdate = true;
 			break;
 		case OC_TIMER:
-			SetTimeout(s.GetArgLLVal() * TICK_PER_SEC);
+			SetTimeout(s.GetArgLLVal(pArgs, pSrc, this) * TICK_PER_SEC);
 			break;
 		case OC_TIMERD:
-			SetTimeout(s.GetArgLLVal());
+			SetTimeout(s.GetArgLLVal(pArgs, pSrc, this));
 			break;
 		case OC_TIMESTAMP:
-			SetTimeStamp(s.GetArgLLVal());
+			SetTimeStamp(s.GetArgLLVal(pArgs, pSrc, this));
 			break;
 		case OC_SPAWNITEM:
 			if ( !g_Serv.IsLoading() )	// SPAWNITEM is read-only
 				return false;
-			m_uidSpawnItem = static_cast<CGrayUID>(s.GetArgVal());
+			m_uidSpawnItem = static_cast<CGrayUID>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case OC_UID:
 		case OC_SERIAL:
 			// Don't set container flags through this.
-			SetUID(s.GetArgVal(), dynamic_cast<CItem *>(this) ? true : false);
+			SetUID(s.GetArgVal(pArgs, pSrc, this), dynamic_cast<CItem *>(this) ? true : false);
 			break;
 		default:
 			return false;

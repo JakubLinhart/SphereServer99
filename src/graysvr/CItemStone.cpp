@@ -154,7 +154,7 @@ bool CStoneMember::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pA
 	int index = FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )
 	{
-		if ( r_LoadVal(s) )
+		if ( r_LoadVal(s, pArgs, pSrc) )
 			return true;
 	}
 
@@ -193,7 +193,7 @@ LPCTSTR const CStoneMember::sm_szLoadKeys[STMM_QTY + 1] =
 	NULL
 };
 
-bool CStoneMember::r_LoadVal(CScript &s)
+bool CStoneMember::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CStoneMember::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1348,7 +1348,7 @@ bool CItemStone::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	return false;
 }
 
-bool CItemStone::r_LoadVal(CScript &s)
+bool CItemStone::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemStone::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1415,7 +1415,7 @@ bool CItemStone::r_LoadVal(CScript &s)
 		return false;
 	}
 
-	return CItem::r_LoadVal(s);
+	return CItem::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

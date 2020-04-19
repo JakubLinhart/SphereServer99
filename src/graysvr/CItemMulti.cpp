@@ -420,7 +420,7 @@ bool CItemMulti::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	return CItem::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
-bool CItemMulti::r_LoadVal(CScript &s)
+bool CItemMulti::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemMulti::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -433,9 +433,9 @@ bool CItemMulti::r_LoadVal(CScript &s)
 		}
 		CScript script(s.GetKey() + 7, s.GetArgStr());
 		if (m_pRegion)
-			return m_pRegion->r_LoadVal(script);
+			return m_pRegion->r_LoadVal(script, pArgs, pSrc);
 	}
-	return CItem::r_LoadVal(s);
+	return CItem::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

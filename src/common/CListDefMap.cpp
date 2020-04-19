@@ -65,7 +65,7 @@ inline LPCTSTR CListDefContNum::GetValStr() const
 	return pszTmp;
 }
 
-bool CListDefContNum::r_LoadVal(CScript &s)
+bool CListDefContNum::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	SetValNum(s.GetArgLLVal());
 	return true;
@@ -120,7 +120,7 @@ void CListDefContStr::SetValStr( LPCTSTR pszVal )
 }
 
 
-bool CListDefContStr::r_LoadVal( CScript & s )
+bool CListDefContStr::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	SetValStr( s.GetArgStr());
 	return( true );
@@ -608,7 +608,7 @@ void CListDefCont::r_WriteSave( CScript& s )
 	}
 }
 
-bool CListDefCont::r_LoadVal( CScript& s )
+bool CListDefCont::r_LoadVal( CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CListDefCont::r_LoadVal");
 	bool fQuoted = false;

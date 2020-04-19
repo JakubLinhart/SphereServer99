@@ -1100,14 +1100,14 @@ bool CServer::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 	return CServerDef::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
-bool CServer::r_LoadVal(CScript &s)
+bool CServer::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CServer::r_LoadVal");
-	if ( g_Cfg.r_LoadVal(s) )
+	if ( g_Cfg.r_LoadVal(s, pArgs, pSrc) )
 		return true;
-	if ( g_World.r_LoadVal(s) )
+	if ( g_World.r_LoadVal(s, pArgs, pSrc) )
 		return true;
-	return CServerDef::r_LoadVal(s);
+	return CServerDef::r_LoadVal(s, pArgs, pSrc);
 }
 
 enum SV_TYPE
@@ -1237,7 +1237,7 @@ bool CServer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			{
 				SKIP_SEPARATORS(pszKey);
 				CScript script(pszKey, s.GetArgStr());
-				return pAccount->r_LoadVal(script);
+				return pAccount->r_LoadVal(script, pArgs, pSrc);
 			}
 			return false;
 		}
@@ -1254,7 +1254,7 @@ bool CServer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 
 			SKIP_SEPARATORS(pszKey);
 			CScript script(pszKey, s.GetArgStr());
-			return pGMPage->r_LoadVal(script);
+			return pGMPage->r_LoadVal(script, pArgs, pSrc);
 		}
 		else if ( !strnicmp(pszKey, "CLEARVARS", 9) )
 		{

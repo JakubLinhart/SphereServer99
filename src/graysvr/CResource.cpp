@@ -844,7 +844,7 @@ const CAssocReg CResource::sm_szLoadKeys[RC_QTY + 1] =
 	{NULL,							{ELEM_VOID,		0,														0}}
 };
 
-bool CResource::r_LoadVal(CScript &s)
+bool CResource::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CResource::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -2836,7 +2836,7 @@ bool CResource::LoadResourceSection(CScript *pScript)
 
 			while ( pScript->ReadKeyParse() )
 			{
-				if ( !pListBase->r_LoadVal(*pScript) )
+				if ( !pListBase->r_LoadVal(*pScript, NULL, &g_Serv) )
 					DEBUG_ERR(("Unable to add element '%s' to list '%s'\n", pScript->GetArgStr(), pListBase->GetKey()));
 			}
 			return true;
@@ -3833,7 +3833,7 @@ int CItemTypeDef::GetItemType() const
 	return GETINTRESOURCE(GetResourceID());
 }
 
-bool CItemTypeDef::r_LoadVal(CScript &s)
+bool CItemTypeDef::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemTypeDef::r_LoadVal");
 	EXC_TRY("LoadVal");

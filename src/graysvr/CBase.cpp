@@ -478,7 +478,7 @@ bool CBaseBaseDef::r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pA
 	return false;
 }
 
-bool CBaseBaseDef::r_LoadVal(CScript &s)
+bool CBaseBaseDef::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CBaseBaseDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -695,7 +695,7 @@ bool CBaseBaseDef::r_LoadVal(CScript &s)
 		case OBC_TEVENTS:
 			return m_TEvents.r_LoadVal(s, RES_EVENTS);
 	}
-	return CScriptObj::r_LoadVal(s);
+	return CScriptObj::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

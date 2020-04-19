@@ -475,7 +475,7 @@ public:
 	void ResetMakeValue();
 
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 public:
 	virtual void UnLink()
@@ -712,7 +712,7 @@ public:
 	bool AddComponent(TCHAR *pszArgs);
 	int GetMaxDist() const;
 
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
 
 private:

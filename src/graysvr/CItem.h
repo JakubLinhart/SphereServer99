@@ -32,6 +32,7 @@ enum ITRIG_TYPE
 	ITRIG_Sell,					// Item got sold to a vendor
 	ITRIG_Ship_Turn,
 	ITRIG_SPELLEFFECT,			// Item got hit by a spell
+	ITRIG_STACKON,
 	ITRIG_STEP,					// Item got stepped by someone
 	ITRIG_TARGON_CANCEL,
 	ITRIG_TARGON_CHAR,
@@ -739,7 +740,7 @@ public:
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_Load(CScript &s);	// Load an item from script
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);	// Execute command from script
 
@@ -987,7 +988,7 @@ public:
 	CCharBase *SetTrackID();
 
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual void r_Write(CScript &s);
 };
 
@@ -1032,7 +1033,7 @@ public:
 	virtual void DupeCopy(const CItem *pItem);
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 private:
 	CItemVendable(const CItemVendable &copy);
@@ -1219,7 +1220,7 @@ public:
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);	// some command on this object as a target
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual void DupeCopy(const CItem *pItem);
 };
 
@@ -1366,7 +1367,7 @@ public:
 
 	virtual bool IsSameType(const CObjBase *pObj) const;
 
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual void r_Write(CScript &s);
 	virtual void DupeCopy(const CItem *pItem);
@@ -1401,7 +1402,7 @@ public:
 
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual void DupeCopy(const CItem *pItem);
 };
 
@@ -1446,7 +1447,7 @@ public:
 
 	virtual void r_Write(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);	// execute command from script
 
 	WORD GetPageCount() const

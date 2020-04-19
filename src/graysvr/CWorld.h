@@ -280,7 +280,7 @@ public:
 
 	void r_Write(CScript &s);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 
 	void OnTick();

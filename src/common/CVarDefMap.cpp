@@ -81,7 +81,7 @@ inline LPCTSTR CVarDefContNum::GetValStr() const
 	return pszTmp;
 }
 
-bool CVarDefContNum::r_LoadVal( CScript & s )
+bool CVarDefContNum::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	SetValNum(s.GetArgLLVal());
 	return( true );
@@ -140,7 +140,7 @@ void CVarDefContStr::SetValStr(LPCTSTR pszVal)
 }
 
 
-bool CVarDefContStr::r_LoadVal(CScript& s)
+bool CVarDefContStr::r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	SetValStr(s.GetArgStr());
 	return(true);
@@ -200,7 +200,7 @@ inline INT64 CVarDefContRef::GetValNum() const
 }
 
 
-bool CVarDefContRef::r_LoadVal(CScript& s)
+bool CVarDefContRef::r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	return(false);
 }
@@ -875,7 +875,7 @@ void CVarDefMap::ClearKeys(LPCTSTR mask)
 	}
 }
 
-bool CVarDefMap::r_LoadVal( CScript & s )
+bool CVarDefMap::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CVarDefMap::r_LoadVal");
 	bool fQuoted = false;

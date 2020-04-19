@@ -162,7 +162,7 @@ bool CItemVendable::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSr
 	return false;
 }
 
-bool CItemVendable::r_LoadVal(CScript &s)
+bool CItemVendable::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemVendable::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -175,7 +175,7 @@ bool CItemVendable::r_LoadVal(CScript &s)
 			m_quality = static_cast<WORD>(s.GetArgVal());
 			return true;
 	}
-	return CItem::r_LoadVal(s);
+	return CItem::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

@@ -188,7 +188,7 @@ bool CSQLite::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CSQLite::r_LoadVal(CScript &s)
+bool CSQLite::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CSQLite::r_LoadVal");
 	UNREFERENCED_PARAMETER(s);

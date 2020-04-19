@@ -323,7 +323,7 @@ public:
 
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	virtual void r_Write(CScript &s);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 

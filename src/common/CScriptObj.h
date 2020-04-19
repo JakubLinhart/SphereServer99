@@ -118,7 +118,7 @@ public:
 
 	virtual bool r_GetRef(LPCTSTR& pszKey, CScriptObj*& pRef);
 	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_Load(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_WriteValChained(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
@@ -129,7 +129,7 @@ public:
 	bool r_SetVal(LPCTSTR pszKey, LPCTSTR pszVal)
 	{
 		CScript s(pszKey, pszVal);
-		return r_LoadVal(s);
+		return r_LoadVal(s, NULL, NULL);
 	}
 
 	virtual LPCTSTR GetName() const = 0;	// every object must have at least a type name
@@ -188,7 +188,7 @@ public:
 	void Init(LPCTSTR pszStr);
 
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
 	bool r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
 	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
@@ -247,7 +247,7 @@ public:
 	void FlushAndClose();
 
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
@@ -289,7 +289,7 @@ public:
 	int FixWeirdness();
 
 	virtual bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 

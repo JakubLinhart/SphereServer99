@@ -92,7 +92,7 @@ public:
 	}
 	UINT64 GetArgFlag(UINT64 uStart, UINT64 uMask);
 	long long GetArgLLVal(CScriptTriggerArgs *pArgs = NULL, CTextConsole *pSrc = NULL, CScriptObj* pObj = NULL);
-	long GetArgVal();
+	long GetArgVal(CScriptTriggerArgs* pArgs = NULL, CTextConsole* pSrc = NULL, CScriptObj* pObj = NULL);
 	long GetArgRange();
 };
 

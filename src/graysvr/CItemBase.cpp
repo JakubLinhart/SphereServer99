@@ -144,7 +144,7 @@ CItemBase *CItemBase::FindItemBase(ITEMID_TYPE id)	// static
 		if ( s.IsKeyHead("ON", 2) )		// trigger scripting marks the end
 			break;
 		if ( s.IsKey("ID") || s.IsKey("TYPE") )		// these are required to make CItemBaseMulti::MakeMultiRegion work properly
-			pBase->r_LoadVal(s);
+			pBase->r_LoadVal(s, NULL, &g_Serv);
 	}
 
 	// Return to the start of the item script
@@ -158,7 +158,7 @@ CItemBase *CItemBase::FindItemBase(ITEMID_TYPE id)	// static
 		if ( s.IsKeyHead("ON", 2) )		// trigger scripting marks the end
 			break;
 
-		pBase->r_LoadVal(s);
+		pBase->r_LoadVal(s, NULL, &g_Serv);
 	}
 	return pBase;
 }
@@ -1175,7 +1175,7 @@ bool CItemBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 	return false;
 }
 
-bool CItemBase::r_LoadVal(CScript &s)
+bool CItemBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemBase::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1563,7 +1563,7 @@ bool CItemBase::r_LoadVal(CScript &s)
 			m_weight = static_cast<WORD>(s.GetArgVal());
 			break;
 		default:
-			return CBaseBaseDef::r_LoadVal(s);
+			return CBaseBaseDef::r_LoadVal(s, pArgs, pSrc);
 	}
 	return true;
 	EXC_CATCH;
@@ -1779,7 +1779,7 @@ LPCTSTR const CItemBaseMulti::sm_szLoadKeys[] =
 	NULL
 };
 
-bool CItemBaseMulti::r_LoadVal(CScript &s)
+bool CItemBaseMulti::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemBaseMulti::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1812,7 +1812,7 @@ bool CItemBaseMulti::r_LoadVal(CScript &s)
 		case MLC_TSPEECH:
 			return m_Speech.r_LoadVal(s, RES_SPEECH);
 		default:
-			return CItemBase::r_LoadVal(s);
+			return CItemBase::r_LoadVal(s, pArgs, pSrc);
 	}
 	return true;
 	EXC_CATCH;

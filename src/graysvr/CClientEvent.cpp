@@ -350,12 +350,12 @@ void CClient::Event_Item_Drop(CItem *pItem, CPointMap pt, CGrayUID uidOn, BYTE g
 				return Event_Item_Drop_Fail(pItem);
 		}
 
-		if ( IsTrigUsed(TRIGGER_DROPON_ITEM) || IsTrigUsed(TRIGGER_ITEMDROPON_ITEM) )
+		if ( IsTrigUsed(TRIGGER_DROPON_ITEM) || IsTrigUsed(TRIGGER_ITEMDROPON_ITEM))
 		{
 			CObjBase *pOldObj = pItem->GetParentObj();
 
 			CScriptTriggerArgs Args(pObjOn);
-			if ( pItem->OnTrigger(ITRIG_DROPON_ITEM, m_pChar, &Args) == TRIGRET_RET_TRUE )
+			if (pItem->OnTrigger(ITRIG_DROPON_ITEM, m_pChar, &Args) == TRIGRET_RET_TRUE)
 				return Event_Item_Drop_Fail(pItem);
 
 			if ( pOldObj != pItem->GetParentObj() )		// the trigger moved the item to another location
@@ -365,10 +365,12 @@ void CClient::Event_Item_Drop(CItem *pItem, CPointMap pt, CGrayUID uidOn, BYTE g
 		CItem *pItemOn = dynamic_cast<CItem *>(pObjOn);
 		if ( pItemOn )
 		{
-			if ( IsTrigUsed(TRIGGER_DROPON_SELF) || IsTrigUsed(TRIGGER_ITEMDROPON_SELF) )
+			if ( IsTrigUsed(TRIGGER_DROPON_SELF) || IsTrigUsed(TRIGGER_ITEMDROPON_SELF) || IsTrigUsed(TRIGGER_STACKON))
 			{
 				CScriptTriggerArgs Args(pItem);
 				if ( pItemOn->OnTrigger(ITRIG_DROPON_SELF, m_pChar, &Args) == TRIGRET_RET_TRUE )
+					return Event_Item_Drop_Fail(pItem);
+				if (pItemOn->OnTrigger(ITRIG_STACKON, m_pChar, &Args) == TRIGRET_RET_TRUE)
 					return Event_Item_Drop_Fail(pItem);
 			}
 

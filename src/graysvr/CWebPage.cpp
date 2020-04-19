@@ -96,7 +96,7 @@ bool CWebPageDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc,
 	return false;
 }
 
-bool CWebPageDef::r_LoadVal(CScript &s) // Load an item Script
+bool CWebPageDef::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc) // Load an item Script
 {
 	ADDTOCALLSTACK("CWebPageDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -119,7 +119,7 @@ bool CWebPageDef::r_LoadVal(CScript &s) // Load an item Script
 				m_type = WEBPAGE_TEMPLATE;
 			break;
 		default:
-			return CScriptObj::r_LoadVal(s);
+			return CScriptObj::r_LoadVal(s, pArgs, pSrc);
 	}
 	return true;
 	EXC_CATCH;

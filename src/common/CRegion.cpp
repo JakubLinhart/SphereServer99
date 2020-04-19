@@ -669,7 +669,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 	return false;
 }
 
-bool CRegionBase::r_LoadVal( CScript & s )
+bool CRegionBase::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CRegionBase::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1224,7 +1224,7 @@ bool CRegionWorld::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * p
 	return false;
 }
 
-bool CRegionWorld::r_LoadVal( CScript &s )
+bool CRegionWorld::r_LoadVal( CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CRegionWorld::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1240,7 +1240,7 @@ bool CRegionWorld::r_LoadVal( CScript &s )
 		default:
 			break;
 	}
-	return(CRegionBase::r_LoadVal(s));
+	return(CRegionBase::r_LoadVal(s, pArgs, pSrc));
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

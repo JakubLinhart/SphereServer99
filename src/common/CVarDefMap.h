@@ -51,7 +51,7 @@ public:
 	void SetValNum( INT64 iVal );
 	LPCTSTR GetValStr() const;
 
-	bool r_LoadVal( CScript & s );
+	bool r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc );
 
 	virtual CVarDefCont * CopySelf() const;
@@ -78,7 +78,7 @@ public:
 	void SetValStr(LPCTSTR pszVal);
 	INT64 GetValNum() const;
 
-	bool r_LoadVal(CScript& s);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pKey, CGString& sVal, CTextConsole* pSrc);
 
 	virtual CVarDefCont* CopySelf() const;
@@ -106,7 +106,7 @@ public:
 
 	LPCTSTR GetValStr() const;
 	INT64 GetValNum() const;
-	bool r_LoadVal(CScript& s);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pKey, CGString& sVal, CTextConsole* pSrc);
 
 	virtual CVarDefCont* CopySelf() const;
@@ -195,7 +195,7 @@ public:
 	void ClearKeys(LPCTSTR mask = NULL);
 	void DeleteKey( LPCTSTR key );
 
-	bool r_LoadVal( CScript & s );
+	bool r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	void r_WritePrefix( CScript & s, LPCTSTR pszPrefix = NULL, LPCTSTR pszKeyExclude = NULL );
 };
 

@@ -1672,7 +1672,7 @@ bool CWorld::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScr
 	return false;
 }
 
-bool CWorld::r_LoadVal(CScript &s)
+bool CWorld::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CWorld::r_LoadVal");
 	EXC_TRY("LoadVal");

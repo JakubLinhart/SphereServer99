@@ -33,6 +33,7 @@ LPCTSTR const CItem::sm_szTrigName[ITRIG_QTY+1] =	// static
 	"@SELL",
 	"@Ship_Turn",
 	"@SpellEffect",		// cast some spell on me.
+	"@STACKON",
 	"@STEP",			// I have been walked on.
 	"@TARGON_CANCEL",
 	"@TARGON_CHAR",
@@ -464,7 +465,7 @@ CItem * CItem::ReadTemplate( CResourceLock & s, CObjBase * pCont ) // static
 
 		if ( pItem != NULL && fItemAttrib )
 		{
-			pItem->r_LoadVal( s );
+			pItem->r_LoadVal( s, NULL, &g_Serv);
 		}
 	}
 
@@ -2336,8 +2337,9 @@ bool CItem::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc, CS
 	return false;
 }
 
-bool CItem::r_LoadVal( CScript & s ) // Load an item Script
+bool CItem::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc) // Load an item Script
 {
+	CExpression expr(pArgs, pSrc, this);
 	ADDTOCALLSTACK("CItem::r_LoadVal");
 	EXC_TRY("LoadVal");
 	switch ( FindTableSorted( s.GetKey(), sm_szLoadKeys, COUNTOF( sm_szLoadKeys )-1 ))
@@ -2379,13 +2381,13 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		case IC_DOOROPENSOUND:
 		case IC_PORTCULISSOUND:
 		case IC_DOOROPENID:
-			SetDefNum(s.GetKey(),s.GetArgVal(), false);
+			SetDefNum(s.GetKey(),s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_QUALITY:
 			break;
 		case IC_USESMAX:
 		{
-			INT64 amount = s.GetArgLLVal();
+			INT64 amount = s.GetArgLLVal(pArgs, pSrc, this);
 			SetDefNum(s.GetKey(), amount, false);
 			CVarDefCont * pVar = GetDefKey("UsesCur", true);
 			if (!pVar)
@@ -2393,7 +2395,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		}	break;
 
 		case IC_MAXAMOUNT:
-			if (!SetMaxAmount(static_cast<WORD>(s.GetArgVal())))
+			if (!SetMaxAmount(static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this))))
 				return false;
 			break;
 		case IC_ADDCIRCLE:
@@ -2421,149 +2423,149 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		case IC_ADDSPELL:
 			// Add this spell to the i_spellbook.
 			{
-				SPELL_TYPE spell = static_cast<SPELL_TYPE>(RES_GET_INDEX(s.GetArgVal()));
+				SPELL_TYPE spell = static_cast<SPELL_TYPE>(RES_GET_INDEX(s.GetArgVal(pArgs, pSrc, this)));
 				if (AddSpellbookSpell(spell, false))
 					return(false);
 				return(true);
 			}
 		case IC_AMOUNT:
-			SetAmountUpdate(static_cast<WORD>(s.GetArgVal()));
+			SetAmountUpdate(static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this)));
 			return true;
 		case IC_ATTR:
-			m_Attr = static_cast<DWORD>(s.GetArgVal());
+			m_Attr = static_cast<DWORD>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_ATTR_BLESSED:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_BLESSED : m_Attr & ~ATTR_BLESSED;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_BLESSED : m_Attr & ~ATTR_BLESSED;
 			break;
 		case IC_ATTR_BLESSED2:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_BLESSED2 : m_Attr & ~ATTR_BLESSED2;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_BLESSED2 : m_Attr & ~ATTR_BLESSED2;
 			break;
 		case IC_ATTR_CANDECAY:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_CANDECAY : m_Attr & ~ATTR_CANDECAY;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_CANDECAY : m_Attr & ~ATTR_CANDECAY;
 			break;
 		case IC_ATTR_CURSED:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_CURSED : m_Attr & ~ATTR_CURSED;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_CURSED : m_Attr & ~ATTR_CURSED;
 			break;
 		case IC_ATTR_CURSED2:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_CURSED2 : m_Attr & ~ATTR_CURSED2;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_CURSED2 : m_Attr & ~ATTR_CURSED2;
 			break;
 		case IC_ATTR_DECAY:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_DECAY : m_Attr & ~ATTR_DECAY;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_DECAY : m_Attr & ~ATTR_DECAY;
 			break;
 		case IC_ATTR_FORSALE:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_FORSALE : m_Attr & ~ATTR_FORSALE;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_FORSALE : m_Attr & ~ATTR_FORSALE;
 			break;
 		case IC_ATTR_IDENTIFIED:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_IDENTIFIED : m_Attr & ~ATTR_IDENTIFIED;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_IDENTIFIED : m_Attr & ~ATTR_IDENTIFIED;
 			break;
 		case IC_ATTR_INVIS:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_INVIS : m_Attr & ~ATTR_INVIS;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_INVIS : m_Attr & ~ATTR_INVIS;
 			break;
 		case IC_ATTR_MAGIC:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_MAGIC : m_Attr & ~ATTR_MAGIC;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_MAGIC : m_Attr & ~ATTR_MAGIC;
 			break;
 		case IC_ATTR_MOVEALWAYS:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_MOVE_ALWAYS : m_Attr & ~ATTR_MOVE_ALWAYS;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_MOVE_ALWAYS : m_Attr & ~ATTR_MOVE_ALWAYS;
 			break;
 		case IC_ATTR_MOVENEVER:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_MOVE_NEVER : m_Attr & ~ATTR_MOVE_NEVER;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_MOVE_NEVER : m_Attr & ~ATTR_MOVE_NEVER;
 			break;
 		case IC_ATTR_NEWBIE:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_NEWBIE : m_Attr & ~ATTR_NEWBIE;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_NEWBIE : m_Attr & ~ATTR_NEWBIE;
 			break;
 		case IC_ATTR_OWNED:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_OWNED : m_Attr & ~ATTR_OWNED;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_OWNED : m_Attr & ~ATTR_OWNED;
 			break;
 		case IC_ATTR_STATIC:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_STATIC : m_Attr & ~ATTR_STATIC;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_STATIC : m_Attr & ~ATTR_STATIC;
 			break;
 		case IC_ATTR_STOLEN:
-			m_Attr = s.GetArgVal() ? m_Attr | ATTR_STOLEN : m_Attr & ~ATTR_STOLEN;
+			m_Attr = s.GetArgVal(pArgs, pSrc, this) ? m_Attr | ATTR_STOLEN : m_Attr & ~ATTR_STOLEN;
 			break;
 		case IC_FRIEND:
 		case IC_COOWNER:
 			break;
 		case IC_BASEWEIGHT:
-			m_weight = static_cast<WORD>(s.GetArgVal());
+			m_weight = static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this));
 			return true;
 		case IC_BONUSSTR:
-			m_StrengthBonus = static_cast<int>(s.GetArgVal());
+			m_StrengthBonus = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_BONUSDEX:
-			m_DexterityBonus = static_cast<int>(s.GetArgVal());
+			m_DexterityBonus = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_BONUSINT:
-			m_IntelligenceBonus = static_cast<int>(s.GetArgVal());
+			m_IntelligenceBonus = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_BONUSHITS:
-			m_HitpointIncrease = static_cast<int>(s.GetArgVal());
+			m_HitpointIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_BONUSSTAM:
-			m_StaminaIncrease = static_cast<int>(s.GetArgVal());
+			m_StaminaIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_BONUSMANA:
-			m_ManaIncrease = static_cast<int>(s.GetArgVal());
+			m_ManaIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MAGEARMOR:
-			m_MageArmor = static_cast<int>(s.GetArgVal());
+			m_MageArmor = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MAGEWEAPON:
-			m_MageWeapon = static_cast<int>(s.GetArgVal());
+			m_MageWeapon = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_RARITY:
-			m_ArtifactRarity = static_cast<int>(s.GetArgVal());
+			m_ArtifactRarity = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_SELFREPAIR:
-			m_SelfRepair = static_cast<int>(s.GetArgVal());
+			m_SelfRepair = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_SPELLCHANNELING:
-			m_SpellChanneling = static_cast<int>(s.GetArgVal());
+			m_SpellChanneling = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_LOWERREQ:
-			m_LowerRequirements = static_cast<int>(s.GetArgVal());
+			m_LowerRequirements = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_USEBESTWEAPONSKILL:
-			m_UseBestWeaponSkill = static_cast<int>(s.GetArgVal());
+			m_UseBestWeaponSkill = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITAREAPHYSICAL:
-			m_HitPhysicalArea = static_cast<int>(s.GetArgVal());
+			m_HitPhysicalArea = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITAREAFIRE:
-			m_HitFireArea = static_cast<int>(s.GetArgVal());
+			m_HitFireArea = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITAREACOLD:
-			m_HitColdArea = static_cast<int>(s.GetArgVal());
+			m_HitColdArea = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITAREAPOISON:
-			m_HitPoisonArea = static_cast<int>(s.GetArgVal());
+			m_HitPoisonArea = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITAREAENERGY:
-			m_HitEnergyArea = static_cast<int>(s.GetArgVal());
+			m_HitEnergyArea = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITDISPEL:
-			m_HitDispel = static_cast<int>(s.GetArgVal());
+			m_HitDispel = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITFIREBALL:
-			m_HitFireball = static_cast<int>(s.GetArgVal());
+			m_HitFireball = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITHARM:
-			m_HitHarm = static_cast<int>(s.GetArgVal());
+			m_HitHarm = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITLIGHTNING:
-			m_HitLightning = static_cast<int>(s.GetArgVal());
+			m_HitLightning = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_HITMAGICARROW:
-			m_HitMagicArrow = static_cast<int>(s.GetArgVal());
+			m_HitMagicArrow = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_CAN:
-			m_Can = static_cast<DWORD>(s.GetArgVal());
+			m_Can = static_cast<DWORD>(s.GetArgVal(pArgs, pSrc, this));
 			return true;
 		case IC_CANUSE:
-			m_CanUse = static_cast<DWORD>(s.GetArgVal());
+			m_CanUse = static_cast<DWORD>(s.GetArgVal(pArgs, pSrc, this));
 			return true;
 		case IC_CONT:	// needs special processing.
 			{
-				bool normcont = LoadSetContainer(s.GetArgVal(), static_cast<LAYER_TYPE>(GetTopZ()));
+				bool normcont = LoadSetContainer(s.GetArgVal(pArgs, pSrc, this), static_cast<LAYER_TYPE>(GetTopZ()));
 				if ( !normcont && (g_Serv.m_iModeCode == SERVMODE_Loading) )
 					Delete();	// since the item is no longer in container, it should be deleted
 				return normcont;
@@ -2571,7 +2573,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 		case IC_CONTGRID:
 			if ( !IsItemInContainer() )
 				return false;
-			SetContainedGridIndex(static_cast<BYTE>(s.GetArgVal()));
+			SetContainedGridIndex(static_cast<BYTE>(s.GetArgVal(pArgs, pSrc, this)));
 			return true;
 		case IC_CONTP:
 			{
@@ -2622,7 +2624,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			{
 				int maxHits = HIWORD(m_itNormal.m_more1);
 				if ( maxHits == 0 )
-					maxHits = s.GetArgVal();
+					maxHits = s.GetArgVal(pArgs, pSrc, this);
 				m_itNormal.m_more1 = MAKEDWORD(s.GetArgVal(), maxHits);
 			}
 			break;
@@ -2632,7 +2634,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 				DEBUG_ERR(("Can't set hitpoints on non-weapon/armor item '%s'\n", GetResourceName()));
 				return false;
 			}
-			m_itArmor.m_Hits_Cur = m_itArmor.m_Hits_Max = static_cast<WORD>(s.GetArgVal());
+			m_itArmor.m_Hits_Cur = m_itArmor.m_Hits_Max = static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_ID:
 			return SetID(static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType( RES_ITEMDEF, s.GetArgStr())));
@@ -2641,21 +2643,21 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			if ( !IsDisconnected() && !IsItemInContainer() && !IsItemEquipped())
 				return false;
 
-			SetTopZ(static_cast<signed char>(s.GetArgVal()));
+			SetTopZ(static_cast<signed char>(s.GetArgVal(pArgs, pSrc, this)));
 			return true;
 		case IC_LINK:
-			m_uidLink = s.GetArgVal();
+			m_uidLink = s.GetArgVal(pArgs, pSrc, this);
 			return true;
 
 		case IC_FRUIT:	// m_more2
 			m_itCrop.m_ReapFruitID = static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType( RES_ITEMDEF, s.GetArgStr()));
 			return true;
 		case IC_MAXHITS:
-			m_itNormal.m_more1 = MAKEDWORD(LOWORD(m_itNormal.m_more1), s.GetArgVal());
+			m_itNormal.m_more1 = MAKEDWORD(LOWORD(m_itNormal.m_more1), s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MORE:
 		case IC_MORE1:
-			m_itNormal.m_more1 = s.GetArgVal();
+			m_itNormal.m_more1 = s.GetArgVal(pArgs, pSrc, this);
 			if ( !g_Serv.IsLoading( )
 				&& ( IsType( IT_SPAWN_CHAR ) || IsType( IT_SPAWN_ITEM ) ) )
 			{
@@ -2670,24 +2672,24 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			}
 			return true;
 		case IC_MORE1h:
-			m_itNormal.m_more1 = MAKEDWORD( LOWORD(m_itNormal.m_more1), s.GetArgVal());
+			m_itNormal.m_more1 = MAKEDWORD( LOWORD(m_itNormal.m_more1), s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MORE1l:
-			m_itNormal.m_more1 = MAKEDWORD( s.GetArgVal(), HIWORD(m_itNormal.m_more1));
+			m_itNormal.m_more1 = MAKEDWORD( s.GetArgVal(pArgs, pSrc, this), HIWORD(m_itNormal.m_more1));
 			break;
 		case IC_MORE2:
-			m_itNormal.m_more2 = s.GetArgVal();
+			m_itNormal.m_more2 = s.GetArgVal(pArgs, pSrc, this);
 			if ( IsType(IT_SPAWN_ITEM) )
 				m_itSpawnItem.m_pile = minimum(WORD_MAX, m_itNormal.m_more2);
 			return true;
 		case IC_MORE2h:
-			m_itNormal.m_more2 = MAKEDWORD( LOWORD(m_itNormal.m_more2), s.GetArgVal());
+			m_itNormal.m_more2 = MAKEDWORD( LOWORD(m_itNormal.m_more2), s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MORE2l:
-			m_itNormal.m_more2 = MAKEDWORD( s.GetArgVal(), HIWORD(m_itNormal.m_more2));
+			m_itNormal.m_more2 = MAKEDWORD( s.GetArgVal(pArgs, pSrc, this), HIWORD(m_itNormal.m_more2));
 			break;
 		case IC_MOREM:
-			m_itNormal.m_morep.m_map = static_cast<BYTE>(s.GetArgVal());
+			m_itNormal.m_morep.m_map = static_cast<BYTE>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MOREP:
 			{
@@ -2728,13 +2730,13 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			}
 			break;
 		case IC_MOREX:
-			m_itNormal.m_morep.m_x = static_cast<signed short>(s.GetArgVal());
+			m_itNormal.m_morep.m_x = static_cast<signed short>(s.GetArgVal(pArgs, pSrc, this));
 			return true;
 		case IC_MOREY:
-			m_itNormal.m_morep.m_y = static_cast<signed short>(s.GetArgVal());
+			m_itNormal.m_morep.m_y = static_cast<signed short>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_MOREZ:
-			m_itNormal.m_morep.m_z = static_cast<signed char>(s.GetArgVal());
+			m_itNormal.m_morep.m_z = static_cast<signed char>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case IC_P_X:
 		{
@@ -2750,7 +2752,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			if (!IsDisconnected() && !IsItemInContainer())
 				return false;
 			CPointMap pt = this->GetTopPoint();
-			pt.m_y = s.GetArgVal();
+			pt.m_y = s.GetArgVal(pArgs, pSrc, this);
 			SetUnkPoint(pt);
 			break;
 		}
@@ -2759,7 +2761,7 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			if (!IsDisconnected() && !IsItemInContainer())
 				return false;
 			CPointMap pt = this->GetTopPoint();
-			pt.m_z = s.GetArgVal();
+			pt.m_z = s.GetArgVal(pArgs, pSrc, this);
 			SetUnkPoint(pt);
 			break;
 		}
@@ -2779,10 +2781,10 @@ bool CItem::r_LoadVal( CScript & s ) // Load an item Script
 			SetType(static_cast<IT_TYPE>(g_Cfg.ResourceGetIndexType( RES_TYPEDEF, s.GetArgStr())));
 			break;
 		case IC_WEIGHTREDUCTION:
-			m_WeightReduction = static_cast<int>(s.GetArgVal());
+			m_WeightReduction = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		default:
-			return( CObjBase::r_LoadVal( s ));
+			return( CObjBase::r_LoadVal( s, pArgs, pSrc));
 	}
 	UpdatePropertyFlag();
 	return true;

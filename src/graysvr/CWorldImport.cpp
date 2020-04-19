@@ -328,7 +328,7 @@ bool CImportFile::ImportSCP( CScript & s, WORD wModeFlags )
 			}
 			else
 			{
-				m_pCurObj->r_LoadVal( s );
+				m_pCurObj->r_LoadVal( s, NULL, &g_Serv);
 			}
 		}
 	}

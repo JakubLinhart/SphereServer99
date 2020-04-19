@@ -1161,7 +1161,7 @@ bool CItemMultiCustom::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *
 	return false;
 }
 
-bool CItemMultiCustom::r_LoadVal(CScript &s)
+bool CItemMultiCustom::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemMultiCustom::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1185,7 +1185,7 @@ bool CItemMultiCustom::r_LoadVal(CScript &s)
 			return true;
 		}
 	}
-	return CItemMulti::r_LoadVal(s);
+	return CItemMulti::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;

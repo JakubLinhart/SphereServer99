@@ -110,7 +110,7 @@ bool CGMPage::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc)
 	return false;
 }
 
-bool CGMPage::r_LoadVal(CScript &s)
+bool CGMPage::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CGMPage::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -141,7 +141,7 @@ bool CGMPage::r_LoadVal(CScript &s)
 			m_time = CServTime::GetCurrentTime() - (s.GetArgLLVal() * TICK_PER_SEC);
 			break;
 		default:
-			return CScriptObj::r_LoadVal(s);
+			return CScriptObj::r_LoadVal(s, pArgs, pSrc);
 	}
 	return true;
 	EXC_CATCH;

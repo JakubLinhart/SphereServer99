@@ -838,7 +838,7 @@ bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 	return false;
 }
 
-bool CClient::r_LoadVal(CScript &s)
+bool CClient::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CClient::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1650,7 +1650,7 @@ bool CClient::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs) 
 			addWebLaunch(s.GetArgStr());
 			break;
 		default:
-			if ( r_LoadVal(s) )
+			if ( r_LoadVal(s, pArgs, pSrc) )
 			{
 				CGString sVal;
 				if ( r_WriteVal(s.GetKey(), sVal, pSrc, pArgs) )

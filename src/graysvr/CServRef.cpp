@@ -188,7 +188,7 @@ LPCTSTR const CServerDef::sm_szLoadKeys[SC_QTY + 1] =	// static
 	NULL
 };
 
-bool CServerDef::r_LoadVal(CScript &s)
+bool CServerDef::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CServerDef::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -236,7 +236,7 @@ bool CServerDef::r_LoadVal(CScript &s)
 		case SC_ITEMS:
 			break;	// read-only
 		default:
-			return CScriptObj::r_LoadVal(s);
+			return CScriptObj::r_LoadVal(s, pArgs, pSrc);
 	}
 	return true;
 	EXC_CATCH;

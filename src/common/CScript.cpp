@@ -70,20 +70,28 @@ long long CScriptKey::GetArgLLVal(CScriptTriggerArgs* pArgs, CTextConsole* pSrc,
 		return Exp_GetLLVal(m_pszArg);
 }
 
-long CScriptKey::GetArgVal()
+long CScriptKey::GetArgVal(CScriptTriggerArgs* pArgs, CTextConsole* pSrc, CScriptObj* pObj)
 {
 	ADDTOCALLSTACK("CScriptKey::GetArgVal");
 	ASSERT(m_pszKey);
 	ASSERT(m_pszArg);
 
-	TCHAR* pArgs = m_pszArg;
-	if (*pArgs == '"')
+	TCHAR* pStrArgs = m_pszArg;
+	if (*pStrArgs == '"')
 	{
-		pArgs++;
-		pArgs = Str_TrimEnd(pArgs, "\"");
+		pStrArgs++;
+		pStrArgs = Str_TrimEnd(pStrArgs, "\"");
 	}
 
-	return Exp_GetVal(pArgs);
+	if (pArgs != NULL || pObj != NULL)
+	{
+		CExpression expr(pArgs, pSrc, pObj);
+		if (*(m_pszArg - 1) == '(')
+			m_pszArg--;
+		return expr.GetVal(m_pszArg);
+	}
+	else
+		return Exp_GetVal(pStrArgs);
 }
 
 long CScriptKey::GetArgRange()

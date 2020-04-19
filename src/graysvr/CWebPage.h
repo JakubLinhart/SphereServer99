@@ -67,7 +67,7 @@ public:
 	}
 
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);	// some command on this object as a target
 
 private:

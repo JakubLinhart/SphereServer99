@@ -122,7 +122,7 @@ bool CSector::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 	return false;
 }
 
-bool CSector::r_LoadVal(CScript &s)
+bool CSector::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CSector::r_LoadVal");
 	EXC_TRY("LoadVal");

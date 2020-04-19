@@ -1255,7 +1255,7 @@ bool CItemShip::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pSrc
 	return false;
 }
 
-bool CItemShip::r_LoadVal( CScript & s  )
+bool CItemShip::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemShip::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1333,7 +1333,7 @@ bool CItemShip::r_LoadVal( CScript & s  )
 			return true;
 		}
 		default:
-			return CItemMulti::r_LoadVal(s);
+			return CItemMulti::r_LoadVal(s, pArgs, pSrc);
 	}
 	EXC_CATCH;
 

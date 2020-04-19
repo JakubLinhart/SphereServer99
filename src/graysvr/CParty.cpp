@@ -569,7 +569,7 @@ bool CPartyDef::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CPartyDef::r_LoadVal(CScript &s)
+bool CPartyDef::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CPartyDef::r_LoadVal");
 	EXC_TRY("LoadVal");

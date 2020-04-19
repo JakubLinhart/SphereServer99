@@ -308,7 +308,7 @@ bool CDataBase::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CDataBase::r_LoadVal(CScript &s)
+bool CDataBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CDataBase::r_LoadVal");
 	UNREFERENCED_PARAMETER(s);

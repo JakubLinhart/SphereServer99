@@ -1047,7 +1047,7 @@ bool CChar::ReadScript(CResourceLock &s, bool fVendor)
 			if ( fFullInterp )	// modify the item
 				pItem->r_Verb(s, &g_Serv, NULL);
 			else
-				pItem->r_LoadVal(s);
+				pItem->r_LoadVal(s, NULL, &g_Serv);
 		}
 		else
 		{
@@ -2282,7 +2282,7 @@ void CChar::SetFlag(long long val)
 	NotoSave_Update();
 }
 
-bool CChar::r_LoadVal(CScript &s)
+bool CChar::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CChar::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -2301,7 +2301,7 @@ bool CChar::r_LoadVal(CScript &s)
 		STAT_TYPE stat = g_Cfg.FindStatKey(pszKey);
 		if ( stat != STAT_NONE )
 		{
-			Stat_SetBase(stat, static_cast<int>(s.GetArgVal()));
+			Stat_SetBase(stat, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			return true;
 		}
 		if ( !strnicmp(pszKey, "O", 1) )
@@ -2309,7 +2309,7 @@ bool CChar::r_LoadVal(CScript &s)
 			stat = g_Cfg.FindStatKey(pszKey + 1);
 			if ( stat != STAT_NONE )
 			{
-				Stat_SetBase(stat, static_cast<int>(s.GetArgVal()));
+				Stat_SetBase(stat, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 				return true;
 			}
 		}
@@ -2318,7 +2318,7 @@ bool CChar::r_LoadVal(CScript &s)
 			stat = g_Cfg.FindStatKey(pszKey + 3);
 			if ( stat != STAT_NONE )
 			{
-				Stat_SetMod(stat, static_cast<int>(s.GetArgVal()));
+				Stat_SetMod(stat, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 				return true;
 			}
 		}
@@ -2327,11 +2327,11 @@ bool CChar::r_LoadVal(CScript &s)
 		SKILL_TYPE skill = g_Cfg.FindSkillKey(pszKey);
 		if ( skill != SKILL_NONE )
 		{
-			Skill_SetBase(skill, static_cast<WORD>(s.GetArgVal()));
+			Skill_SetBase(skill, static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this)));
 			return true;
 		}
 
-		return CObjBase::r_LoadVal(s);
+		return CObjBase::r_LoadVal(s, pArgs, pSrc);
 	}
 
 	switch ( index )
@@ -2341,32 +2341,32 @@ bool CChar::r_LoadVal(CScript &s)
 		case CHC_REGENVALHITS:
 		case CHC_REGENVALSTAM:
 		case CHC_REGENVALMANA:
-			SetDefNum(s.GetKey(), s.GetArgVal(), false);
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this), false);
 			UpdateStatsFlag();
 			break;
 		// Set as numeric
 		case CHC_SPELLTIMEOUT:
-			SetDefNum(s.GetKey(), s.GetArgVal(), false);
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this), false);
 			break;
 		case CHC_BLOODCOLOR:
-			m_wBloodHue = static_cast<HUE_TYPE>(s.GetArgVal());
+			m_wBloodHue = static_cast<HUE_TYPE>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_MAXFOOD:
-			Stat_SetMax(STAT_FOOD, static_cast<int>(s.GetArgVal()));
+			Stat_SetMax(STAT_FOOD, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_MAXHITS:
-			Stat_SetMax(STAT_STR, static_cast<int>(s.GetArgVal()));
+			Stat_SetMax(STAT_STR, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_MAXMANA:
-			Stat_SetMax(STAT_INT, static_cast<int>(s.GetArgVal()));
+			Stat_SetMax(STAT_INT, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_MAXSTAM:
-			Stat_SetMax(STAT_DEX, static_cast<int>(s.GetArgVal()));
+			Stat_SetMax(STAT_DEX, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_ACCOUNT:
 			return SetPlayerAccount(s.GetArgStr());
 		case CHC_ACT:
-			m_Act_Targ = s.GetArgVal();
+			m_Act_Targ = s.GetArgVal(pArgs, pSrc, this);
 			break;
 		case CHC_ACTP:
 		{
@@ -2377,19 +2377,19 @@ bool CChar::r_LoadVal(CScript &s)
 			break;
 		}
 		case CHC_ACTPRV:
-			m_Act_TargPrv = static_cast<CGrayUID>(s.GetArgVal());
+			m_Act_TargPrv = static_cast<CGrayUID>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_ACTDIFF:
-			m_Act_Difficulty = (s.GetArgVal() / 10);
+			m_Act_Difficulty = (s.GetArgVal(pArgs, pSrc, this) / 10);
 			break;
 		case CHC_ACTARG1:
-			m_atUnk.m_Arg1 = s.GetArgVal();
+			m_atUnk.m_Arg1 = s.GetArgVal(pArgs, pSrc, this);
 			break;
 		case CHC_ACTARG2:
-			m_atUnk.m_Arg2 = s.GetArgVal();
+			m_atUnk.m_Arg2 = s.GetArgVal(pArgs, pSrc, this);
 			break;
 		case CHC_ACTARG3:
-			m_atUnk.m_Arg3 = s.GetArgVal();
+			m_atUnk.m_Arg3 = s.GetArgVal(pArgs, pSrc, this);
 			break;
 		case CHC_ACTION:
 			return Skill_Start(g_Cfg.FindSkillKey(s.GetArgStr()));
@@ -2412,7 +2412,7 @@ bool CChar::r_LoadVal(CScript &s)
 					}
 					else if ( !strnicmp(pszKey, "DELETE", 6) )
 					{
-						CChar *pChar = static_cast<CGrayUID>(s.GetArgVal()).CharFind();
+						CChar *pChar = static_cast<CGrayUID>(s.GetArgVal(pArgs, pSrc, this)).CharFind();
 						if ( !pChar )
 							return false;
 						Attacker_Delete(pChar, false, ATTACKER_CLEAR_SCRIPT);
@@ -2420,7 +2420,7 @@ bool CChar::r_LoadVal(CScript &s)
 					}
 					else if ( !strnicmp(pszKey, "TARGET", 6) )
 					{
-						CChar *pChar = static_cast<CGrayUID>(s.GetArgVal()).CharFind();
+						CChar *pChar = static_cast<CGrayUID>(s.GetArgVal(pArgs, pSrc, this)).CharFind();
 						if ( !pChar || (pChar == this) )	// can't set ourself as target
 							return false;
 						m_Fight_Targ = pChar->GetUID();
@@ -2433,7 +2433,8 @@ bool CChar::r_LoadVal(CScript &s)
 						return true;
 					}
 
-					id = Exp_GetVal(pszKey);
+					CExpression expr(pArgs, pSrc, this);
+					id = expr.GetVal(pszKey);
 					if ( id < 0 )
 						return false;
 
@@ -2442,17 +2443,17 @@ bool CChar::r_LoadVal(CScript &s)
 					{
 						if ( !strnicmp(pszKey, "ELAPSED", 7) )
 						{
-							Attacker_SetElapsed(id, s.GetArgLLVal());
+							Attacker_SetElapsed(id, s.GetArgLLVal(pArgs, pSrc, this));
 							return true;
 						}
 						else if ( !strnicmp(pszKey, "ATTACK", 6) )
 						{
-							Attacker_SetDamage(id, s.GetArgLLVal());
+							Attacker_SetDamage(id, s.GetArgLLVal(pArgs, pSrc, this));
 							return true;
 						}
 						else if ( !strnicmp(pszKey, "THREAT", 6) )
 						{
-							Attacker_SetThreat(id, s.GetArgLLVal());
+							Attacker_SetThreat(id, s.GetArgLLVal(pArgs, pSrc, this));
 							return true;
 						}
 						else if ( !strnicmp(pszKey, "DELETE", 6) )
@@ -2472,17 +2473,17 @@ bool CChar::r_LoadVal(CScript &s)
 		{
 			if ( !strnicmp(pszKey, "BREATH.DAM", 10) || !strnicmp(pszKey, "BREATH.HUE", 10) || !strnicmp(pszKey, "BREATH.ANIM", 11) || !strnicmp(pszKey, "BREATH.TYPE", 11) )
 			{
-				SetDefNum(s.GetKey(), s.GetArgLLVal());
+				SetDefNum(s.GetKey(), s.GetArgLLVal(pArgs, pSrc, this));
 				return true;
 			}
 			return false;
 		}
 		case CHC_CREATE:
-			m_timeCreate = CServTime::GetCurrentTime() - (s.GetArgLLVal() * TICK_PER_SEC);
+			m_timeCreate = CServTime::GetCurrentTime() - (s.GetArgLLVal(pArgs, pSrc, this) * TICK_PER_SEC);
 			break;
 		case CHC_DIR:
 		{
-			DIR_TYPE dir = static_cast<DIR_TYPE>(s.GetArgVal());
+			DIR_TYPE dir = static_cast<DIR_TYPE>(s.GetArgVal(pArgs, pSrc, this));
 			if ( (dir <= DIR_INVALID) || (dir >= DIR_QTY) )
 				dir = DIR_SE;
 			m_dirFace = dir;
@@ -2496,7 +2497,7 @@ bool CChar::r_LoadVal(CScript &s)
 		{
 			bool fSet = IsStatFlag(STATF_EmoteAction);
 			if ( s.HasArgs() )
-				fSet = s.GetArgVal() ? true : false;
+				fSet = s.GetArgVal(pArgs, pSrc, this) ? true : false;
 			else
 				fSet = !fSet;
 			StatFlag_Mod(STATF_EmoteAction, fSet);
@@ -2504,195 +2505,195 @@ bool CChar::r_LoadVal(CScript &s)
 		}
 		case CHC_FLAGS:
 		{
-			SetFlag(s.GetArgLLVal());
+			SetFlag(s.GetArgLLVal(pArgs, pSrc, this));
 			break;
 		}
 		case CHC_FLAG_INVUL:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_INVUL : m_StatFlag & ~STATF_INVUL;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_INVUL : m_StatFlag & ~STATF_INVUL;
 			break;
 		case CHC_FLAG_DEAD:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_DEAD : m_StatFlag & ~STATF_DEAD;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_DEAD : m_StatFlag & ~STATF_DEAD;
 			break;
 		case CHC_FLAG_FREEZE:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Freeze : m_StatFlag & ~STATF_Freeze;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Freeze : m_StatFlag & ~STATF_Freeze;
 			break;
 		case CHC_FLAG_IMMOBILE:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Freeze : m_StatFlag & ~STATF_Freeze;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Freeze : m_StatFlag & ~STATF_Freeze;
 			break;
 		case CHC_FLAG_INVISIBLE:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Invisible : m_StatFlag & ~STATF_Invisible;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Invisible : m_StatFlag & ~STATF_Invisible;
 			break;
 		case CHC_FLAG_SLEEPING:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Sleeping : m_StatFlag & ~STATF_Sleeping;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Sleeping : m_StatFlag & ~STATF_Sleeping;
 			break;
 		case CHC_FLAG_WAR:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_War : m_StatFlag & ~STATF_War;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_War : m_StatFlag & ~STATF_War;
 			break;
 		case CHC_FLAG_REACTIVE:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Reactive : m_StatFlag & ~STATF_Reactive;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Reactive : m_StatFlag & ~STATF_Reactive;
 			break;
 		case CHC_FLAG_POISONED:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Poisoned : m_StatFlag & ~STATF_Poisoned;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Poisoned : m_StatFlag & ~STATF_Poisoned;
 			break;
 		case CHC_FLAG_NIGHTSIGHT:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_NightSight : m_StatFlag & ~STATF_NightSight;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_NightSight : m_StatFlag & ~STATF_NightSight;
 			break;
 		case CHC_FLAG_REFLECTION:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Reflection : m_StatFlag & ~STATF_Reflection;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Reflection : m_StatFlag & ~STATF_Reflection;
 			break;
 		case CHC_FLAG_POLYMORPH:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Polymorph : m_StatFlag & ~STATF_Polymorph;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Polymorph : m_StatFlag & ~STATF_Polymorph;
 			break;
 		case CHC_FLAG_INCOGNITO:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Incognito : m_StatFlag & ~STATF_Incognito;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Incognito : m_StatFlag & ~STATF_Incognito;
 			break;
 		case CHC_FLAG_SPIRITSPEAK:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_SpiritSpeak : m_StatFlag & ~STATF_SpiritSpeak;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_SpiritSpeak : m_StatFlag & ~STATF_SpiritSpeak;
 			break;
 		case CHC_FLAG_INSUBSTANTIAL:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Insubstantial : m_StatFlag & ~STATF_Insubstantial;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Insubstantial : m_StatFlag & ~STATF_Insubstantial;
 			break;
 		case CHC_FLAG_EMOTEACTION:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_EmoteAction : m_StatFlag & ~STATF_EmoteAction;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_EmoteAction : m_StatFlag & ~STATF_EmoteAction;
 			break;
 		case CHC_FLAG_COMMCRYSTAL:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_COMM_CRYSTAL : m_StatFlag & ~STATF_COMM_CRYSTAL;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_COMM_CRYSTAL : m_StatFlag & ~STATF_COMM_CRYSTAL;
 			break;
 		case CHC_FLAG_HASSHIELD:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_HasShield : m_StatFlag & ~STATF_HasShield;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_HasShield : m_StatFlag & ~STATF_HasShield;
 			break;
 		case CHC_FLAG_ARCHERCANMOV:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_ArcherCanMove : m_StatFlag & ~STATF_ArcherCanMove;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_ArcherCanMove : m_StatFlag & ~STATF_ArcherCanMove;
 			break;
 		case CHC_FLAG_STONE:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Stone : m_StatFlag & ~STATF_Stone;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Stone : m_StatFlag & ~STATF_Stone;
 			break;
 		case CHC_FLAG_HOVERING:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Hovering : m_StatFlag & ~STATF_Hovering;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Hovering : m_StatFlag & ~STATF_Hovering;
 			break;
 		case CHC_FLAG_FLY:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Fly : m_StatFlag & ~STATF_Fly;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Fly : m_StatFlag & ~STATF_Fly;
 			break;
 		case CHC_FLAG_HALLUCINATING:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Hallucinating : m_StatFlag & ~STATF_Hallucinating;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Hallucinating : m_StatFlag & ~STATF_Hallucinating;
 			break;
 		case CHC_FLAG_HIDDEN:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Hidden : m_StatFlag & ~STATF_Hidden;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Hidden : m_StatFlag & ~STATF_Hidden;
 			break;
 		case CHC_FLAG_INDOORS:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_InDoors : m_StatFlag & ~STATF_InDoors;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_InDoors : m_StatFlag & ~STATF_InDoors;
 			break;
 		case CHC_FLAG_CRIMINAL:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Criminal : m_StatFlag & ~STATF_Criminal;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Criminal : m_StatFlag & ~STATF_Criminal;
 			break;
 		case CHC_FLAG_CONJURED:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Conjured : m_StatFlag & ~STATF_Conjured;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Conjured : m_StatFlag & ~STATF_Conjured;
 			break;
 		case CHC_FLAG_PET:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Pet : m_StatFlag & ~STATF_Pet;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Pet : m_StatFlag & ~STATF_Pet;
 			break;
 		case CHC_FLAG_SPAWNED:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Spawned : m_StatFlag & ~STATF_Spawned;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Spawned : m_StatFlag & ~STATF_Spawned;
 			break;
 		case CHC_FLAG_SAVEPARITY:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_SaveParity : m_StatFlag & ~STATF_SaveParity;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_SaveParity : m_StatFlag & ~STATF_SaveParity;
 			break;
 		case CHC_FLAG_RIDDEN:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Ridden : m_StatFlag & ~STATF_Ridden;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Ridden : m_StatFlag & ~STATF_Ridden;
 			break;
 		case CHC_FLAG_RUNNING:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_Running : m_StatFlag & ~STATF_Running;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_Running : m_StatFlag & ~STATF_Running;
 			break;
 		case CHC_FLAG_ONHORSE:
-			m_StatFlag = s.GetArgLLVal() ? m_StatFlag | STATF_OnHorse : m_StatFlag & ~STATF_OnHorse;
+			m_StatFlag = s.GetArgLLVal(pArgs, pSrc, this) ? m_StatFlag | STATF_OnHorse : m_StatFlag & ~STATF_OnHorse;
 			break;
 		case CHC_FOLLOWERSLOTS:
-			m_FollowerSlots = static_cast<short>(s.GetArgVal());
+			m_FollowerSlots = static_cast<short>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_CURFOLLOWER:
-			m_FollowerCur = static_cast<short>(s.GetArgVal());
+			m_FollowerCur = static_cast<short>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_MAXFOLLOWER:
-			m_FollowerMax = static_cast<short>(s.GetArgVal());
+			m_FollowerMax = static_cast<short>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_TITHING:
-			m_Tithing = static_cast<int>(s.GetArgVal());
+			m_Tithing = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_FONT:
 		{
-			m_fonttype = static_cast<FONT_TYPE>(s.GetArgVal());
+			m_fonttype = static_cast<FONT_TYPE>(s.GetArgVal(pArgs, pSrc, this));
 			if ( (m_fonttype < FONT_BOLD) || (m_fonttype >= FONT_QTY) )
 				m_fonttype = FONT_NORMAL;
 			break;
 		}
 		case CHC_INCREASEDAM:
-			m_DamIncrease = static_cast<int>(s.GetArgVal());
+			m_DamIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_INCREASEDEFCHANCE:
-			m_DefChanceIncrease = static_cast<int>(s.GetArgVal());
+			m_DefChanceIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_INCREASEDEFCHANCEMAX:
-			m_DefChanceIncreaseMax = static_cast<int>(s.GetArgVal());
+			m_DefChanceIncreaseMax = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_INCREASEHITCHANCE:
-			m_HitChanceIncrease = static_cast<int>(s.GetArgVal());
+			m_HitChanceIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_INCREASESPELLDAM:
-			m_SpellDamIncrease = static_cast<int>(s.GetArgVal());
+			m_SpellDamIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_INCREASESWINGSPEED:
-			m_SwingSpeedIncrease = static_cast<int>(s.GetArgVal());
+			m_SwingSpeedIncrease = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_FASTERCASTING:
-			m_FasterCasting = static_cast<int>(s.GetArgVal());
+			m_FasterCasting = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_FASTERCASTRECOVERY:
-			m_FasterCastRecovery = static_cast<int>(s.GetArgVal());
+			m_FasterCastRecovery = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_HITLEECHLIFE:
-			m_HitLifeLeech = static_cast<int>(s.GetArgVal());
+			m_HitLifeLeech = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_HITLEECHMANA:
-			m_HitManaLeech = static_cast<int>(s.GetArgVal());
+			m_HitManaLeech = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_HITLEECHSTAM:
-			m_HitStaminaLeech = static_cast<int>(s.GetArgVal());
+			m_HitStaminaLeech = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_HITMANADRAIN:
-			m_HitManaDrain = static_cast<int>(s.GetArgVal());
+			m_HitManaDrain = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_LOWERMANACOST:
-			m_LowerManaCost = static_cast<int>(s.GetArgVal());
+			m_LowerManaCost = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_LOWERREAGENTCOST:
-			m_LowerReagentCost = static_cast<int>(s.GetArgVal());
+			m_LowerReagentCost = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			UpdateStatsFlag();
 			break;
 		case CHC_SPEECHCOLOR:
 		{
 			if ( m_pPlayer )	// read-only on players
 				return false;
-			m_SpeechHue = static_cast<HUE_TYPE>(s.GetArgVal());
+			m_SpeechHue = static_cast<HUE_TYPE>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		}
 		case CHC_FOOD:
-			Stat_SetVal(STAT_FOOD, static_cast<int>(s.GetArgVal()));
+			Stat_SetVal(STAT_FOOD, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_GOLD:
 		{
-			DWORD dwAmount = s.GetArgVal();
+			DWORD dwAmount = s.GetArgVal(pArgs, pSrc, this);
 			if ( dwAmount <= 0 )
 				dwAmount = 0;
 
@@ -2714,23 +2715,23 @@ bool CChar::r_LoadVal(CScript &s)
 		}
 		case CHC_HITPOINTS:
 		case CHC_HITS:
-			Stat_SetVal(STAT_STR, static_cast<int>(s.GetArgVal()));
+			Stat_SetVal(STAT_STR, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			UpdateHitsFlag();
 			break;
 		case CHC_MANA:
-			Stat_SetVal(STAT_INT, static_cast<int>(s.GetArgVal()));
+			Stat_SetVal(STAT_INT, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			UpdateManaFlag();
 			break;
 		case CHC_STAM:
 		case CHC_STAMINA:
-			Stat_SetVal(STAT_DEX, static_cast<int>(s.GetArgVal()));
+			Stat_SetVal(STAT_DEX, static_cast<int>(s.GetArgVal(pArgs, pSrc, this)));
 			UpdateStamFlag();
 			break;
 		case CHC_STEPSTEALTH:
-			m_StepStealth = static_cast<int>(s.GetArgVal());
+			m_StepStealth = static_cast<int>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_HEIGHT:
-			m_height = static_cast<height_t>(s.GetArgVal());
+			m_height = static_cast<height_t>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		case CHC_HOME:
 		{
@@ -2772,7 +2773,8 @@ bool CChar::r_LoadVal(CScript &s)
 					if ( skill == SKILL_NONE )
 						return false;
 
-					Skill_UseQuick(skill, Exp_GetVal(ppArgs[1]));
+					CExpression expr(pArgs, pSrc, this);
+					Skill_UseQuick(skill, expr.GetVal(ppArgs[1]));
 					return true;
 				}
 			}
@@ -2801,7 +2803,7 @@ bool CChar::r_LoadVal(CScript &s)
 			bool fChange = IsStatFlag(STATF_NightSight);
 			if ( s.HasArgs() )
 			{
-				fSet = s.GetArgVal() ? true : false;
+				fSet = s.GetArgVal(pArgs, pSrc, this) ? true : false;
 				fChange = (fSet != fChange);
 			}
 			else
@@ -2822,7 +2824,7 @@ bool CChar::r_LoadVal(CScript &s)
 			break;
 		}
 		case CHC_NPC:
-			return SetNPCBrain(static_cast<NPCBRAIN_TYPE>(s.GetArgVal()));
+			return SetNPCBrain(static_cast<NPCBRAIN_TYPE>(s.GetArgVal(pArgs, pSrc, this)));
 		case CHC_OBODY:
 		{
 			CREID_TYPE id = static_cast<CREID_TYPE>(g_Cfg.ResourceGetIndexType(RES_CHARDEF, s.GetArgStr()));
@@ -2840,21 +2842,21 @@ bool CChar::r_LoadVal(CScript &s)
 		case CHC_P_X:
 		{
 			CPointMap pt = GetTopPoint();
-			pt.m_x = s.GetArgVal();
+			pt.m_x = s.GetArgVal(pArgs, pSrc, this);
 			MoveTo(pt);
 			break;
 		}
 		case CHC_P_Y:
 		{
 			CPointMap pt = GetTopPoint();
-			pt.m_y = s.GetArgVal();
+			pt.m_y = s.GetArgVal(pArgs, pSrc, this);
 			MoveTo(pt);
 			break;
 		}
 		case CHC_P_Z:
 		{
 			CPointMap pt = GetTopPoint();
-			pt.m_z = s.GetArgVal();
+			pt.m_z = s.GetArgVal(pArgs, pSrc, this);
 			MoveTo(pt);
 			break;
 		}
@@ -2866,16 +2868,16 @@ bool CChar::r_LoadVal(CScript &s)
 			break;
 		}
 		case CHC_REGENHITS:
-			SetDefNum(s.GetKey(), s.GetArgVal(), false);
-			UpdateRegenTimers(STAT_STR, static_cast<WORD>(s.GetArgVal()));
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this), false);
+			UpdateRegenTimers(STAT_STR, static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_REGENMANA:
-			SetDefNum(s.GetKey(), s.GetArgVal(), false);
-			UpdateRegenTimers(STAT_INT, static_cast<WORD>(s.GetArgVal()));
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this), false);
+			UpdateRegenTimers(STAT_INT, static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_REGENSTAM:
-			SetDefNum(s.GetKey(), s.GetArgVal(), false);
-			UpdateRegenTimers(STAT_DEX, static_cast<WORD>(s.GetArgVal()));
+			SetDefNum(s.GetKey(), s.GetArgVal(pArgs, pSrc, this), false);
+			UpdateRegenTimers(STAT_DEX, static_cast<WORD>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		case CHC_STONE:
 		{
@@ -2883,7 +2885,7 @@ bool CChar::r_LoadVal(CScript &s)
 			bool fChange = IsStatFlag(STATF_Stone);
 			if ( s.HasArgs() )
 			{
-				fSet = s.GetArgVal() ? true : false;
+				fSet = s.GetArgVal(pArgs, pSrc, this) ? true : false;
 				fChange = (fSet != fChange);
 			}
 			else
@@ -2902,30 +2904,30 @@ bool CChar::r_LoadVal(CScript &s)
 		}
 		case CHC_SWING:
 		{
-			if ( s.GetArgVal() && ((s.GetArgVal() < WAR_SWING_INVALID) || (s.GetArgVal() > WAR_SWING_SWINGING)) )
+			if ( s.GetArgVal(pArgs, pSrc, this) && ((s.GetArgVal(pArgs, pSrc, this) < WAR_SWING_INVALID) || (s.GetArgVal(pArgs, pSrc, this) > WAR_SWING_SWINGING)) )
 				return false;
-			m_atFight.m_Swing_State = static_cast<WAR_SWING_TYPE>(s.GetArgVal());
+			m_atFight.m_Swing_State = static_cast<WAR_SWING_TYPE>(s.GetArgVal(pArgs, pSrc, this));
 			break;
 		}
 		case CHC_TITLE:
 			m_sTitle = s.GetArgStr();
 			break;
 		case CHC_LIGHT:
-			m_LocalLight = static_cast<BYTE>(minimum(maximum(s.GetArgVal(), LIGHT_BRIGHT), LIGHT_DARK));
+			m_LocalLight = static_cast<BYTE>(minimum(maximum(s.GetArgVal(pArgs, pSrc, this), LIGHT_BRIGHT), LIGHT_DARK));
 			break;
 		case CHC_EXP:
-			m_exp = s.GetArgVal();
+			m_exp = s.GetArgVal(pArgs, pSrc, this);
 			ChangeExperience();
 			break;
 		case CHC_LEVEL:
-			m_level = s.GetArgVal();
+			m_level = s.GetArgVal(pArgs, pSrc, this);
 			ChangeExperience();
 			break;
 		case CHC_VIRTUALGOLD:
-			m_virtualGold = static_cast<UINT64>(s.GetArgLLVal());
+			m_virtualGold = static_cast<UINT64>(s.GetArgLLVal(pArgs, pSrc, this));
 			break;
 		case CHC_VISUALRANGE:
-			SetSight(static_cast<BYTE>(s.GetArgVal()));
+			SetSight(static_cast<BYTE>(s.GetArgVal(pArgs, pSrc, this)));
 			break;
 		default:
 			return false;

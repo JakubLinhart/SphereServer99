@@ -307,7 +307,7 @@ public:
 
 public:
 	TRIGRET_TYPE OnTrigger(LPCTSTR pszTrigName, CTextConsole *pSrc, CScriptTriggerArgs *pArgs);
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL);
 
 private:
@@ -407,7 +407,7 @@ public:
 		return m_sName;
 	}
 
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	bool GetPrimarySkill(int *piSkill = NULL, int *piQty = NULL) const;
@@ -448,7 +448,7 @@ private:
 	int CalcTotalWeight();
 
 public:
-	virtual bool r_LoadVal(CScript &s);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	CResourceQty GetMember(size_t i) const
@@ -517,7 +517,7 @@ private:
 	void Init();
 
 public:
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
 
 	LPCTSTR GetName() const
@@ -604,7 +604,7 @@ public:
 	BYTE m_StatBonus[STAT_BASE_QTY];	// % of each stat toward success at skill, total 100
 
 public:
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 	LPCTSTR GetKey() const
@@ -1023,7 +1023,7 @@ private:
 	RESOURCE_ID ResourceGetNewID(RES_TYPE restype, LPCTSTR pszName, CVarDefContNum **ppVarNum, bool fNewStyleDef);
 
 public:
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	bool r_GetRef(LPCTSTR pszResType, LPCTSTR pszKey, CScriptObj*& pRef);
@@ -1184,7 +1184,7 @@ public:
 	bool GumpSetup(int iPage, CClient *pClientSrc, CObjBase *pObj, LPCTSTR pszArguments = "");
 	size_t GumpAddText(LPCTSTR pszText);		// Add text to the text section, return insertion index
 
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
 	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
@@ -1205,7 +1205,7 @@ public:
 
 public:
 	int GetItemType() const;
-	bool r_LoadVal(CScript &s);
+	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 private:
 	CItemTypeDef(const CItemTypeDef &copy);

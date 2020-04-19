@@ -288,7 +288,7 @@ bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 	return false;
 }
 
-bool CCharBase::r_LoadVal(CScript &s)
+bool CCharBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CCharBase::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -398,7 +398,7 @@ bool CCharBase::r_LoadVal(CScript &s)
 		case CBC_TSPEECH:
 			return m_Speech.r_LoadVal(s, RES_SPEECH);
 		default:
-			return CBaseBaseDef::r_LoadVal(s);
+			return CBaseBaseDef::r_LoadVal(s, pArgs, pSrc);
 	}
 	return true;
 	EXC_CATCH;

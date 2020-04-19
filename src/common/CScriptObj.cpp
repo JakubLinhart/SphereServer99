@@ -1517,7 +1517,7 @@ bool CScriptObj::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CScriptObj::r_LoadVal(CScript &s)
+bool CScriptObj::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CScriptObj::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -1585,7 +1585,7 @@ bool CScriptObj::r_Load(CScript &s)
 	{
 		if ( s.IsKeyHead("ON", 2) )		// trigger scripting marks the end
 			break;
-		r_LoadVal(s);
+		r_LoadVal(s, NULL, &g_Serv);
 	}
 	return true;
 }
@@ -2829,7 +2829,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 				}
 			}
 
-			return r_LoadVal(s);		// default to loading values
+			return r_LoadVal(s, pArgs, pSrc);		// default to loading values
 		}
 	}
 	return true;
@@ -3051,7 +3051,7 @@ bool CScriptTriggerArgs::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CScriptTriggerArgs::r_LoadVal(CScript &s)
+bool CScriptTriggerArgs::r_LoadVal(CScript &s, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CScriptTriggerArgs::r_LoadVal");
 
@@ -3165,11 +3165,9 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 				TemporaryString varName;
 				if (Str_ParseVariableName(pszKey, varName))
 				{
-					if (Str_ParseArgumentEnd(pszKey, true))
-					{
-						sVal = m_VarsLocal.GetKeyStr(varName, true);
-						return r_WriteValChained(pszKey, sVal, pSrc, this);
-					}
+					Str_ParseArgumentEnd(pszKey, true);
+					sVal = m_VarsLocal.GetKeyStr(varName, true);
+					return r_WriteValChained(pszKey, sVal, pSrc, this);
 				}
 			}
 		}
@@ -3550,7 +3548,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 				if (pObj)
 				{
 					CScript subS(pszCmd);
-					return pObj->r_LoadVal(subS);
+					return pObj->r_LoadVal(subS, pArgs, pSrc);
 				}
 			}
 			break;
@@ -3702,7 +3700,7 @@ bool CFileObj::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CFileObj::r_LoadVal(CScript &s)
+bool CFileObj::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CFileObj::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -4018,7 +4016,7 @@ bool CFileObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 	LPCTSTR pszKey = s.GetKey();
 	int index = FindTableSorted(pszKey, sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1);
 	if ( index < 0 )
-		return r_LoadVal(s);
+		return r_LoadVal(s, pArgs, pSrc);
 
 	switch ( index )
 	{
@@ -4212,7 +4210,7 @@ bool CFileObjContainer::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 	return false;
 }
 
-bool CFileObjContainer::r_LoadVal(CScript &s)
+bool CFileObjContainer::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CFileObjContainer::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -4336,7 +4334,7 @@ bool CFileObjContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArg
 				return false;
 			}
 		}
-		return r_LoadVal(s);
+		return r_LoadVal(s, pArgs, pSrc);
 	}
 
 	switch ( index )

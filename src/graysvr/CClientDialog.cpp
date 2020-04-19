@@ -514,12 +514,12 @@ bool	CDialogDef::r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * pSrc
 }
 
 
-bool		CDialogDef::r_LoadVal( CScript & s )
+bool		CDialogDef::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CDialogDef::r_LoadVal");
 	if ( !m_pObj )
 		return false;
-	return m_pObj->r_LoadVal( s );
+	return m_pObj->r_LoadVal( s, pArgs, pSrc);
 }
 
 

@@ -50,7 +50,7 @@ public:
 	void SetValNum( INT64 iVal );
 	LPCTSTR GetValStr() const;
 
-	bool r_LoadVal( CScript & s );
+	bool r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc );
 
 	virtual CListDefContElem * CopySelf() const;
@@ -77,7 +77,7 @@ public:
 	void SetValStr( LPCTSTR pszVal );
 	INT64 GetValNum() const;
 
-	bool r_LoadVal( CScript & s );
+	bool r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_WriteVal( LPCTSTR pKey, CGString & sVal, CTextConsole * pSrc );
 
 	virtual CListDefContElem * CopySelf() const;
@@ -136,7 +136,7 @@ public:
 	void PrintElements(CGString& strElements) const;
 	void DumpElements( CTextConsole * pSrc, LPCTSTR pszPrefix = NULL ) const;
 	void r_WriteSave( CScript& s );
-	bool r_LoadVal( CScript& s );
+	bool r_LoadVal( CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_LoadVal( LPCTSTR pszArg );
 };
 

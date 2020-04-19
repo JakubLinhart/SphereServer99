@@ -424,14 +424,14 @@ bool CItemSpawn::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 	return CItem::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
-bool CItemSpawn::r_LoadVal(CScript &s)
+bool CItemSpawn::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemSpawn::r_LoadVal");
 	EXC_TRY("LoadVal");
 
 	int iCmd = FindTableSorted(s.GetKey(), sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( iCmd < 0 )
-		return CItem::r_LoadVal(s);
+		return CItem::r_LoadVal(s, pArgs, pSrc);
 
 	switch ( iCmd )
 	{
@@ -654,7 +654,7 @@ bool CItemMap::IsSameType(const CObjBase *pObj) const
 	return CItemVendable::IsSameType(pObj);
 }
 
-bool CItemMap::r_LoadVal(CScript &s)	// load an item script
+bool CItemMap::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)	// load an item script
 {
 	ADDTOCALLSTACK("CItemMap::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -666,7 +666,7 @@ bool CItemMap::r_LoadVal(CScript &s)	// load an item script
 		m_Pins.Add(pin);
 		return true;
 	}
-	return CItem::r_LoadVal(s);
+	return CItem::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;
@@ -750,7 +750,7 @@ LPCTSTR const CItemMessage::sm_szLoadKeys[CIC_QTY + 1] =	// static
 	NULL
 };
 
-bool CItemMessage::r_LoadVal(CScript &s)
+bool CItemMessage::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemMessage::r_LoadVal");
 	EXC_TRY("LoadVal");
@@ -775,7 +775,7 @@ bool CItemMessage::r_LoadVal(CScript &s)
 			SetName(s.GetArgStr());
 			return true;
 	}
-	return CItemVendable::r_LoadVal(s);
+	return CItemVendable::r_LoadVal(s, pArgs, pSrc);
 	EXC_CATCH;
 
 	EXC_DEBUG_START;
@@ -1059,7 +1059,7 @@ bool CItemCommCrystal::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *
 	return true;
 }
 
-bool CItemCommCrystal::r_LoadVal(CScript &s)
+bool CItemCommCrystal::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemCommCrystal::r_LoadVal");
 	switch ( FindTableSorted(s.GetKey(), sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1) )
@@ -1067,7 +1067,7 @@ bool CItemCommCrystal::r_LoadVal(CScript &s)
 		case 0:
 			return m_Speech.r_LoadVal(s, RES_SPEECH);
 		default:
-			return CItemVendable::r_LoadVal(s);
+			return CItemVendable::r_LoadVal(s, pArgs, pSrc);
 	}
 }
 
@@ -1108,10 +1108,10 @@ bool CItemScript::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc,
 	return CItemVendable::r_WriteVal(pszKey, sVal, pSrc, pArgs);
 }
 
-bool CItemScript::r_LoadVal(CScript &s)
+bool CItemScript::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CItemScript::r_LoadVal");
-	return CItemVendable::r_LoadVal(s);
+	return CItemVendable::r_LoadVal(s, pArgs, pSrc);
 }
 
 bool CItemScript::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)

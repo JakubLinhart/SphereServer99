@@ -852,7 +852,7 @@ const LPCTSTR CAccount::sm_szLoadKeys[AC_QTY + 1] =	// static
 	NULL
 };
 
-bool CAccount::r_LoadVal(CScript &s)
+bool CAccount::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CAccount::r_LoadVal");
 	EXC_TRY("LoadVal");
