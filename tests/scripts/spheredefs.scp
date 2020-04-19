@@ -1,3 +1,8 @@
+[DEFNAMES HARDCODED]
+DEFAULTITEM i_GOLD	// if we cannot create the item. make it this.
+DEFAULTCHAR	c_MAN	// if we cannot create the char. make it this.
+GUARDS		c_MAN
+
 [DEFNAMES CAN_FLAGS]
 // Monster "Can" type flags.
 MT_NONMOVER		00000
@@ -22,12 +27,16 @@ t_scroll		    32 	// = magic scroll
 t_log				43 	// = make into furniture etc. lumberlogs
 t_multi				47 	// = multi part object like house or ship.
 t_sign_gump			56 	// = Things like grave stones and sign plaques
+t_gold				72 	// = gold coin
 t_eq_memory_obj		74 	// = A Char has a memory link to some object. (I am fighting with someone. This records the fight.)
+t_eq_bank_box		114 	// = an equipped bank box
 
 [DEFNAMES LAYERS]
 layer_hand1     		 1
 layer_hand2              2
+layer_bankbox			29 // contents of my bank box.
 layer_special			30	// Can be multiple of these. memories
+
 
 [DEFNAMES MEM_FLAGS]
 MEMORY_WAR_TARG		02000	// This is one of my current war targets.
@@ -53,5 +62,9 @@ spellflag_noLOS			00800//nepotrebuje LOS k efektu (snad)
 spellflag_SM			01000//vyse efektu zalezi na SM, jinak na magery a rozsah EFFECT
 spellflag_evil			02000//odrazi se
 spellflag_harmcaster		04000
+
+[DEFNAMES ATTR_FLAGS]
+// apply to items
+attr_identified		00001	// This is the identified name. ???
 
 [EOF]

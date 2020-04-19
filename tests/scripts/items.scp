@@ -141,4 +141,39 @@ SUBSECTION=Red Sparkle
 DESCRIPTION=@
 DUPELIST=0374b,0374c,0374d,0374e,0374f,03750,03751,03752,03753,03754,03755,03756,03757,03758,03759
 
+[ITEMDEF 0eed]
+//gold coin
+DEFNAME=i_gold
+TYPE=T_GOLD
+VALUE=1
+WEIGHT=0.0
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Coins
+DESCRIPTION=Gold Coin
+DUPELIST=0eee,0eef
+
+ON=@Create
+ATTR=attr_identified
+
+[ITEMDEF 0eee]
+//gold coins
+DUPEITEM=0eed
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Coins
+DESCRIPTION=Gold Coins
+
+[ITEMDEF 0eef]
+//gold coins
+DUPEITEM=0eed
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Coins
+DESCRIPTION=Gold Coins
+
+[ITEMDEF 09b2]
+DEFNAME=i_bankbox
+NAME=Bank Box
+LAYER=layer_bankbox
+TYPE=T_EQ_BANK_BOX
+TDATA2=04a
+
 [EOF]
