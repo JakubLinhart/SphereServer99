@@ -1,5 +1,19 @@
-[function test_findcont]
+[function test_containers]
+test_findcont
+test_emptycont
 
+[function test_emptycont]
+serv.smsg "test_emptycont\n"
+
+arg(backpack,<finduid(010000).findid(i_backpack)>)
+finduid(010000).newitem(i_log)
+lastnew.cont=arg(backpack)
+backpack.emptycont
+ShouldBeSameString("emptycont removes content of target container",0,<arg(backpack).rescount>)
+
+serv.smsg "\n"
+
+[function test_findcont]
 serv.smsg "test_findcont\n"
 
 ShouldBeSameString("rescount - on char",1,<finduid(010000).rescount>)

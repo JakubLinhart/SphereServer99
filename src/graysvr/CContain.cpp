@@ -1628,6 +1628,7 @@ enum ICV_TYPE
 	ICV_CLOSE,
 	ICV_DELETE,
 	ICV_EMPTY,
+	ICV_EMPTYCONT,
 	ICV_FIXWEIGHT,
 	ICV_OPEN,
 	ICV_QTY
@@ -1638,6 +1639,7 @@ LPCTSTR const CItemContainer::sm_szVerbKeys[ICV_QTY + 1] =
 	"CLOSE",
 	"DELETE",
 	"EMPTY",
+	"EMPTYCONT",
 	"FIXWEIGHT",
 	"OPEN",
 	NULL
@@ -1674,6 +1676,7 @@ bool CItemContainer::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* 
 			}
 			return false;
 		}
+		case ICV_EMPTYCONT:
 		case ICV_EMPTY:
 		{
 			DeleteAll();

@@ -34,7 +34,7 @@ test_finduid
 test_newitem
 test_findid
 test_findlayer
-test_findcont
+test_containers
 test_equip
 test_defnames
 
