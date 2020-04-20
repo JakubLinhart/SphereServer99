@@ -1111,10 +1111,15 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 					{
 						EXC_SET("verb");
 						fRes = r_Verb(s, pSrc, pArgs);
+						if (!fRes)
+							fRes = r_VerbGlobal(s, pSrc, pArgs);
 					}
 
-					if ( !fRes )
+					if (!fRes)
+					{
+						DEBUG_ERR(("Undefined keyword '%s'\n", s.GetKey()));
 						DEBUG_MSG(("WARNING: Trigger Bad Verb '%s','%s'\n", pszKey, s.GetArgStr()));
+					}
 				}
 				break;
 			}
@@ -1533,10 +1538,7 @@ bool CScriptObj::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* 
 
 	int index = FindTableHeadSorted(pszKey, sm_szLoadKeys, COUNTOF(sm_szLoadKeys) - 1);
 	if ( index < 0 )
-	{
-		DEBUG_ERR(("Undefined keyword '%s'\n", s.GetKey()));
 		return false;
-	}
 
 	switch ( index )
 	{
@@ -1585,7 +1587,7 @@ bool CScriptObj::r_Load(CScript &s)
 	{
 		if ( s.IsKeyHead("ON", 2) )		// trigger scripting marks the end
 			break;
-		r_LoadVal(s, NULL, &g_Serv);
+		r_LoadVal(s, NULL, NULL);
 	}
 	return true;
 }
@@ -2478,6 +2480,95 @@ bool CScriptObj::r_VerbChained(CScript &s, CGString& sVal, CTextConsole* pSrc, C
 	return true;
 }
 
+bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+{
+
+	LPCTSTR pszKey = s.GetKey();
+	CGString sVal;
+	TemporaryString varName;
+	if (Str_ParseVariableName(pszKey, varName))
+	{
+		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, NULL, pSrc);
+		if (pVar)
+		{
+			sVal = pVar->GetValStr();
+			CScript chainedScript(pszKey, s.GetArgStr());
+			return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
+		}
+		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
+		if (pDef)
+		{
+			if (*pszKey == '.')
+			{
+				INT64 num = pDef->GetValNum();
+				if (num > 0)
+				{
+					RES_TYPE resType = static_cast<RES_TYPE>(RES_GET_TYPE(num));
+					RESOURCE_ID resId(resType, RES_GET_INDEX(num));
+					switch (resType)
+					{
+					case RES_ITEMDEF:
+					{
+						CItemBase* itemBase = CItemBase::FindItemBase(static_cast<ITEMID_TYPE>(RES_GET_INDEX(num)));
+						if (itemBase)
+						{
+							pszKey++;
+							CScript chainedScript(pszKey, s.GetArgStr());
+							return itemBase->r_Verb(chainedScript, pSrc, pArgs);
+						}
+						break;
+					}
+					case RES_CHARDEF:
+					{
+						CCharBase* charBase = CCharBase::FindCharBase(static_cast<CREID_TYPE>(RES_GET_INDEX(num)));
+						if (charBase)
+						{
+							pszKey++;
+							CScript chainedScript(pszKey, s.GetArgStr());
+							return charBase->r_Verb(chainedScript, pSrc, pArgs);
+						}
+						break;
+					}
+					case RES_SKILL:
+					{
+						CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
+						if (pDef)
+						{
+							CSkillDef* pSkillDef = g_Cfg.GetSkillDef(static_cast<SKILL_TYPE>(resId.GetResIndex()));
+							if (pSkillDef)
+							{
+								pszKey++;
+								CScript chainedScript(pszKey, s.GetArgStr());
+								return pSkillDef->r_Verb(chainedScript, pSrc, pArgs);
+							}
+						}
+						break;
+					}
+					case RES_SPELL:
+					{
+						CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
+						if (pDef)
+						{
+							CSpellDef* pSpellDef = g_Cfg.GetSpellDef(static_cast<SPELL_TYPE>(resId.GetResIndex()));
+							if (pSpellDef)
+							{
+								pszKey++;
+								CScript chainedScript(pszKey, s.GetArgStr());
+								return pSpellDef->r_Verb(chainedScript, pSrc, pArgs);
+							}
+						}
+						break;
+					}
+					}
+				}
+			}
+			sVal = pDef->GetValStr();
+			CScript chainedScript(pszKey, s.GetArgStr());
+			return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
+		}
+	}
+}
+
 bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CScriptObj::r_Verb");
@@ -2532,96 +2623,6 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 	}
 
 	SSV_TYPE index = static_cast<SSV_TYPE>(FindTableSorted(s.GetKey(), sm_szVerbKeys, COUNTOF(sm_szVerbKeys) - 1));
-
-	if (index < 0)
-	{
-		LPCTSTR pszOriginalKey = pszKey;
-		CGString sVal;
-		TemporaryString varName;
-		if (Str_ParseVariableName(pszKey, varName))
-		{
-			CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, NULL, pSrc);
-			if (pVar)
-			{
-				sVal = pVar->GetValStr();
-				CScript chainedScript(pszKey, s.GetArgStr());
-				return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
-			}
-			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
-			if (pDef)
-			{
-				if (*pszKey == '.')
-				{
-					INT64 num = pDef->GetValNum();
-					if (num > 0)
-					{
-						RES_TYPE resType = static_cast<RES_TYPE>(RES_GET_TYPE(num));
-						RESOURCE_ID resId(resType, RES_GET_INDEX(num));
-						switch (resType)
-						{
-							case RES_ITEMDEF:
-							{
-								CItemBase* itemBase = CItemBase::FindItemBase(static_cast<ITEMID_TYPE>(RES_GET_INDEX(num)));
-								if (itemBase)
-								{
-									pszKey++;
-									CScript chainedScript(pszKey, s.GetArgStr());
-									return itemBase->r_Verb(chainedScript, pSrc, pArgs);
-								}
-								break;
-							}
-							case RES_CHARDEF:
-							{
-								CCharBase* charBase = CCharBase::FindCharBase(static_cast<CREID_TYPE>(RES_GET_INDEX(num)));
-								if (charBase)
-								{
-									pszKey++;
-									CScript chainedScript(pszKey, s.GetArgStr());
-									return charBase->r_Verb(chainedScript, pSrc, pArgs);
-								}
-								break;
-							}
-							case RES_SKILL:
-							{
-								CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
-								if (pDef)
-								{
-									CSkillDef* pSkillDef = g_Cfg.GetSkillDef(static_cast<SKILL_TYPE>(resId.GetResIndex()));
-									if (pSkillDef)
-									{
-										pszKey++;
-										CScript chainedScript(pszKey, s.GetArgStr());
-										return pSkillDef->r_Verb(chainedScript, pSrc, pArgs);
-									}
-								}
-								break;
-							}
-							case RES_SPELL:
-							{
-								CResourceDef* pDef = g_Cfg.ResourceGetDef(resId);
-								if (pDef)
-								{
-									CSpellDef* pSpellDef = g_Cfg.GetSpellDef(static_cast<SPELL_TYPE>(resId.GetResIndex()));
-									if (pSpellDef)
-									{
-										pszKey++;
-										CScript chainedScript(pszKey, s.GetArgStr());
-										return pSpellDef->r_Verb(chainedScript, pSrc, pArgs);
-									}
-								}
-								break;
-							}
-						}
-					}
-				}
-				sVal = pDef->GetValStr();
-				CScript chainedScript(pszKey, s.GetArgStr());
-				return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
-			}
-		}
-		pszKey = pszOriginalKey;
-	}
-
 
 	switch ( index )
 	{
@@ -2777,7 +2778,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 					}
 					return true;
 				}
-				else
+				else if (pszKey[3] == '(' || strlen(pszKey) == 3)
 				{
 					TCHAR* ppArgs[2];
 					size_t iCount;

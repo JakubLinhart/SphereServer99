@@ -1047,7 +1047,7 @@ bool CChar::ReadScript(CResourceLock &s, bool fVendor)
 			if ( fFullInterp )	// modify the item
 				pItem->r_Verb(s, &g_Serv, NULL);
 			else
-				pItem->r_LoadVal(s, NULL, &g_Serv);
+				pItem->r_LoadVal(s, NULL, NULL);
 		}
 		else
 		{

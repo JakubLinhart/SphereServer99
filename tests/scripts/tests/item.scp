@@ -1,0 +1,12 @@
+[function test_item]
+serv.smsg "test_items\n"
+
+var(amount,321)
+finduid(010000).newitem(i_log)
+lastnew.cont=finduid(010000).findid(i_backpack)
+lastnew.amount=123
+ShouldBeSameString("item properties/global variable conflict",123,<lastnew.amount>)
+lastnew.remove
+var.amount.remove
+
+serv.smsg "\n"
