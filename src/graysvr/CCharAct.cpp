@@ -2062,15 +2062,56 @@ bool CChar::Horse_Mount(CChar *pHorse)
 		return false;
 	}
 
-	TCHAR *pszMountID = Str_GetTemp();
-	sprintf(pszMountID, "mount_0x%x", pHorse->GetDispID());
-	LPCTSTR pszMemoryID = g_Exp.m_VarDefs.GetKeyStr(pszMountID);
+	CCharBase* pCharDef = pHorse->Char_GetDef();
+	ASSERT(pCharDef);
 
-	RESOURCE_ID rid = g_Cfg.ResourceGetID(RES_QTY, pszMemoryID);
+	static const WORD g_Item_Horse_Mounts[][2] =
+	{
+		ITEMID_M_HORSE1,		CREID_HORSE1,
+		ITEMID_M_HORSE2,		CREID_HORSE2,
+		ITEMID_M_HORSE3,		CREID_HORSE3,
+		ITEMID_M_HORSE4,		CREID_HORSE4,
+		ITEMID_M_OSTARD_DES,	CREID_Ostard_Desert,	// t2A
+		ITEMID_M_OSTARD_Frenz,	CREID_Ostard_Frenz,		// t2A
+		ITEMID_M_OSTARD_For,	CREID_Ostard_Forest,	// t2A
+		ITEMID_M_LLAMA,			CREID_Llama,			// t2A
+		ITEMID_M_KIRIN,			CREID_KIRIN,			// lbr
+		ITEMID_M_SEAHORSE,	CREID_SEAHORSE,
+		ITEMID_M_DARK_STEED,	CREID_DARK_STEED,
+		ITEMID_M_ETHEREAL_HORSE,	CREID_ETHEREAL_HORSE,
+		ITEMID_M_NIGHTMARE,		CREID_NIGHTMARE,
+		ITEMID_M_SILVER_STEED,	CREID_SILVER_STEED,
+		ITEMID_M_BRITANNIAN_WARHORSE,	CREID_BRITANNIAN_WARHORSE,
+		ITEMID_M_MAGECOUNCIL_WARHORSE,	CREID_MAGECOUNCIL_WARHORSE,
+		ITEMID_M_MINAX_WARHORSE,	CREID_MINAX_WARHORSE,
+		ITEMID_M_SHADOWLORD_WARHORSE,	CREID_SHADOWLORD_WARHORSE,
+		ITEMID_M_ETHEREAL_LLAMA,	CREID_ETHEREAL_LLAMA,
+		ITEMID_M_ETHEREAL_OSTARD,	CREID_ETHEREAL_OSTARD,
+		ITEMID_M_UNICORN,		CREID_UNICORN,			// lbr
+		ITEMID_M_RIDGEBACK1,	CREID_RIDGEBACK1,		// lbr
+		ITEMID_M_RIDGEBACK2,	CREID_RIDGEBACK2,		// lbr
+		ITEMID_M_BEETLE,		CREID_GIANT_BEETLE,			// lbr
+		ITEMID_M_SKELETAL_MOUNT, CREID_SKELETAL_MOUNT,	// lbr
+		ITEMID_M_SWAMPDRAGON1,	CREID_SWAMP_DRAGON1,	// lbr
+		ITEMID_M_SWAMPDRAGON2,	CREID_SWAMP_DRAGON2,	// lbr
+		0,0,
+	};
 
-	ITEMID_TYPE id = static_cast<ITEMID_TYPE>(rid.GetResIndex());
-	if ( id <= ITEMID_NOTHING )
-		return false;
+	ITEMID_TYPE id = pCharDef->m_MountID;
+
+	for (int i = 0; id == ITEMID_NOTHING; i++)
+	{
+		if (i >= COUNTOF(g_Item_Horse_Mounts))
+		{
+			return(false);
+		}
+
+		if (pHorse->GetDispID() == g_Item_Horse_Mounts[i][1])
+		{
+			id = (ITEMID_TYPE)g_Item_Horse_Mounts[i][0];
+			break;
+		}
+	}
 
 	if ( m_pClient && m_pClient->m_pHouseDesign )	// can't mount while in house design mode
 		return false;

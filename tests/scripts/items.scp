@@ -176,4 +176,17 @@ LAYER=layer_bankbox
 TYPE=T_EQ_BANK_BOX
 TDATA2=04a
 
+[ITEMDEF 03ea6]
+//ship (really used as horse equipped)
+DEFNAME=i_mt_llama
+TYPE=T_EQ_HORSE
+LAYER=layer_horse
+
+[ITEMDEF 020f6]
+DEFNAME=i_pet_llama
+NAME=Llama
+TYPE=T_FIGURINE
+TDATA3=c_llama
+
+
 [EOF]

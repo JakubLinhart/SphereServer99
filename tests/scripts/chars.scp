@@ -35,3 +35,10 @@ attack=8
 ARMOR=12
 moverate=3
 
+[CHARDEF 0dc]
+mountid=i_mt_llama
+DEFNAME=c_llama
+NAME=Lama
+ANIM=01fff
+ICON=i_pet_LLAMA
+CAN=MT_WALK|MT_RUN

@@ -24,16 +24,19 @@ t_container			1	// any unlocked container or corpse. CContainer based
 t_weapon_fence		14 	// can't be used to chop trees. (make kindling)
 t_spell				28 	// = magic spell effect.
 t_scroll		    32 	// = magic scroll
+t_figurine			37 	// = magic figure that turns into a creature when activated.
 t_log				43 	// = make into furniture etc. lumberlogs
 t_multi				47 	// = multi part object like house or ship.
 t_sign_gump			56 	// = Things like grave stones and sign plaques
 t_gold				72 	// = gold coin
 t_eq_memory_obj		74 	// = A Char has a memory link to some object. (I am fighting with someone. This records the fight.)
+t_eq_horse			76 	// = equipped horse object represents a riding horse to the client.
 t_eq_bank_box		114 	// = an equipped bank box
 
 [DEFNAMES LAYERS]
 layer_hand1     		 1
 layer_hand2              2
+layer_horse		    	25	// ride this object. (horse objects are strange?)
 layer_bankbox			29 // contents of my bank box.
 layer_special			30	// Can be multiple of these. memories
 

@@ -13,6 +13,7 @@ CCharBase::CCharBase(CREID_TYPE id) : CBaseBaseDef(RESOURCE_ID(RES_CHARDEF, id))
 	m_soundGetHit = SOUND_NONE;
 	m_soundDie = SOUND_NONE;
 	m_MaxFood = 0;
+	m_MountID = (ITEMID_TYPE)0;
 	m_defense = 0;
 	m_defenseBase = 0;
 	m_defenseRange = 0;
@@ -203,6 +204,9 @@ bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 			sVal = pszTmp;
 			break;
 		}
+		case CBC_MOUNTID:
+			sVal.FormatUid(m_MountID);
+			break;
 		case CBC_DEX:
 			sVal.FormatVal(m_Dex);
 			break;
@@ -239,9 +243,6 @@ bool CCharBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, C
 			break;
 		case CBC_MAXFOOD:
 			sVal.FormatVal(m_MaxFood);
-			break;
-		case CBC_MOUNTID:
-			sVal.FormatVal(0);
 			break;
 		case CBC_MOVERATE:
 			sVal.FormatVal(m_iMoveRate);
@@ -364,6 +365,7 @@ bool CCharBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* p
 			m_MaxFood = static_cast<int>(s.GetArgVal());
 			break;
 		case CBC_MOUNTID:
+			m_MountID = static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, s.GetArgStr()));
 			break;
 		case CBC_MOVERATE:
 			m_iMoveRate = static_cast<short>(s.GetArgVal());

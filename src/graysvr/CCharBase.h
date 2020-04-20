@@ -31,6 +31,7 @@ public:
 	WORD m_defense;			// base defense (basic to body type)
 	WORD m_attack;
 	DWORD m_Anims;			// bitmask of animations available for monsters (ANIM_TYPE)
+	ITEMID_TYPE m_MountID;	// Can creature be mounted?
 	HUE_TYPE m_wBloodHue;	// when damaged, what color is the blood (-1 = no blood)
 	HUE_TYPE m_wColor;
 
