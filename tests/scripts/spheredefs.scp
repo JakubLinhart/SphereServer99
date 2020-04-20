@@ -32,6 +32,7 @@ t_gold				72 	// = gold coin
 t_eq_memory_obj		74 	// = A Char has a memory link to some object. (I am fighting with someone. This records the fight.)
 t_eq_horse			76 	// = equipped horse object represents a riding horse to the client.
 t_eq_bank_box		114 	// = an equipped bank box
+t_eq_script			176	// Pure scriptable item equipped.
 
 [DEFNAMES LAYERS]
 layer_hand1     		 1
@@ -69,5 +70,14 @@ spellflag_harmcaster		04000
 [DEFNAMES ATTR_FLAGS]
 // apply to items
 attr_identified		00001	// This is the identified name. ???
+
+// Brain types
+[DEFNAMES BRAINS]
+BRAIN_NONE             0
+BRAIN_ANIMAL           1
+BRAIN_HUMAN            2
+
+[DEFNAMES HUES_RANGE]	// These are ranges of hues from hues.mul.
+colors_skin	{1002 1057}
 
 [EOF]

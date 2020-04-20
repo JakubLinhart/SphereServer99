@@ -1487,6 +1487,14 @@ bool CScriptObj::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 		pRef = g_World.m_uidObj.ObjFind();
 		return true;
 	}
+	else if (!strnicmp(pszKey, "LASTNEWCHAR", 11))
+	{
+		pszKey += 11;
+		if (*pszKey == '.')
+			pszKey++;
+		pRef = g_World.m_uidLastNewChar.CharFind();
+		return true;
+	}
 	else if ( !strnicmp(pszKey, "LASTNEW", 7) )
 	{
 		pszKey += 7;

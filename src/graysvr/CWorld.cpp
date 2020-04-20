@@ -1605,14 +1605,18 @@ void CWorld::r_Write(CScript &s)
 bool CWorld::r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef)
 {
 	ADDTOCALLSTACK("CWorld::r_GetRef");
-	if ( !strnicmp(pszKey, "LASTNEW", 7) )
+	if (!strnicmp(pszKey, "LASTNEWCHAR", 11))
+	{
+		pszKey += 11;
+		SKIP_SEPARATORS(pszKey);
+		pRef = m_uidLastNewChar.CharFind();
+		return true;
+	}
+	else if ( !strnicmp(pszKey, "LASTNEW", 7) )
 	{
 		pszKey += 7;
 		SKIP_SEPARATORS(pszKey);
 		pRef = m_uidLastNewItem.ItemFind();
-		if (!pRef)
-			pRef = m_uidLastNewChar.CharFind();
-
 		return true;
 	}
 	return false;
