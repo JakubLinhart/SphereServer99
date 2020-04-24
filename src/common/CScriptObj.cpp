@@ -147,8 +147,12 @@ TRIGRET_TYPE CScriptObj::OnTriggerForLoop(CScript &s, int iType, CTextConsole *p
 		CGString sOrig;
 		TemporaryString pszTemp;
 		int i = 0;
+		CExpression expr(pArgs, pSrc, this);
+		LPCTSTR pszArg = s.GetArgStr();
+		if (*(pszArg - 1) == '(')
+			pszArg--;
 
-		sOrig.Copy(s.GetArgStr());
+		sOrig.Copy(pszArg);
 		for (;;)
 		{
 			++iLoopsMade;
@@ -159,7 +163,6 @@ TRIGRET_TYPE CScriptObj::OnTriggerForLoop(CScript &s, int iType, CTextConsole *p
 			strcpy(pszTemp, sOrig.GetPtr());
 			pszCond = pszTemp;
 			ParseText(pszCond, pSrc, 0, pArgs);
-			CExpression expr(pArgs, pSrc, this);
 			if ( !expr.GetVal(pszCond) )
 				break;
 
@@ -661,6 +664,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			{
 				case SK_IF:
 				case SK_RETURN:
+				case SK_WHILE:
 					s.SetArgRaw(const_cast<TCHAR*>(peekedKey));
 					strncpy(tempKey, pszKey, keyLength);
 					tempKey.setAt(keyLength, '\0');
@@ -1112,7 +1116,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 						EXC_SET("verb");
 						fRes = r_Verb(s, pSrc, pArgs);
 						if (!fRes)
-							fRes = r_VerbGlobal(s, pSrc, pArgs);
+							fRes = r_VerbVariables(s, pSrc, pArgs);
 					}
 
 					if (!fRes)
@@ -2488,7 +2492,7 @@ bool CScriptObj::r_VerbChained(CScript &s, CGString& sVal, CTextConsole* pSrc, C
 	return true;
 }
 
-bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+bool CScriptObj::r_VerbVariables(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
 {
 
 	LPCTSTR pszKey = s.GetKey();
@@ -2503,6 +2507,18 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 			CScript chainedScript(pszKey, s.GetArgStr());
 			return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
 		}
+
+		if (pArgs)
+		{
+			CVarDefCont* pLocalVar = pArgs->m_VarsLocal.GetKey(varName, NULL, pSrc);
+			if (pLocalVar)
+			{
+				sVal = pLocalVar->GetValStr();
+				CScript chainedScript(pszKey, s.GetArgStr());
+				return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
+			}
+		}
+
 		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
 		if (pDef)
 		{
@@ -2575,6 +2591,8 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 			return r_VerbChained(chainedScript, sVal, pSrc, pArgs);
 		}
 	}
+
+	return false;
 }
 
 bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)

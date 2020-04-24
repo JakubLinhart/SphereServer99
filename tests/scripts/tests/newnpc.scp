@@ -7,4 +7,10 @@ ShouldBeSameString("lastnewchar is uid",<lastnewchar>,<lastnewchar.uid>)
 ShouldBeTrue("act is set",<finduid(010000).act>,<lastnewchar.id>)
 lastnewchar.remove
 
+finduid(010000).newnpc(c_man)
+arg(mylastnewchar,<lastnewchar>)
+mylastnewchar.newequip(i_dagger)
+ShouldBeSameString("can call function on variable containing lastnewchar",dagger,<mylastnewchar.findid(i_dagger).name>)
+mylastnewchar.remove
+
 serv.smsg "\n"
