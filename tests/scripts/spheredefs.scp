@@ -68,8 +68,9 @@ spellflag_evil			02000//odrazi se
 spellflag_harmcaster		04000
 
 [DEFNAMES ATTR_FLAGS]
-// apply to items
 attr_identified		00001	// This is the identified name. ???
+attr_decay		    00002	// Timer currently set to decay.
+attr_invis		    00080	// Gray hidden item (to GM's or owners?)
 
 // Brain types
 [DEFNAMES BRAINS]

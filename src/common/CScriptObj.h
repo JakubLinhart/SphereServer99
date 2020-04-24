@@ -122,7 +122,7 @@ public:
 	virtual bool r_Load(CScript &s);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_WriteValChained(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
-	virtual bool r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
+	virtual bool r_VerbVariables(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);	// execute command from script
 	virtual bool r_VerbChained(CScript& s, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 

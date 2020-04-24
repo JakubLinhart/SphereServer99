@@ -5,7 +5,8 @@ var(amount,321)
 finduid(010000).newitem(i_log)
 lastnew.cont=finduid(010000).findid(i_backpack)
 lastnew.amount=123
-ShouldBeSameString("item properties/global variable conflict",123,<lastnew.amount>)
+ShouldBeSameString("set amount",123,<lastnew.amount>)
+
 lastnew.remove
 var.amount.remove
 

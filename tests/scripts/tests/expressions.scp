@@ -29,6 +29,8 @@ ShouldBeSameString("empty parentheses with whitespace",0,<eval()>)
 
 ShouldBeSameString("parentheses - add",5,<eval(2+3)>)
 ShouldBeSameString("parentheses - mult",6,<eval(2*3)>)
+ShouldBeSameString("parentheses - bitwise or",6,<eval(2|4)>)
+ShouldBeSameString("parentheses - bitwise and",4,<eval(6&4)>)
 ShouldBeSameString("nested parentheses - priority - mult",10,<eval((2+3)*(5-3))>)
 ShouldBeSameString("nested parentheses - nested",15,<eval(1+(2+(3+(4+5))))>)
 
