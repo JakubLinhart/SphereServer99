@@ -1467,6 +1467,7 @@ bool CClient::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs) 
 			g_NetworkManager.flush(m_NetState);
 			break;
 		case CV_RESEND:
+		case CV_RESYNC:
 			addReSync();
 			break;
 		case CV_SAVE:
