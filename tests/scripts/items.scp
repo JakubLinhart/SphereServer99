@@ -182,6 +182,13 @@ DEFNAME=i_mt_llama
 TYPE=T_EQ_HORSE
 LAYER=layer_horse
 
+on=@create
+var(i_mt_llama_create_called,"yes")
+
+on=@equip
+var(i_mt_llama_equip_called,"yes")
+
+
 [ITEMDEF 020f6]
 DEFNAME=i_pet_llama
 NAME=Llama

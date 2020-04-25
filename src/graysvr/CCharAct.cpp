@@ -2162,6 +2162,11 @@ bool CChar::Horse_Mount(CChar *pHorse)
 	pItem->SetType(IT_EQ_HORSE);
 	pItem->SetTimeout(TICK_PER_SEC);
 	LayerAdd(pItem, LAYER_HORSE);		// equip the horse item
+	if (IsTrigUsed(TRIGGER_EQUIP) || IsTrigUsed(TRIGGER_ITEMEQUIP))
+	{
+		pItem->OnTrigger(ITRIG_EQUIP, this);
+	}
+
 	pHorse->StatFlag_Set(STATF_Ridden);
 	pHorse->Skill_Start(NPCACT_RIDDEN);
 	return true;

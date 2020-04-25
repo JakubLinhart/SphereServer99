@@ -1,0 +1,11 @@
+[function test_mounts_client]
+serv.smsg("test_mounts_client\n")
+
+var(i_mt_llama_create_called,no)
+var(i_mt_llama_equip_called,no)
+arg(llama,0D728B)
+finduid(arg(llama)).dclick
+ShouldBeSameString("calls create on mt item",yes,"<var(i_mt_llama_create_called)>")
+ShouldBeSameString("calls equip on mt item",yes,"<var(i_mt_llama_equip_called)>")
+
+serv.smsg("\n")
