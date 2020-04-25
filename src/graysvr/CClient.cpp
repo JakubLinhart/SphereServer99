@@ -745,6 +745,7 @@ bool CClient::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CSc
 		case CC_CLIENTISSA:
 			sVal.FormatVal(m_NetState->isClientEnhanced());
 			break;
+		case CC_CLIENTVER:
 		case CC_CLIENTVERSION:
 		{
 			TCHAR szVersion[128];
