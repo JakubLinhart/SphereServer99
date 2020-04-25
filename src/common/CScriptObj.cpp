@@ -2615,7 +2615,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 		}
 		// else just fall through. as they seem to be setting the pointer !?
 	}
-	if (r_GetRefNew(pszKey, pRef, s.GetArgRaw(), NULL, pSrc))
+	if (r_GetRefNew(pszKey, pRef, s.GetArgRaw(), pArgs, pSrc))
 	{
 		if (pszKey[0])
 		{
