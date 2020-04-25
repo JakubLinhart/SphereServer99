@@ -1017,6 +1017,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			return false;
 		}
 		case OC_DISTANCE:
+		case OC_DISTANCEFROM:
 		{
 			pszKey += 8;
 			SKIP_SEPARATORS(pszKey);
