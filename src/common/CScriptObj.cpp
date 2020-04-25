@@ -1116,7 +1116,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 						EXC_SET("verb");
 						fRes = r_Verb(s, pSrc, pArgs);
 						if (!fRes)
-							fRes = r_VerbVariables(s, pSrc, pArgs);
+							fRes = r_VerbGlobal(s, pSrc, pArgs);
 					}
 
 					if (!fRes)
@@ -2492,7 +2492,7 @@ bool CScriptObj::r_VerbChained(CScript &s, CGString& sVal, CTextConsole* pSrc, C
 	return true;
 }
 
-bool CScriptObj::r_VerbVariables(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
 {
 
 	LPCTSTR pszKey = s.GetKey();
