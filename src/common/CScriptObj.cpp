@@ -2808,7 +2808,11 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 				{
 					TCHAR* ppArgs[2];
 					size_t iCount;
-					iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
+					LPCTSTR pszRawArgs = s.GetArgRaw();
+					TemporaryString varArgList;
+					Str_ParseArgumentList(pszRawArgs, varArgList);
+					Str_ParseArgumentEnd(pszRawArgs, false);
+					iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",");
 					TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 					if (iCount > 1)
 					{
@@ -2837,17 +2841,13 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 					}
 					else
 					{
-						TemporaryString varName;
-						LPCTSTR cmd = ppArgs[0];
-						Str_ParseArgumentList(cmd, varName);
-						Str_ParseArgumentEnd(cmd, true);
-						if (*cmd == '.')
+						if (*pszRawArgs == '.')
 						{
-							cmd++;
-							CObjBase* pObj = static_cast<CGrayUID>(g_Exp.m_VarGlobals.GetKeyNum(varName)).ObjFind();
+							pszRawArgs++;
+							CObjBase* pObj = static_cast<CGrayUID>(g_Exp.m_VarGlobals.GetKeyNum(varArgList)).ObjFind();
 							if (pObj)
 							{
-								CScript subS(cmd);
+								CScript subS(pszRawArgs);
 								return pObj->r_Verb(subS, pSrc, pArgs);
 							}
 						}
@@ -3410,7 +3410,11 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			bool fQuoted = false;
 			TCHAR* ppArgs[2];
 			size_t iCount;
-			iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetKey() + 4), ppArgs, COUNTOF(ppArgs), ",");
+			LPCTSTR pszRawArgs = s.GetArgRaw();
+			TemporaryString varArgList;
+			Str_ParseArgumentList(pszRawArgs, varArgList);
+			Str_ParseArgumentEnd(pszRawArgs, false);
+			iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",");
 			if (iCount > 1)
 			{
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
@@ -3447,17 +3451,13 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			}
 			else
 			{
-				TemporaryString varName;
-				LPCTSTR cmd = ppArgs[0];
-				Str_ParseArgumentList(cmd, varName);
-				Str_ParseArgumentEnd(cmd, true);
-				if (*cmd == '.')
+				if (*pszRawArgs == '.')
 				{
-					cmd++;
-					CObjBase* pObj = static_cast<CGrayUID>(m_VarsLocal.GetKeyNum(varName)).ObjFind();
+					pszRawArgs++;
+					CObjBase* pObj = static_cast<CGrayUID>(m_VarsLocal.GetKeyNum(varArgList)).ObjFind();
 					if (pObj)
 					{
-						CScript subS(cmd);
+						CScript subS(pszRawArgs);
 						return pObj->r_Verb(subS, pSrc, pArgs);
 					}
 				}

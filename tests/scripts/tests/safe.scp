@@ -67,6 +67,7 @@ finduid(010000).test_safe_chained
 serv.smsg "\n"
 
 [function test_safe_chained]
+p_x=5398
 ShouldBeSamestring("r_write object property","5398","<safe p_x>")
 ShouldBeSamestring("r_write object property - with parentheses","5398","<safe(p_x)>")
 ShouldBeSamestring("r_write object property - with dot","5398","<safe.p_x>")

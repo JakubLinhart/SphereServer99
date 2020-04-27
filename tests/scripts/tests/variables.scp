@@ -50,6 +50,9 @@ arg(localVar2,#010000)
 localVar2.f_was_function_call
 ShouldBeSameString("direct chained local variable parameterless call",yes,<var(function_was_called)>)
 
+arg(localVar2).p=5400,2553
+ShouldBeSameString("set chained local variable value containing commas on char","5400,2553","<arg(localVar2).p>")
+
 var(localVar3,321)
 arg(localVar3,123)
 ShouldBeSameString("local variable has higher priority than global variable",123,<localVar3>)
@@ -103,6 +106,11 @@ var(variable2,#010000)
 variable2.f_was_function_call
 ShouldBeSameString("direct chained global variable parameterless call",yes,<var(function_was_called)>)
 
+var(variable2).p=5399,2552
+ShouldBeSameString("set chained global variable value containing commas on","5399,2552","<var(variable2).p>")
+variable2.p=5398,2551
+ShouldBeSameString("set direct chained global variable value containing commas on","5398,2551","<variable2.p>")
+
 // globalSavedVariable has to be stored in save file
 ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 
@@ -119,3 +127,4 @@ ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 // ShouldBeSameString("chained call",DrZhor,<var(variable2).name>)
 
 serv.smsg "\n"
+

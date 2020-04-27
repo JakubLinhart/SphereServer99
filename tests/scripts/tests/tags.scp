@@ -43,6 +43,9 @@ finduid(010000).tag(localTag,#010000)
 finduid(010000).tag(localTag).f_was_function_call
 ShouldBeSameString("chained tag parameterless call",yes,<var(function_was_called)>)
 
+finduid(010000).tag(localTag).p=5397,2550
+ShouldBeSameString("set chained tag value containing commas on char","5397,2550","<finduid(010000).tag(localTag).p>")
+
 finduid(010000).test_tags_nonchained
 test_tags_on_arguments(<finduid(010000)>)
 
