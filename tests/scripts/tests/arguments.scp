@@ -26,6 +26,10 @@ var(function_was_called,0)
 argv(0).f_was_function_call
 ShouldBeSameString("direct chained argument parameterless call",yes,<var(function_was_called)>)
 
+var(function_was_called,0)
+argv(0).f_was_function_call("asdf")
+ShouldBeSameString("direct chained argument call",asdf,<var(function_was_called)>)
+
 [function test_arguments_core_multiple]
 if (strcmp("asdf",<argv(0)>))
   tst_fail("multiple arguments - argv(0)")
