@@ -5,3 +5,4 @@ test_regions_client
 test_typedef_client
 test_player_client
 test_mounts_client
+test_timers_client

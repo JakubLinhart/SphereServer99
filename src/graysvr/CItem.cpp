@@ -5025,7 +5025,11 @@ bool CItem::OnTick()
 
 	if ( IsTrigUsed(TRIGGER_TIMER) || IsTrigUsed(TRIGGER_ITEMTIMER) )
 	{
-		iRet = OnTrigger( ITRIG_TIMER, &g_Serv );
+		CTextConsole* pSource = &g_Serv;
+		CChar* pTopChar = dynamic_cast<CChar*>(GetTopLevelObj());
+		if (pTopChar)
+			pSource = pTopChar;
+		iRet = OnTrigger( ITRIG_TIMER, pSource );
 		if ( iRet == TRIGRET_RET_TRUE )
 			return true;
 	}

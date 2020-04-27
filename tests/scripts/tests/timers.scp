@@ -1,0 +1,20 @@
+[function test_timers_client]
+serv.smsg "test_timers_client"
+
+finduid(010000).newitem(i_timer_src_test)
+finduid(010000).equip(<lastnew>)
+src=finduid(0D728B)
+
+serv.smsg "\n"
+
+[itemdef i_timer_src_test]
+id=i_memory
+type=t_eq_script
+name=timer src test
+
+on=@create
+timer=1
+
+on=@timer
+ShouldBeTrue("src is topobj char",<src>==010000)
+
