@@ -3343,7 +3343,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 		if (pObj)
 		{
 			pszKey++;
-			CScript subS(pszKey);
+			CScript subS(pszKey, s.GetArgStr());
 			return pObj->r_Verb(subS, pSrc, pArgs);
 		}
 	}
