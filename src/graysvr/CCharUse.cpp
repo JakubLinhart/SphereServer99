@@ -908,9 +908,9 @@ CChar *CChar::Use_Figurine(CItem *pItem, bool fCheckFollowerSlots)
 	// Create a new NPC if there's no one linked to this figurine 
 	bool fCreatedNewNPC = false;
 	CChar *pPet = pItem->m_itFigurine.m_UID.CharFind();
-	if ( !pPet )
+	CREID_TYPE id = pItem->m_itFigurine.m_ID;
+	if ( !pPet || pPet->GetDispID() != id )
 	{
-		CREID_TYPE id = pItem->m_itFigurine.m_ID;
 		if ( !id )
 		{
 			id = CItemBase::FindCharTrack(pItem->GetID());
