@@ -2,8 +2,10 @@
 serv.smsg "test_timers_client"
 
 finduid(010000).newitem(i_timer_src_test)
-finduid(010000).equip(<lastnew>)
 src=finduid(0D728B)
+lastnew.more1=123
+var(lastenew_timer_uid,<lastnew>)
+finduid(010000).equip(<lastnew>)
 
 serv.smsg "\n"
 
@@ -16,5 +18,7 @@ on=@create
 timer=1
 
 on=@timer
-ShouldBeTrue("src is topobj char",<src>==010000)
+ShouldBeTrue("test_timers_client - src is topobj char",<src>==010000)
+ShouldBeTrue("test_timers_client - more1",123,<more1>)
+ShouldBeSameString("test_timers_client - uid",<var(lastenew_timer_uid)>,<uid>)
 
