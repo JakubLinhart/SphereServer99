@@ -3421,7 +3421,15 @@ TRIGRET_TYPE CChar::OnTrigger(LPCTSTR pszTrigName, CTextConsole *pSrc, CScriptTr
 		pszTrigName = sm_szTrigName[iAction];
 	}
 	else
+	{
+		TemporaryString prefixedTrigName;
+		if (*pszTrigName != '@')
+		{
+			sprintf(prefixedTrigName, "@%s", pszTrigName);
+			pszTrigName = prefixedTrigName;
+		}
 		iAction = static_cast<CTRIG_TYPE>(FindTableSorted(pszTrigName, sm_szTrigName, COUNTOF(sm_szTrigName) - 1));
+	}
 
 	SetTriggerActive(pszTrigName);
 	TRIGRET_TYPE iRet = TRIGRET_RET_DEFAULT;

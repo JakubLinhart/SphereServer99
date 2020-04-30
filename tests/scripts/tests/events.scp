@@ -8,9 +8,15 @@ ShouldBeSameString("event on char without parentheses",1,<finduid(010000).iseven
 
 var(customTriggerVar,0)
 finduid(010000).trigger @customTrigger
-ShouldBeSameString("triggers custom trigger on event - without parentheses",customTriggerExecuted,<var(customTriggerVar)>)
+ShouldBeSameString("triggers custom trigger on event - without parentheses, with at",customTriggerExecuted,<var(customTriggerVar)>)
+
+var(customTriggerVar,0)
 finduid(010000).trigger(@customTrigger2)
-ShouldBeSameString("triggers custom trigger on event - without parentheses",customTrigger2Executed,<var(customTriggerVar)>)
+ShouldBeSameString("triggers custom trigger on event - with parentheses, at",customTrigger2Executed,<var(customTriggerVar)>)
+
+var(builtinTriggerVar,0)
+finduid(010000).trigger(death)
+ShouldBeSameString("triggers builtin trigger on event - with parentheses without at",deathExecuted,<var(builtinTriggerVar)>)
 
 finduid(010000).events -e_testevent
 ShouldBeSameString("removed event on char",0,<finduid(010000).isevent(e_testevent)>)
@@ -25,10 +31,31 @@ finduid(010000).trigger(@triggerexplicit)
 finduid(010000).events(-e_testevent)
 
 finduid(010000).newitem(i_event_test)
+
+var(builtinTriggerVar,0)
 finduid(010000).equip(<lastnew>)
+ShouldBeSameString("builtin event on item - implicit",equipExecuted,<var(builtinTriggerVar)>)
+
+var(builtinTriggerVar,0)
+lastnew.trigger(equip)
+ShouldBeSameString("builtin event on item - explicit with parentheses without at",equipExecuted,<var(builtinTriggerVar)>)
+
+// This doesn't work on Sphere 0.99
+// var(builtinTriggerVar,0)
+// lastnew.trigger(@equip)
+// ShouldBeSameString("builtin event on item - explicit with parentheses, at",equipExecuted,<var(builtinTriggerVar)>)
+
 lastnew.remove
 
 serv.smsg "\n"
+
+[itemdef i_backpack_event_test]
+id=i_backpack
+name=bakcpack event test
+
+on=@stackon
+serv.smsg("@stackon")
+return 1
 
 [events e_testevent]
 on=@skillstart
@@ -41,6 +68,9 @@ var(customTriggerVar,customTrigger2Executed)
 on=@triggerexplicit
 arg(local1,123)
 ShouldBeSameString("local variables in explicit trigger",123,<arg(local1)>)
+
+on=@death
+var(builtinTriggerVar,deathExecuted)
 
 [ITEMDEF 0f51]
 DEFNAME=i_event_test
@@ -63,6 +93,7 @@ DUPELIST=0f52
 on=@equip
 arg(local1,123)
 ShouldBeSameString("local variables in implicit trigger",123,<arg(local1)>)
+var(builtinTriggerVar,equipExecuted)
 
 [events e_allplayers]
 on=@login

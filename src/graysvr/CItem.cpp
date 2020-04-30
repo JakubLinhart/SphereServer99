@@ -2952,6 +2952,13 @@ TRIGRET_TYPE CItem::OnTrigger( LPCTSTR pszTrigName, CTextConsole * pSrc, CScript
 	}
 	else
 	{
+		TemporaryString prefixedTrigName;
+		if (*pszTrigName != '@')
+		{
+			sprintf(prefixedTrigName, "@%s", pszTrigName);
+			pszTrigName = prefixedTrigName;
+		}
+		
 		iAction = (ITRIG_TYPE) FindTableSorted( pszTrigName, sm_szTrigName, COUNTOF(sm_szTrigName)-1 );
 	}
 	SetTriggerActive(pszTrigName);
