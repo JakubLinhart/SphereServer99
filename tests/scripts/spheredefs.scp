@@ -32,6 +32,7 @@ t_gold				72 	// = gold coin
 t_eq_memory_obj		74 	// = A Char has a memory link to some object. (I am fighting with someone. This records the fight.)
 t_eq_horse			76 	// = equipped horse object represents a riding horse to the client.
 t_eq_bank_box		114 	// = an equipped bank box
+t_spellicon			133
 t_eq_script			176	// Pure scriptable item equipped.
 
 [DEFNAMES LAYERS]
@@ -80,5 +81,26 @@ BRAIN_HUMAN            2
 
 [DEFNAMES HUES_RANGE]	// These are ranges of hues from hues.mul.
 colors_skin	{1002 1057}
+
+[DEFNAMES SOUNDS]
+snd_SPELL_INVISIBILITY               515
+
+[DEFNAMES SPELL_FLAGS]
+// spell flags.
+SPELLFLAG_DIR_ANIM		00001 // evoke type cast or directed. (animation)
+SPELLFLAG_TARG_OBJ		00002 // need to target an object?
+SPELLFLAG_TARG_CHAR		00004 // needs to target a living thing
+SPELLFLAG_TARG_XYZ		00008 // can just target a location.
+SPELLFLAG_HARM			00010 // the spell is in some way harmfull.
+SPELLFLAG_FX_BOLT		00020 // effect is a bolt to the target.
+SPELLFLAG_FX_TARG		00040 // effect is at the target.
+SPELLFLAG_FIELD			00080 // create a field of stuff. (fire,poison,wall)
+SPELLFLAG_SUMMON		00100 // summon a creature.
+SPELLFLAG_GOOD			00200 // the spell is a good spell. You intend to help to receiver.
+SPELLFLAG_RESIST		00400 // allowed to resist this.	
+spellflag_noLOS			00800//nepotrebuje LOS k efektu (snad)
+spellflag_SM			01000//vyse efektu zalezi na SM, jinak na magery a rozsah EFFECT
+spellflag_evil			02000//odrazi se
+spellflag_harmcaster		04000
 
 [EOF]

@@ -1,0 +1,31 @@
+[ITEMDEF 020ab]
+//Invisibility
+DEFNAME=i_rune_invisibility
+TYPE=T_SPELLICON
+
+[ITEMDEF 01f58]
+DEFNAME=i_scroll_invisibility
+RESOURCES=i_scroll_blank//, i_reag_blood_moss, i_reag_nightshade
+TYPE=T_SCROLL
+WEIGHT=1.0
+//CIRCLE=6
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Invisibility Scroll
+
+[Spell 44]
+// NOTE: Used primarily to regain mana while fighting or cast helpful spells without incurring attack. Duration should reflect the non-offensive use of this spell
+DEFNAME=s_invisibility
+NAME=Invisibility
+SOUND=snd_SPELL_INVISIBILITY
+RUNES=ALX
+CASTTIME=3.0
+//RESOURCES=i_reag_blood_moss,i_reag_nightshade
+RUNEITEM=i_rune_INVISIBILITY
+SCROLLITEM=i_scroll_INVISIBILITY
+FLAGS=SPELLFLAG_GOOD//SPELLFLAG_TARG_CHAR
+EFFECTID=0
+EFFECT=0
+DURATION=1*60.0,5*60.0
+MANAUSE=20
+SKILLREQ=MAGERY 60.0

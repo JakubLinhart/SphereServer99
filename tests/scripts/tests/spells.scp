@@ -1,0 +1,3 @@
+[function test_spelleffect_invisibility]
+spelleffect(s_invisibility,1000)
+src.sysmessage("test_spelleffect_invisibility done")

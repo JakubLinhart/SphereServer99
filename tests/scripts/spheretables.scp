@@ -1,6 +1,7 @@
 [RESOURCES]
 spheredefs.scp
 skills.scp
+spelldefs.scp
 items.scp
 chars.scp
 tests/
