@@ -532,6 +532,85 @@ TCHAR * Str_TrimWhitespace(TCHAR * pStr)
 	return(pStr);
 }
 
+bool Str_ParseExpressionArgument(TCHAR* pLine, TCHAR** ppLine2, LPCTSTR pszSep)
+{
+	// Parse a list of args. Just get the next arg.
+	// similar to strtok()
+	// RETURN: true = the second arg is valid.
+
+	if (pszSep == NULL)	// default sep.
+		pszSep = "=, \t";
+
+	// skip leading white space.
+	TCHAR* pNonWhite = pLine;
+	GETNONWHITESPACE(pNonWhite);
+	if (pNonWhite != pLine)
+	{
+		memmove(pLine, pNonWhite, strlen(pNonWhite) + 1);
+	}
+
+	TCHAR ch;
+	bool bQuotes = false;
+	int macroLevel = 0;
+	int parenthesesLevel = 0;
+	bool ignoreMacros = strchr(pszSep, '<');
+	for (; ; pLine++)
+	{
+		ch = *pLine;
+		if (ch == '(')
+			parenthesesLevel++;
+		if (ch == ')')
+			parenthesesLevel--;
+		if (parenthesesLevel)
+			continue;
+		if (ch == '"')	// quoted argument
+		{
+			bQuotes = !bQuotes;
+			continue;
+		}
+		if (!ignoreMacros && ch == '<' && !bQuotes)
+		{
+			macroLevel++;
+			continue;
+		}
+		if (!ignoreMacros && ch == '>' && !bQuotes)
+		{
+			macroLevel++;
+			continue;
+		}
+		if (ch == '\0')	// no args i guess.
+		{
+			if (ppLine2 != NULL)
+			{
+				*ppLine2 = pLine;
+			}
+			return false;
+		}
+		if (strchr(pszSep, ch) && (bQuotes == false) && !macroLevel)
+		{
+			break;
+		}
+	}
+
+	*pLine++ = '\0';
+	if (IsSpace(ch))	// space separators might have other seps as well ?
+	{
+		GETNONWHITESPACE(pLine);
+		ch = *pLine;
+		if (ch && strchr(pszSep, ch))
+		{
+			pLine++;
+		}
+	}
+
+	// skip leading white space on args as well.
+	if (ppLine2 != NULL)
+	{
+		*ppLine2 = Str_TrimWhitespace(pLine);
+	}
+	return true;
+}
+
 bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep)
 {
 	// Parse a list of args. Just get the next arg.

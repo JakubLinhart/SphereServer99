@@ -1905,16 +1905,17 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		{
 			TCHAR * ppArgs[3];
 			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
-			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
-			if (iQty != 3)
-				return false;
+			Str_ParseExpressionArgument(const_cast<TCHAR*>(pszKey), ppArgs, ",");
 
 			CExpression expr(pArgs, pSrc, this);
-			INT64 conditionValue = expr.GetVal(ppArgs[0]);
+			INT64 conditionValue = expr.GetVal(pszKey);
+
+			Str_Parse(ppArgs[0], &(ppArgs[1]), ",");
+
 			if (conditionValue)
-				sVal = ppArgs[1];
+				sVal = ppArgs[0];
 			else
-				sVal = ppArgs[2];
+				sVal = ppArgs[1];
 			return true;
 		}
 		case SSC_ISBIT:

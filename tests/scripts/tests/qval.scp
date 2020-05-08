@@ -14,5 +14,6 @@ ShouldBeSameString("false - without parentheses",false,<qval 0,true,false>)
 
 ShouldBeSameString("true - chained",true,<qval.1,true,false>)
 ShouldBeSameString("false - chained",false,<qval.0,true,false>)
+ShouldBeSameString("true - with expression call with 2 arguments",true,<qval(isbit(4,2),true,false)>)
 
 serv.smsg("\n")
