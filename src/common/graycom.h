@@ -105,6 +105,7 @@ struct CGrayUIDBase		// A unique system serial id (4 bytes long)
 	// This is a ref to a game object. It may or may not be valid
 	// The top few bits are just flags
 	#define UID_CLEAR			0
+	#define UID_INDEX_CLEAR		0
 	#define UID_UNUSED			0xFFFFFFFF	// 0 = not used as well
 
 	#define UID_F_ITEM			0x40000000	// CItem as apposed to CChar based
@@ -207,6 +208,8 @@ public:
 		return GetObjUID();
 	}
 };
+
+#define CSphereUID CGrayUID
 
 struct CGrayUID : public CGrayUIDBase
 {

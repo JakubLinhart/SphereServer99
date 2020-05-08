@@ -836,12 +836,14 @@ public:
 	void SendPacket(TCHAR *pszKey);
 	void LogOpenedContainer(const CItemContainer *pContainer);
 
+	bool IsPrivFlag(WORD wPrivFlags) const { return IsPriv(wPrivFlags); }
 	bool IsPriv(WORD wPrivFlags) const
 	{
 		if ( m_pAccount )
 			return m_pAccount->IsPriv(wPrivFlags);
 		return false;
 	}
+	void SetPrivFlag(WORD wPrivFlags) { SetPrivFlags(wPrivFlags); }
 	void SetPrivFlags(WORD wPrivFlags)
 	{
 		if ( m_pAccount )

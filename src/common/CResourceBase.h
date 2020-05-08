@@ -2,6 +2,8 @@
 #define _INC_CRESOURCEBASE_H
 #pragma once
 
+#define RES_SkillMenu RES_SKILLMENU
+
 enum RES_TYPE	// all the script resource blocks we know how to deal with
 {
 	// NOTE: sphere.ini and spheretables.scp are read at start

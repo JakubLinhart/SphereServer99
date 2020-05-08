@@ -104,10 +104,12 @@ private:
 	#define DEBUG_WARN(_x_)		g_pLog->EventWarn _x_
 	#define DEBUG_MSG(_x_)		g_pLog->EventEvent _x_
 	#define DEBUG_MYFLAG(_x_)	g_pLog->Event _x_
+	#define DEBUG_TRACE(_x_)	g_pLog->EventDebug _x_
 #else
 	#define DEBUG_WARN(_x_)
 	#define DEBUG_MSG(_x_)
 	#define DEBUG_MYFLAG(_x_)
+	#define DEBUG_TRACE(_x_)
 #endif
 
 extern struct CLog : public CFileText, public CEventLog

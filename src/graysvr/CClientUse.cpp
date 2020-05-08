@@ -894,107 +894,100 @@ size_t CClient::Cmd_Skill_Menu_Build(RESOURCE_ID_BASE rid, int iSelect, CMenuIte
 bool CClient::Cmd_Skill_Magery(SPELL_TYPE iSpell, CObjBase *pSrc)
 {
 	ADDTOCALLSTACK("CClient::Cmd_Skill_Magery");
-	// Start casting a spell. Prompt for target.
-	// ARGS:
-	//	pSrc = you the char.
-	//	pSrc = magic object is source ?
 
+	// start casting a spell. prompt for target.
+	// pSrc = you the char.
+	// pSrc = magic object is source ?
+	static const TCHAR sm_Txt_Summon[] = "Where would you like to summon the creature ?";
+
+	CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef(iSpell);
+	if (pSpellDef == NULL)
+		return(HRES_INVALID_INDEX);
+
+	// Do we have the regs ? etc.
 	ASSERT(m_pChar);
+	if (!m_pChar->Spell_CanCast(iSpell, true, pSrc, true))
+		return HRES_INVALID_HANDLE;
 
-	const CSpellDef *pSpellDef;
-	if ( IsSetMagicFlags(MAGICF_PRECAST) && (iSpell == m_tmSkillMagery.m_Spell) )
-	{
-		pSpellDef = g_Cfg.GetSpellDef(m_tmSkillMagery.m_Spell);
-		if ( pSpellDef && !pSpellDef->IsSpellType(SPELLFLAG_NOPRECAST) )
-			iSpell = m_tmSkillMagery.m_Spell;
-	}
-	else
-		pSpellDef = g_Cfg.GetSpellDef(iSpell);
-
-	if ( !pSpellDef )
-		return false;
-
-	// Do we have the regs? Etc.
-	if ( !m_pChar->Spell_CanCast(iSpell, true, pSrc, true) )
-		return false;
+	DEBUG_TRACE(("%x:Cast Spell %d='%s'" LOG_CR, m_Socket.GetSocket(), iSpell, (LPCTSTR)pSpellDef->GetName()));
 
 	SetTargMode();
-	m_tmSkillMagery.m_Spell = iSpell;	// m_atMagery.m_Spell
-	m_Targ_UID = m_pChar->GetUID();		// Default target.
-	m_Targ_PrvUID = pSrc->GetUID();		// Source of the spell.
+	m_tmSkillMagery.m_Spell = iSpell;	// m_Act.m_atMagery.m_Spell
+	m_Targ_UID = m_pChar->GetUID();	// default target = self
+	m_Targ_PrvUID = pSrc->GetUID();	// source of the spell.
 
-	switch ( iSpell )
+	LPCTSTR pPrompt = "Select Target";
+	switch (iSpell)
 	{
-		case SPELL_Polymorph:
-		{
-			if ( IsTrigUsed(TRIGGER_SKILLMENU) )
-			{
-				CScriptTriggerArgs args("sm_polymorph");
-				if ( m_pChar->OnTrigger("@SkillMenu", m_pChar, &args) == TRIGRET_RET_TRUE )
-					return true;
-			}
-			return Cmd_Skill_Menu(g_Cfg.ResourceGetIDType(RES_SKILLMENU, "sm_polymorph"));
-		}
+	case SPELL_Recall:
+		pPrompt = "Select rune to recall from.";
+		break;
+	case SPELL_Blade_Spirit:
+		pPrompt = sm_Txt_Summon;
+		break;
+	case SPELL_Summon:
+		return(Cmd_Skill_Menu(g_Cfg.ResourceGetIDType(RES_SkillMenu, "sm_summon")));
 
-		case SPELL_Summon:
+	case SPELL_Mark:
+		pPrompt = "Select rune to mark.";
+		break;
+	case SPELL_Gate_Travel:	// gate travel
+		pPrompt = "Select rune to gate from.";
+		break;
+	case SPELL_Polymorph:
+		// polymorph creature menu.
+		if (IsPrivFlag(PRIV_GM))
 		{
-			if ( IsTrigUsed(TRIGGER_SKILLMENU) )
-			{
-				CScriptTriggerArgs args("sm_summon");
-				if ( m_pChar->OnTrigger("@SkillMenu", m_pChar, &args) == TRIGRET_RET_TRUE )
-					return true;
-			}
-			return Cmd_Skill_Menu(g_Cfg.ResourceGetIDType(RES_SKILLMENU, "sm_summon"));
-		}
-
-		case SPELL_Summon_Familiar:
-		{
-			if ( IsTrigUsed(TRIGGER_SKILLMENU) )
-			{
-				CScriptTriggerArgs args("sm_summon_familiar");
-				if ( m_pChar->OnTrigger("@SkillMenu", m_pChar, &args) == TRIGRET_RET_TRUE )
-					return true;
-			}
-			return Cmd_Skill_Menu(g_Cfg.ResourceGetIDType(RES_SKILLMENU, "sm_summon_familiar"));
-		}
-
-		default:
+			pPrompt = "Select creature to polymorph.";
 			break;
+		}
+		return(Cmd_Skill_Menu(g_Cfg.ResourceGetIDType(RES_SkillMenu, "sm_polymorph")));
+
+	case SPELL_Earthquake:
+		// cast immediately with no targeting.
+		m_pChar->m_atMagery.m_Spell = SPELL_Earthquake;
+		m_pChar->m_Act_Targ = m_Targ_UID;
+		m_pChar->m_Act_TargPrv = m_Targ_PrvUID;
+		m_pChar->m_Act_p = m_pChar->GetTopPoint();
+		if (!m_pChar->Skill_Start(SKILL_MAGERY))
+		{
+			return HRES_INVALID_HANDLE;
+		}
+		return NO_ERROR;
+
+	case SPELL_Resurrection:
+		pPrompt = "Select ghost to resurrect.";
+		break;
+	case SPELL_Vortex:
+	case SPELL_Air_Elem:
+	case SPELL_Daemon:
+	case SPELL_Earth_Elem:
+	case SPELL_Fire_Elem:
+	case SPELL_Water_Elem:
+		pPrompt = sm_Txt_Summon;
+		break;
+
+		// Necro spells
+	case SPELL_Summon_Undead: // Summon an undead
+		pPrompt = sm_Txt_Summon;
+		break;
+	case SPELL_Animate_Dead: // Corpse to zombie
+		pPrompt = "Choose a corpse";
+		break;
+	case SPELL_Bone_Armor: // Skeleton corpse to bone armor
+		pPrompt = "Chose a skeleton";
+		break;
 	}
 
-	// Targeted spells
-	if ( pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ|SPELLFLAG_TARG_XYZ) )
+	if (!pSpellDef->m_sTargetPrompt.IsEmpty())
 	{
-		LPCTSTR pszPrompt = !pSpellDef->m_sTargetPrompt.IsEmpty() ? static_cast<LPCTSTR>(pSpellDef->m_sTargetPrompt) : g_Cfg.GetDefaultMsg(DEFMSG_SELECT_MAGIC_TARGET);
-
-		int iTimeout = static_cast<int>(m_pChar->GetDefNum("SPELLTIMEOUT"));
-		if ( !iTimeout )
-			iTimeout = g_Cfg.m_iSpellTimeout * TICK_PER_SEC;
-
-		addTarget(CLIMODE_TARG_SKILL_MAGERY, pszPrompt, pSpellDef->IsSpellType(SPELLFLAG_TARG_XYZ), pSpellDef->IsSpellType(SPELLFLAG_HARM), iTimeout);
-		return true;
+		pPrompt = pSpellDef->m_sTargetPrompt;
 	}
 
-	// Non-targeted spells
-	m_pChar->m_Act_p = m_pChar->GetTopPoint();
-	m_pChar->m_Act_Targ = m_Targ_UID;
-	m_pChar->m_Act_TargPrv = m_Targ_PrvUID;
-	m_pChar->m_atMagery.m_Spell = iSpell;
-	m_Targ_p = m_pChar->GetTopPoint();
-
-	if ( IsSetMagicFlags(MAGICF_PRECAST) && !pSpellDef->IsSpellType(SPELLFLAG_NOPRECAST) )
-	{
-		m_pChar->Spell_CastDone();
-		return true;
-	}
-	else
-	{
-		int skill;
-		if ( !pSpellDef->GetPrimarySkill(&skill) )
-			return false;
-
-		return m_pChar->Skill_Start(static_cast<SKILL_TYPE>(skill));
-	}
+	addTarget(CLIMODE_TARG_SKILL_MAGERY, pPrompt,
+		!pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ | SPELLFLAG_TARG_CHAR),
+		pSpellDef->IsSpellType(SPELLFLAG_HARM));
+	return(NO_ERROR);
 }
 
 bool CClient::Cmd_Skill_Tracking(WORD wTrackType, bool fExec)

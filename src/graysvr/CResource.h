@@ -10,6 +10,8 @@ class CServerDef;
 class CWebPageDef;
 
 typedef CServerDef *CServerRef;
+#define HRES_INVALID_INDEX false
+#define HRES_INVALID_HANDLE false
 
 enum OF_TYPE	// option flags
 {

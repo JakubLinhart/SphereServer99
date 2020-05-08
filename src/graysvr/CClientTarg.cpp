@@ -1241,77 +1241,24 @@ bool CClient::OnTarg_Skill_Herd_Dest(CObjBase *pObj, const CPointMap &pt)
 bool CClient::OnTarg_Skill_Magery(CObjBase *pObj, const CPointMap &pt)
 {
 	ADDTOCALLSTACK("CClient::OnTarg_Skill_Magery");
+
 	// The client player has targeted a spell.
 	// CLIMODE_TARG_SKILL_MAGERY
 
-	const CSpellDef *pSpellDef = g_Cfg.GetSpellDef(m_tmSkillMagery.m_Spell);
-	if ( !pSpellDef )
-		return false;
-
-	if ( pObj )
+	if (m_tmSkillMagery.m_Spell == SPELL_Polymorph)
 	{
-		if ( !pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ) )
-		{
-			SysMessageDefault(DEFMSG_MAGERY_4);
-			return true;
-		}
-
-		if ( pObj->IsItem() && !pSpellDef->IsSpellType(SPELLFLAG_TARG_ITEM) )
-		{
-			SysMessageDefault(DEFMSG_MAGERY_1);
-			return true;
-		}
-
-		if ( pObj->IsChar() )
-		{
-			if ( !pSpellDef->IsSpellType(SPELLFLAG_TARG_CHAR) )
-			{
-				SysMessageDefault(DEFMSG_MAGERY_2);
-				return true;
-			}
-			CChar *pChar = static_cast<CChar *>(pObj);
-			if ( pSpellDef->IsSpellType(SPELLFLAG_TARG_NO_PLAYER) && pChar->m_pPlayer )
-			{
-				SysMessageDefault(DEFMSG_MAGERY_7);
-				return true;
-			}
-			if ( pSpellDef->IsSpellType(SPELLFLAG_TARG_NO_NPC) && pChar->m_pNPC )
-			{
-				SysMessageDefault(DEFMSG_MAGERY_8);
-				return true;
-			}
-		}
-
-		if ( pSpellDef->IsSpellType(SPELLFLAG_TARG_NOSELF) && (pObj == m_pChar) && !IsPriv(PRIV_GM) )
-		{
-			SysMessageDefault(DEFMSG_MAGERY_3);
-			return true;
-		}
+		HRESULT hRes = Cmd_Skill_Menu(g_Cfg.ResourceGetIDType(RES_SkillMenu, "sm_polymorph"));
+		return(hRes > 0);
 	}
 
 	m_pChar->m_atMagery.m_Spell = m_tmSkillMagery.m_Spell;
 	m_pChar->m_atMagery.m_SummonID = m_tmSkillMagery.m_SummonID;
 
-	m_pChar->m_Act_TargPrv = m_Targ_PrvUID;		// source (char/wand)
-	m_pChar->m_Act_Targ = pObj ? pObj->GetUID() : static_cast<CGrayUID>(UID_CLEAR);
+	m_pChar->m_Act_TargPrv = m_Targ_PrvUID;	// Source (wand or you?)
+	m_pChar->m_Act_Targ = pObj ? (DWORD)pObj->GetUID() : UID_INDEX_CLEAR;
 	m_pChar->m_Act_p = pt;
-	m_Targ_p = pt;
 
-	if ( IsSetMagicFlags(MAGICF_PRECAST) && !pSpellDef->IsSpellType(SPELLFLAG_NOPRECAST) && m_pChar->m_pClient )
-	{
-		if ( g_Cfg.IsSkillFlag(m_pChar->m_Act_SkillCurrent, SKF_MAGIC) )
-		{
-			SysMessageDefault(DEFMSG_MAGERY_5);
-			return false;
-		}
-		return m_pChar->Spell_CastDone();
-	}
-
-	int skill;
-	if ( !pSpellDef->GetPrimarySkill(&skill, NULL) )
-		return false;
-
-	return m_pChar->Skill_Start(static_cast<SKILL_TYPE>(skill));
+	return(m_pChar->Skill_Start(SKILL_MAGERY));
 }
 
 bool CClient::OnTarg_Pet_Command(CObjBase *pObj, const CPointMap &pt)

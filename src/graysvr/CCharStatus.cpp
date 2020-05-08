@@ -535,39 +535,18 @@ CItem *CChar::GetSpellbook(SPELL_TYPE spell) const
 	ADDTOCALLSTACK("CChar::GetSpellbook");
 	// Check if the char have any spellbook to cast the spell
 
-	// Search in hands
-	CItem *pReturn = NULL;
-	for ( CItem *pItem = GetContentHead(); pItem != NULL; pItem = pItem->GetNext() )
-	{
-		CItemBase *pItemDef = pItem->Item_GetDef();
-		if ( !pItemDef->IsTypeSpellbook(pItem->GetType()) )
-			continue;
-		if ( (spell < static_cast<SPELL_TYPE>(pItemDef->m_ttSpellbook.m_Offset)) || (spell > static_cast<SPELL_TYPE>(pItemDef->m_ttSpellbook.m_Offset + pItemDef->m_ttSpellbook.m_MaxSpells)) )
-			continue;
-		if ( pItem->IsSpellInBook(spell) )
-			return pItem;
-
-		pReturn = pItem;		// spellbook found, but it doesn't have the spell... return this book if nothing better is found
-	}
+	CItem* pBook = ContentFind(RESOURCE_ID(RES_TYPEDEF, IT_SPELLBOOK), 0, 1);
+	if (pBook != NULL)
+		return(pBook);
 
 	// Search in the top level of backpack
 	CItemContainer *pPack = GetContainer(LAYER_PACK);
-	if ( pPack )
-	{
-		for ( CItem *pItem = pPack->GetContentHead(); pItem != NULL; pItem = pItem->GetNext() )
-		{
-			CItemBase *pItemDef = pItem->Item_GetDef();
-			if ( !pItemDef->IsTypeSpellbook(pItem->GetType()) )
-				continue;
-			if ( (spell < static_cast<SPELL_TYPE>(pItemDef->m_ttSpellbook.m_Offset)) || (spell > static_cast<SPELL_TYPE>(pItemDef->m_ttSpellbook.m_Offset + pItemDef->m_ttSpellbook.m_MaxSpells)) )
-				continue;
-			if ( pItem->IsSpellInBook(spell) )
-				return pItem;
+	pBook = pPack->ContentFind(RESOURCE_ID(RES_TYPEDEF, IT_SPELLBOOK), 0, 4);
 
-			pReturn = pItem;	// spellbook found, but it doesn't have the spell... return this book if nothing better is found
-		}
-	}
-	return pReturn;
+	if (pBook != NULL)
+		return(pBook);
+
+	return NULL;
 }
 
 int CChar::Food_GetLevelPercent() const
