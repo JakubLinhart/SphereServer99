@@ -58,6 +58,8 @@ enum HUE_CODE
 	HUE_MASK_UNDERWEAR		= 0x8000	// can be used only on chars
 };
 
+#define HUE_UNDERWEAR HUE_MASK_UNDERWEAR
+
 typedef WORD SOUND_TYPE;	// Sound ID
 
 enum SOUND_CODE

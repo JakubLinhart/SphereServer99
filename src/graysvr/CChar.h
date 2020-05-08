@@ -6,6 +6,11 @@
 #define _INC_CCHAR_H
 #pragma once
 
+#define m_StatDex Stat_GetVal(STAT_DEX)
+#define m_StatInt Stat_GetVal(STAT_INT)
+#define m_StatStr Stat_GetVal(STAT_STR)
+#define m_ArmorDisplay m_defense
+
 enum NPCBRAIN_TYPE
 {
 	NPCBRAIN_NONE,				// 0 = This should never really happen
@@ -787,6 +792,7 @@ public:
 	void Stat_SetMod(STAT_TYPE stat, int iVal);
 	int Stat_GetMod(STAT_TYPE stat) const;
 
+	void Stat_Set(STAT_TYPE stat, int iVal) { Stat_SetVal(stat, iVal); }
 	void Stat_SetVal(STAT_TYPE stat, int iVal);
 	int Stat_GetVal(STAT_TYPE stat) const;
 
@@ -871,6 +877,7 @@ public:
 	// Client/player specific stuff
 	void ClientAttach(CClient *pClient);
 	void ClientDetach();
+	bool IsClient() const { return(m_pClient != NULL); }
 
 	bool SetPrivLevel(CTextConsole *pSrc, LPCTSTR pszFlags);
 	bool CanDisturb(const CChar *pChar) const;
@@ -888,6 +895,10 @@ public:
 		if ( m_pClient )
 			m_pClient->addObjMessage(pszMsg, pSrc);
 	}
+	void WriteString(LPCTSTR pszMsg) const
+	{
+		SysMessage(pszMsg);
+	}
 	void SysMessage(LPCTSTR pszMsg) const
 	{
 		if ( m_pClient )
@@ -904,6 +915,10 @@ public:
 	ANIM_TYPE GenerateAnimate(ANIM_TYPE action, bool fTranslate = true);
 	bool UpdateAnimate(ANIM_TYPE action, bool fTranslate = true, bool fBackward = false, BYTE iFrameDelay = 0, BYTE iAnimLen = 7);
 
+	void UpdateMode(bool fFull = true, CClient* pClientExclude = NULL)
+	{
+		Update(fFull, pClientExclude);
+	}
 	void Update(bool fFull = true, CClient *pClientExclude = NULL);
 	void UpdateMove(const CPointMap &ptOld, CClient *pClientExclude = NULL);
 	void UpdateDir(DIR_TYPE dir);

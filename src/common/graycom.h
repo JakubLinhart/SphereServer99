@@ -25,6 +25,14 @@
 	#endif
 #endif
 
+#ifndef DEBUG_CHECK
+	#ifdef _DEBUG
+		#define DEBUG_CHECK(exp)	(void)( (exp) || (Assert_CheckFail(#exp, __FILE__, __LINE__), 0) )
+	#else
+		#define DEBUG_CHECK(exp)
+	#endif
+#endif	// DEBUG_CHECK
+
 #ifndef ASSERT
 	#ifdef _DEBUG
 		extern void Assert_CheckFail(LPCTSTR pszExp, LPCTSTR pszFile, long lLine);

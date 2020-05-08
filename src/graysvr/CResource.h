@@ -329,6 +329,8 @@ enum SPTRIG_TYPE
 	SPTRIG_QTY
 };
 
+#define CSpellDefPtr CSpellDef*
+
 class CSpellDef : public CResourceLink	// 1 based spells. See SPELL_*
 {
 	// RES_SPELL
@@ -489,6 +491,10 @@ enum STAT_TYPE
 	STAT_FAME,		// 0 to g_Cfg.m_iMaxFame
 	STAT_QTY
 };
+
+#define STAT_Str STAT_STR
+#define STAT_Int STAT_INT
+#define STAT_Dex STAT_DEX
 
 class CSkillClassDef : public CResourceLink // For skill def table
 {

@@ -6,6 +6,8 @@
 #define _INC_CCHARBASE_H
 #pragma once
 
+#define CCharDefPtr CCharBase*
+
 class CCharBase : public CBaseBaseDef	// define basic info about each "TYPE" of monster/creature
 {
 	// RES_CHARDEF
