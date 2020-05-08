@@ -5,6 +5,7 @@ serv.smsg "test_intrinsics\n"
 test_intrinsics_strcmp
 test_intrinsics_strlen
 test_strcmpi
+test_intrinsics_isbit
 
 serv.smsg "\n"
 
@@ -73,3 +74,7 @@ ShouldBeSameString("strlen outside eval - length of empty string is 0",0,<strlen
 ShouldBeSameString("strlen outside eval - length of quoted empty string is 0",0,<strlen("")>)
 ShouldBeSameString("strlen outside eval - quoted argument",4,<strlen("qwer")>)
 ShouldBeSameString("strlen outside eval - unquoted argument",4,<strlen(qwer)>)
+
+[function test_intrinsics_isbit]
+ShouldBeSameString("isbit - const arguments, result 1",1,<isbit(4,2)>)
+ShouldBeSameString("isbit - const arguments, result 0",0,<isbit(4,1)>)
