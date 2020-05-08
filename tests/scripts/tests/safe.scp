@@ -64,6 +64,18 @@ ShouldBeSameString("r_verb macro with safe",SKILL_Begging,<safe <arg(prefix)><ar
 
 finduid(010000).test_safe_chained
 
+var(function_was_called,no)
+safe f_was_function_call
+ShouldBeSameString("r_verb call without parentheses, without arguments",yes,<var(function_was_called)>)
+
+var(function_was_called,no)
+safe(f_was_function_call)
+ShouldBeSameString("r_verb call with parentheses, without arguments",yes,<var(function_was_called)>)
+
+var(function_was_called,no)
+safe(f_was_function_call(qwer))
+ShouldBeSameString("r_verb call with parentheses, with arguments with parentheses",qwer,<var(function_was_called)>)
+
 serv.smsg "\n"
 
 [function test_safe_chained]

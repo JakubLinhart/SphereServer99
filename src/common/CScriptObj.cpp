@@ -998,133 +998,48 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			default:
 			{
 				EXC_SET("parsing");
-				if ( !pArgs->r_Verb(s, pSrc, pArgs) )
+				bool isSafe = false;
+				CScript *pSafeScript = NULL;
+				if (!strnicmp(pszKey, "SAFE", 4))
 				{
-					bool fRes;
-					if ( !strcmpi(pszKey, "call") )
+					pszKey += 4;
+					if (*pszKey == '.')
+						pszKey++;
+
+					LPCTSTR safeScriptKey;
+					LPCTSTR safeArgStr;
+					if (!strlen(pszKey))
 					{
-						EXC_SET("call");
-						TCHAR *pszArgRaw = s.GetArgRaw();
-						CScriptObj *pRef = this;
-
-						// Parse object references, SRC.* is not parsed by r_GetRef so do it manually
-						r_GetRef(const_cast<LPCTSTR &>(static_cast<LPTSTR &>(pszArgRaw)), pRef);
-						if ( !strnicmp("SRC.", pszArgRaw, 4) )
-						{
-							pszArgRaw += 4;
-							pRef = pSrc->GetChar();
-						}
-						if ( pRef )
-						{
-							// Locate arguments for the called function
-							TCHAR *z = strchr(pszArgRaw, ' ');
-							if ( z )
-							{
-								*z = 0;
-								++z;
-								GETNONWHITESPACE(z);
-							}
-
-							CGString sVal;
-							if ( z && *z )
-							{
-								INT64 iN1 = pArgs->m_iN1;
-								INT64 iN2 = pArgs->m_iN2;
-								INT64 iN3 = pArgs->m_iN3;
-								CScriptObj *pO1 = pArgs->m_pO1;
-								CGString s1 = pArgs->m_s1;
-								CGString s1_raw = pArgs->m_s1_raw;
-								pArgs->m_v.SetCount(0);
-
-								pArgs->Init(z);
-								fRes = pRef->r_Call(pszArgRaw, pSrc, pArgs, &sVal);
-
-								pArgs->m_iN1 = iN1;
-								pArgs->m_iN2 = iN2;
-								pArgs->m_iN3 = iN3;
-								pArgs->m_pO1 = pO1;
-								pArgs->m_s1 = s1;
-								pArgs->m_s1_raw = s1_raw;
-								pArgs->m_v.SetCount(0);
-							}
-							else
-								fRes = pRef->r_Call(pszArgRaw, pSrc, pArgs, &sVal);
-						}
-						else
-							fRes = false;
-					}
-					else if ( !strcmpi(pszKey, "FullTrigger") )
-					{
-						EXC_SET("FullTrigger");
-						TCHAR *pszArgs = s.GetArgRaw();
-						CScriptObj *pRef = this;
-
-						TCHAR *piCmd[7];
-						size_t iQty = Str_ParseCmds(pszArgs, piCmd, COUNTOF(piCmd), " ,\t");
-						if ( iQty == 2 )
-							pRef = static_cast<CGrayUID>(ATOI(piCmd[1])).ObjFind();
-
-						// Parse object references, SRC.* is not parsed by r_GetRef so do it manually
-						if ( !strnicmp("SRC.", pszArgs, 4) )
-						{
-							pszArgs += 4;
-							pRef = pSrc->GetChar();
-						}
-						if ( pRef )
-						{
-							// Locate arguments for the called function
-							TCHAR *z = strchr(pszArgs, ' ');
-							if ( z )
-							{
-								*z = 0;
-								++z;
-								GETNONWHITESPACE(z);
-							}
-
-							if ( z && *z )
-							{
-								INT64 iN1 = pArgs->m_iN1;
-								INT64 iN2 = pArgs->m_iN2;
-								INT64 iN3 = pArgs->m_iN3;
-								CScriptObj *pO1 = pArgs->m_pO1;
-								CGString s1 = pArgs->m_s1;
-								CGString s1_raw = pArgs->m_s1_raw;
-								pArgs->m_v.SetCount(0);
-
-								pArgs->Init(z);
-								iRet = pRef->OnTrigger(pszArgs, pSrc, pArgs);
-
-								pArgs->m_iN1 = iN1;
-								pArgs->m_iN2 = iN2;
-								pArgs->m_iN3 = iN3;
-								pArgs->m_pO1 = pO1;
-								pArgs->m_s1 = s1;
-								pArgs->m_s1_raw = s1_raw;
-								pArgs->m_v.SetCount(0);
-							}
-							else
-								iRet = pRef->OnTrigger(pszArgs, pSrc, pArgs);
-
-							pArgs->m_VarsLocal.SetNum("return", iRet);
-							fRes = (iRet > TRIGRET_RET_FALSE);
-						}
-						else
-							fRes = false;
+						safeScriptKey = s.GetArgStr();
+						safeArgStr = "";
+						pSafeScript = new CScript(safeScriptKey, safeArgStr);
+						pSafeScript->ReadKeyParse(false);
 					}
 					else
 					{
-						EXC_SET("verb");
-						fRes = r_Verb(s, pSrc, pArgs);
-						if (!fRes)
-							fRes = r_VerbGlobal(s, pSrc, pArgs);
+						safeScriptKey = pszKey;
+						safeArgStr = s.GetArgStr();
+						pSafeScript = new CScript(safeScriptKey, safeArgStr);
 					}
+					isSafe = true;
+				}
 
+				CScript* pScript = pSafeScript != NULL ? pSafeScript : &s;
+				if ( !pArgs->r_Verb(*pScript, pSrc, pArgs) )
+				{
+					EXC_SET("verb");
+					bool fRes = r_Verb(*pScript, pSrc, pArgs);
 					if (!fRes)
+						fRes = r_VerbGlobal(*pScript, pSrc, pArgs);
+
+					if (!fRes && !isSafe)
 					{
-						DEBUG_ERR(("Undefined keyword '%s'\n", s.GetKey()));
-						DEBUG_MSG(("WARNING: Trigger Bad Verb '%s','%s'\n", pszKey, s.GetArgStr()));
+						DEBUG_ERR(("Undefined keyword '%s'\n", pScript->GetKey()));
+						DEBUG_MSG(("WARNING: Trigger Bad Verb '%s','%s'\n", pszKey, pScript->GetArgStr()));
 					}
 				}
+				if (pSafeScript != NULL)
+					delete pSafeScript;
 				break;
 			}
 		}
@@ -2020,7 +1935,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			}
 
 			if ( index == SSC_ISBIT )
-				sVal.FormatLLVal(iVal & (static_cast<INT64>(1) << iBit));
+				sVal.FormatLLVal((iVal & (static_cast<INT64>(1) << iBit)) != 0);
 			else if ( index == SSC_SETBIT )
 				sVal.FormatLLVal(iVal | (static_cast<INT64>(1) << iBit));
 			else
@@ -3507,16 +3422,6 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			m_pO1 = static_cast<CGrayUID>(Exp_GetSingle(pszKey)).ObjFind();
 			return true;
 		}
-	}
-	else if (!strnicmp(pszKey, "SAFE", 4))
-	{
-		pszKey += 4;
-		if (*pszKey == '.')
-			pszKey++;
-
-		CScript safe_script(pszKey, s.GetArgStr());
-		r_Verb(safe_script, pSrc, pArgs);
-		return true;
 	}
 	else if (!strnicmp(pszKey, "ARGS", 4))
 	{
