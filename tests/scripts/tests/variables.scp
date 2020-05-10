@@ -32,6 +32,8 @@ arg(localVariable2,"asdf")
 ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<arg(localVariable2)><arg(localVariable2)><arg(localVariable2)>)
 arg.localVariable2="asdf"
 ShouldBeSameString("no doublequotes for doublequoted value - chained assignment",asdfasdfasdf,<arg(localVariable2)><arg(localVariable2)><arg(localVariable2)>)
+arg(localVariable2, asdf)
+ShouldBeSameString("value prefixed with whitespace"," asdf",<arg(localVariable2)>)
 
 arg(localVariable2,#010000)
 ShouldBeSameString("local variable chained call",DrZhor,<arg(localVariable2).name>)
@@ -88,6 +90,8 @@ var(variable2,"asdf")
 ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<var(variable2)><var(variable2)><var(variable2)>)
 var.variable2="asdf"
 ShouldBeSameString("no doublequotes for doublequoted value - chained assignment",asdfasdfasdf,<var(variable2)><var(variable2)><var(variable2)>)
+var(variable2, asdf)
+ShouldBeSameString("value prefixed with whitespace"," asdf",<var(variable2)>)
 
 var(variable2,#010000)
 ShouldBeSameString("global variable chained call",DrZhor,<var(variable2).name>)
@@ -128,3 +132,6 @@ ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 
 serv.smsg "\n"
 
+[function yyy]
+var(variable2, asdf)
+ShouldBeSameString("value prefixed with whitespace"," asdf",<var(variable2)>)

@@ -2728,7 +2728,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 					TemporaryString varArgList;
 					Str_ParseArgumentList(pszRawArgs, varArgList);
 					Str_ParseArgumentEnd(pszRawArgs, false);
-					iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",");
+					iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",", false);
 					TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 					if (iCount > 1)
 					{
@@ -2889,6 +2889,7 @@ void CScriptTriggerArgs::Init(LPCTSTR pszStr)
 	}
 
 	// Raw is left untouched for now - it'll be split the 1st time argv is accessed
+	Str_TrimEndWhitespace(const_cast<TCHAR*>(pszStr), strlen(pszStr));
 	m_s1_raw = pszStr;
 	bool fQuote = false;
 	if ( *pszStr == '"' )
@@ -3018,19 +3019,17 @@ size_t CScriptTriggerArgs::getArgumentsCount()
 	TCHAR* s = pszArgs;
 	bool fQuotes = false;
 	bool fInerQuotes = false;
+	bool fCommaPrev = false;
 	while (*s)
 	{
-		if (IsSpace(*s))	// ignore leading spaces
-		{
-			++s;
-			continue;
-		}
 		if ((*s == ',') && !fQuotes)	// add empty arguments if they are provided
 		{
+			fCommaPrev = true;
 			m_v.Add(NULL);
 			++s;
 			continue;
 		}
+		fCommaPrev = false;
 		if (*s == '"')	// check to see if the argument is quoted (in case it contains commas)
 		{
 			++s;
@@ -3062,6 +3061,9 @@ size_t CScriptTriggerArgs::getArgumentsCount()
 		}
 		m_v.Add(pszArgs);
 	}
+
+	if (fCommaPrev)
+		m_v.Add(NULL);
 
 	return m_v.GetCount();
 }
@@ -3330,7 +3332,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			TemporaryString varArgList;
 			Str_ParseArgumentList(pszRawArgs, varArgList);
 			Str_ParseArgumentEnd(pszRawArgs, false);
-			iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",");
+			iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",", false);
 			if (iCount > 1)
 			{
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);

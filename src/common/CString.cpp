@@ -483,6 +483,9 @@ LPCTSTR Str_GetArticleAndSpace(LPCTSTR pszWord)
 
 size_t Str_TrimEndWhitespace(TCHAR * pStr, size_t len)
 {
+	if (!len)
+		return 0;
+
 	while (len > 0)
 	{
 		len--;
@@ -611,7 +614,7 @@ bool Str_ParseExpressionArgument(TCHAR* pLine, TCHAR** ppLine2, LPCTSTR pszSep)
 	return true;
 }
 
-bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep)
+bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep, bool fTrim)
 {
 	// Parse a list of args. Just get the next arg.
 	// similar to strtok()
@@ -621,11 +624,14 @@ bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep)
 		pszSep = "=, \t(";
 
 	// skip leading white space.
-	TCHAR * pNonWhite = pLine;
-	GETNONWHITESPACE(pNonWhite);
-	if (pNonWhite != pLine)
+	if (fTrim)
 	{
-		memmove(pLine, pNonWhite, strlen(pNonWhite) + 1);
+		TCHAR* pNonWhite = pLine;
+		GETNONWHITESPACE(pNonWhite);
+		if (pNonWhite != pLine)
+		{
+			memmove(pLine, pNonWhite, strlen(pNonWhite) + 1);
+		}
 	}
 
 	TCHAR ch;
@@ -684,19 +690,24 @@ bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep)
 		if (bBracket)
 			*ppLine2 = Str_TrimEnd(pLine, ") \t");
 		else
-			*ppLine2 = Str_TrimWhitespace(pLine);
+		{
+			if (fTrim)
+				*ppLine2 = Str_TrimWhitespace(pLine);
+			else
+				*ppLine2 = pLine;
+		}
 	}
 	return true;
 }
 
-size_t Str_ParseCmds(TCHAR * pszCmdLine, TCHAR ** ppCmd, size_t iMax, LPCTSTR pszSep)
+size_t Str_ParseCmds(TCHAR * pszCmdLine, TCHAR ** ppCmd, size_t iMax, LPCTSTR pszSep, bool fTrim)
 {
 	size_t iQty = 0;
 	if (pszCmdLine != NULL && pszCmdLine[0] != '\0')
 	{
 		ppCmd[0] = pszCmdLine;
 		iQty++;
-		while (Str_Parse(ppCmd[iQty - 1], &(ppCmd[iQty]), pszSep))
+		while (Str_Parse(ppCmd[iQty - 1], &(ppCmd[iQty]), pszSep, fTrim))
 		{
 			if (++iQty >= iMax)
 				break;

@@ -480,7 +480,7 @@ bool Str_ParseExpressionArgument(TCHAR* pLine, TCHAR** ppArg = NULL, LPCTSTR pSe
 * @param pSep the list of separators (by default "=, \t").
 * @return false if there are no more args to parse, true otherwise.
 */
-bool Str_Parse(TCHAR * pLine, TCHAR ** ppArg = NULL, LPCTSTR pSep = NULL);
+bool Str_Parse(TCHAR * pLine, TCHAR ** ppArg = NULL, LPCTSTR pSep = NULL, bool fTrim = true);
 /**
 * @brief Parse a list of arguments.
 * @param pCmdLine list of arguments to parse.
@@ -489,7 +489,7 @@ bool Str_Parse(TCHAR * pLine, TCHAR ** ppArg = NULL, LPCTSTR pSep = NULL);
 * @param pSep the list of separators (by default "=, \t").
 * @return count of arguments parsed.
 */
-size_t Str_ParseCmds(TCHAR * pCmdLine, TCHAR ** ppCmd, size_t iMax, LPCTSTR pSep = NULL);
+size_t Str_ParseCmds(TCHAR * pCmdLine, TCHAR ** ppCmd, size_t iMax, LPCTSTR pSep = NULL, bool fTrim = true);
 /**
 * @brief Parse a list of arguments (integer version).
 * @param pCmdLine list of arguments to parse.

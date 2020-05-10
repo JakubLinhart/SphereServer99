@@ -982,7 +982,7 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 			bool fQuoted = false;
 			TCHAR* ppArgs[2];
 			size_t iCount;
-			iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",");
+			iCount = Str_ParseCmds(const_cast<TCHAR*>(s.GetArgStr()), ppArgs, COUNTOF(ppArgs), ",", false);
 			TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 			if (iCount > 1)
 			{

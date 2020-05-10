@@ -33,6 +33,10 @@ ShouldBeSameString("remove tag",0,<eval strlen(<finduid(010000).tag(tag4)>)>)
 
 ShouldBeSameString("invalid tag value","",<finduid(010000).tag(npc_knockback)>)
 
+finduid(010000).tag(tag4, asdf)
+ShouldBeSameString("value prefixed with whitespace"," asdf",<finduid(010000).tag(tag4)>)
+
+
 finduid(010000).tag.remove(nonexistingtag)
 ShouldBeSameString("eval of nonexisting tag",0,<eval finduid(010000).tag(nonexistingtag)>)
 finduid(010000).tag.nonexistingtag=#+1

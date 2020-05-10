@@ -17,7 +17,7 @@ ShouldBeSameString("assign to chained local var",321,<arg(test_assignments_playe
 
 arg(color,123)
 finduid(010000).findid(i_backpack).color=arg(color)
-ShouldBeTrue("blabla",<eval 123==<finduid(010000).findid(i_backpack).color>>)
+ShouldBeTrue("assign to chained char property",<eval 123==<finduid(010000).findid(i_backpack).color>>)
 
 test_assignments_arguments(<finduid(010000)>)
 

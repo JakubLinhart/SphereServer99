@@ -2019,7 +2019,7 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 				TemporaryString varArgList;
 				Str_ParseArgumentList(pszRawArgs, varArgList);
 				Str_ParseArgumentEnd(pszRawArgs, false);
-				iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",");
+				iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",", false);
 				TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 				if (iCount > 1)
 				{
