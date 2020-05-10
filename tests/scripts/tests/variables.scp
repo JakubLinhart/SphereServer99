@@ -131,7 +131,3 @@ ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 // ShouldBeSameString("chained call",DrZhor,<var(variable2).name>)
 
 serv.smsg "\n"
-
-[function yyy]
-var(variable2, asdf)
-ShouldBeSameString("value prefixed with whitespace"," asdf",<var(variable2)>)
