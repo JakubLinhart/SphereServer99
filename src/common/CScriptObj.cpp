@@ -2722,6 +2722,7 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 				}
 				else if (pszKey[3] == '(' || strlen(pszKey) == 3)
 				{
+					bool fQuoted = false;
 					TCHAR* ppArgs[2];
 					size_t iCount;
 					LPCTSTR pszRawArgs = s.GetArgRaw();
@@ -2729,10 +2730,19 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 					Str_ParseArgumentList(pszRawArgs, varArgList);
 					Str_ParseArgumentEnd(pszRawArgs, false);
 					iCount = Str_ParseCmds(varArgList, ppArgs, COUNTOF(ppArgs), ",", false);
-					TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
 					if (iCount > 1)
 					{
-						if (*ppArgs[1] == '#')
+						TCHAR* pszVarName = Str_TrimWhitespace(ppArgs[0]);
+						TCHAR* pszValue = iCount == 1 ? s.GetArgStr(&fQuoted) : ppArgs[1];
+
+						if (*pszValue == '"')
+						{
+							pszValue++;
+							pszValue = Str_TrimEnd(pszValue, "\"");
+							fQuoted = true;
+						}
+
+						if (*pszValue == '#')
 						{
 							LPCTSTR ppArgs1 = ppArgs[1] + 1;
 							if (!IsStrNumeric(ppArgs1))
@@ -2741,18 +2751,18 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 
 								TemporaryString pszBuffer;
 								strcpy(pszBuffer, sVal);
-								strcat(pszBuffer, ppArgs[1] + 1);
+								strcat(pszBuffer, pszValue + 1);
 								int iValue = Exp_GetVal(pszBuffer);
 								g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false);
 							}
 							else
 							{
-								g_Exp.m_VarGlobals.SetStr(pszVarName, false, ppArgs[1], false);
+								g_Exp.m_VarGlobals.SetStr(pszVarName, fQuoted, ppArgs[1], false);
 							}
 						}
 						else
 						{
-							g_Exp.m_VarGlobals.SetStr(pszVarName, false, Str_TrimDoublequotes(ppArgs[1]), false);
+							g_Exp.m_VarGlobals.SetStr(pszVarName, fQuoted, Str_TrimDoublequotes(ppArgs[1]), false);
 						}
 					}
 					else
@@ -3342,6 +3352,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 				{
 					pszValue++;
 					pszValue = Str_TrimEnd(pszValue, "\"");
+					fQuoted = true;
 				}
 
 				if (*pszValue == '#')

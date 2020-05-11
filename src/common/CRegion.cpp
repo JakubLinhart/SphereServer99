@@ -992,6 +992,7 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 				{
 					pszValue++;
 					pszValue = Str_TrimEnd(pszValue, "\"");
+					fQuoted = true;
 				}
 
 				if (*ppArgs[1] == '#')
@@ -1009,12 +1010,12 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 					}
 					else
 					{
-						m_TagDefs.SetStr(pszVarName, false, pszValue, false);
+						m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false);
 					}
 				}
 				else
 				{
-					m_TagDefs.SetStr(pszVarName, false, pszValue, false);
+					m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false);
 				}
 			}
 			else
