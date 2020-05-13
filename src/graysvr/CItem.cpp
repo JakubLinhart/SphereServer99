@@ -3062,11 +3062,6 @@ TRIGRET_TYPE CItem::OnTrigger( LPCTSTR pszTrigName, CTextConsole * pSrc, CScript
 			CResourceLink * pResourceLink = dynamic_cast <CResourceLink *>( g_Cfg.ResourceGetDef( RESOURCE_ID( RES_TYPEDEF, GetType() )));
 			if ( pResourceLink == NULL )
 			{
-				if ( pChar )
-					DEBUG_ERR(( "0%" FMTDWORDH " '%s' has unhandled [TYPEDEF %d] for 0%" FMTDWORDH " '%s'\n", static_cast<DWORD>(GetUID()), GetName(), GetType(), static_cast<DWORD>(pChar->GetUID()), pChar->GetName()));
-				else
-					DEBUG_ERR(( "0%" FMTDWORDH " '%s' has unhandled [TYPEDEF %d]\n", static_cast<DWORD>(GetUID()), GetName(), GetType() ));
-
 				m_type = Item_GetDef()->GetType();
 				iRet = TRIGRET_RET_DEFAULT;
 				goto stopandret;//return( TRIGRET_RET_DEFAULT );
@@ -3217,11 +3212,6 @@ TRIGRET_TYPE CItem::OnTriggerCreate( CTextConsole * pSrc, CScriptTriggerArgs * p
 			CResourceLink * pResourceLink = dynamic_cast <CResourceLink *>( g_Cfg.ResourceGetDef( RESOURCE_ID( RES_TYPEDEF, GetType() )));
 			if ( pResourceLink == NULL )
 			{
-				if ( pChar )
-					DEBUG_ERR(( "0%" FMTDWORDH " '%s' has unhandled [TYPEDEF %d] for 0%" FMTDWORDH " '%s'\n", static_cast<DWORD>(GetUID()), GetName(), GetType(), static_cast<DWORD>(pChar->GetUID()), pChar->GetName()));
-				else
-					DEBUG_ERR(( "0%" FMTDWORDH " '%s' has unhandled [TYPEDEF %d]\n", static_cast<DWORD>(GetUID()), GetName(), GetType() ));
-
 				m_type = Item_GetDef()->GetType();
 				return( TRIGRET_RET_DEFAULT );
 			}
