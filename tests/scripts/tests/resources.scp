@@ -11,9 +11,9 @@ c_man.name=Man2
 ShouldBeSameString("read and write char properties",Man2,<c_man.name>)
 c_man.name=Man
 
-s_Clumsy.name=Clumsy2
-ShouldBeSameString("read and write char properties",Clumsy2,<s_clumsy.name>)
-s_Clumsy.name=Clumsy
+s_invisibility.name=Invisibility2
+ShouldBeSameString("read and write char properties",Invisibility2,<s_invisibility.name>)
+s_invisibility.name=Invisibility
 
 i_ankh.weight=123
 ShouldBeSameString("set weight",12.3,<i_ankh.weight>)
@@ -71,7 +71,15 @@ tag.itemdefTag=itemdefTagValue
 
 [ITEMDEF 03]
 DUPEITEM=02
-DESCRIPTION=Ankh (w) 2/2
+DESCRIPTION=Ankh 1/3
+
+[ITEMDEF 04]
+DUPEITEM=02
+DESCRIPTION=Ankh 2/3
+
+[ITEMDEF 05]
+DUPEITEM=02
+DESCRIPTION=Ankh 3/3
 
 [ITEMDEF i_resources_test]
 id=2
