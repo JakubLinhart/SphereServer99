@@ -647,7 +647,6 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 		else
 		{
 			keyLength = 0;
-			s.ReadKeyParse(false);
 		}
 
 	jump_in:
@@ -657,9 +656,16 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 
 		LPCTSTR pszKey = s.GetKey();
 		GETNONWHITESPACE(pszKey);
-		if (keyLength > 0)
+		index = static_cast<SK_TYPE>(FindTableHeadSorted(pszKey, sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
+		if (index == SK_RETURN)
 		{
-			index = static_cast<SK_TYPE>(FindTableHeadSorted(pszKey, sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
+			strncpy(tempKey, pszKey, 6);
+			tempKey.setAt(7, '\0');
+			s.SetArgRaw(const_cast<TCHAR*>(pszKey + 6));
+			pszKey = tempKey;
+		}
+		else if (keyLength > 0)
+		{
 			switch (index)
 			{
 				case SK_IF:
@@ -676,7 +682,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			}
 		}
 		else
-			index = static_cast<SK_TYPE>(FindTableSorted(pszKey, sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
+			s.ReadKeyParse(false);
 
 		switch ( index )
 		{
@@ -908,15 +914,14 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 				LPCTSTR pszArgs = s.GetArgStr();
 				if (*pszArgs)
 				{
-					TemporaryString parsedArgs;
-					Str_ParseArgumentList(pszArgs, parsedArgs);
-					psResult->Copy(parsedArgs);
-					return TRIGRET_RET_TRUE;
-				}
-				else
-				{
-					pszKey += 6;
-					psResult->Copy(Str_TrimDoublequotes(const_cast<TCHAR*>(pszKey)));
+					if (IsSimpleNumberString(pszArgs))
+					{
+						CExpression expr(pArgs, pSrc, this);
+						INT64 result = expr.GetVal(pszArgs);
+						psResult->FormatLLVal(result);
+					}
+					else
+						psResult->Copy(pszArgs);
 					return TRIGRET_RET_TRUE;
 				}
 			}
@@ -3110,7 +3115,7 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 		if (*pszKey == '.')
 		{
 			pszKey++;
-			sVal = m_VarsLocal.GetKeyStr(pszKey, true);
+			sVal = m_VarsLocal.GetKeyStr(pszKey, false);
 			return true;
 		}
 		else
@@ -3121,7 +3126,7 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 				if (Str_ParseVariableName(pszKey, varName))
 				{
 					Str_ParseArgumentEnd(pszKey, true);
-					sVal = m_VarsLocal.GetKeyStr(varName, true);
+					sVal = m_VarsLocal.GetKeyStr(varName, false);
 					return r_WriteValChained(pszKey, sVal, pSrc, this);
 				}
 			}

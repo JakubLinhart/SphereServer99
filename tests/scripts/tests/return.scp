@@ -46,13 +46,13 @@ ShouldBeSameString("doublequoted string","asdf",<test_return_doublequoted_string
 ShouldBeSameString("macro","asdf",<test_return_macro(asdf)>)
 ShouldBeSameString("macro with number - without whitespace","123",<test_return_macro(123)>)
 ShouldBeSameString("macro, from if - without whitespace","123",<test_return_macro_from_if(123)>)
-ShouldBeSameString("macro - whitespace after return","10",<test_return_macro_wh(10)>)
+ShouldBeSameString("macro - whitespace after return with number","10",<test_return_macro_wh(10)>)
+ShouldBeSameString("macro - whitespace after return with string"," asdf",<test_return_macro_wh(asdf)>)
 
-// TODO:
-// ShouldBeSameString("expression",2,<test_return_constant_expression>)
-// ShouldBeSameString("constant expression (doesn't expand variables)","(3*arg(x))",<test_return_expression_first_number>)
-// ShouldBeSameString("macro with expression",2,<test_return_macro_in_parentheses("1+1")>)
-// ShouldBeSameString("macro with expression - whitespace after return",2,<test_return_macro_in_parentheses_wh("1+1")>)
+ShouldBeSameString("expression",2,<test_return_constant_expression>)
+ShouldBeSameString("constant expression (doesn't expand variables)","(3*arg(x))",<test_return_expression_first_number>)
+ShouldBeSameString("macro with expression",2,<test_return_macro_in_parentheses("1+1")>)
+ShouldBeSameString("macro with expression - whitespace after return",2,<test_return_macro_in_parentheses_wh("1+1")>)
 
 // Doesn't work on Sphere99
 // ShouldBeSameString("doublequoted string in parentheses","asdf",<test_return_doublequoted_string_in_parentheses>)
