@@ -62,7 +62,7 @@ arg(number,"1")
 
 ShouldBeSameString("r_verb macro with safe",SKILL_Begging,<safe <arg(prefix)><arg(number)><arg(suffix)>>)
 
-finduid(010000).test_safe_chained
+finduid(0D728A).test_safe_chained
 
 var(function_was_called,no)
 safe f_was_function_call
@@ -75,6 +75,16 @@ ShouldBeSameString("r_verb call with parentheses, without arguments",yes,<var(fu
 var(function_was_called,no)
 safe(f_was_function_call(qwer))
 ShouldBeSameString("r_verb call with parentheses, with arguments with parentheses",qwer,<var(function_was_called)>)
+
+arg(color,111)
+safe(finduid(010000).findid(i_backpack).color=arg(color))
+ShouldBeTrue("assignment with parentheses",<eval 111==<finduid(010000).findid(i_backpack).color>>)
+
+arg(color,321)
+safe finduid(010000).findid(i_backpack).color=arg(color)
+ShouldBeTrue("assignment without parentheses",<eval 321==<finduid(010000).findid(i_backpack).color>>)
+
+safe(finduid(010000).findid(i_backpack).resource=asd)
 
 serv.smsg "\n"
 
