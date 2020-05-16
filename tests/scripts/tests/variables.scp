@@ -101,6 +101,10 @@ var(variable2,"1+1")
 ShouldBeSameString("doublequoted expression","1+1","<var(variable2)>")
 ShouldBeSameString("nonexisting variable value","","<var(nonExistingGlobalVariable)>")
 
+// Error "Can't resolve <variable2>" on Sphere99
+// var(variable2,"")
+// ShouldBeSameString("empty string doesn't remove variable","","<variable2>")
+
 var(variable2,#010000)
 ShouldBeSameString("global variable chained call",DrZhor,<var(variable2).name>)
 ShouldBeSameString("global variable unspecified chained call",DrZhor,<variable2.name>)
