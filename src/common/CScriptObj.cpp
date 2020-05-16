@@ -627,7 +627,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 	EXC_TRY("TriggerRun");
 
 	bool fSectionFalse = ((trigger == TRIGRUN_SECTION_FALSE) || (trigger == TRIGRUN_SINGLE_FALSE));
-	if ( (trigger == TRIGRUN_SECTION_EXEC) || (trigger == TRIGRUN_SINGLE_EXEC) )	// header was already read in
+	if ((trigger == TRIGRUN_SECTION_EXEC) || (trigger == TRIGRUN_SINGLE_EXEC))	// header was already read in
 		goto jump_in;
 
 	EXC_SET("parsing");
@@ -648,9 +648,6 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 		{
 			keyLength = 0;
 		}
-
-	jump_in:
-		TRIGRET_TYPE iRet = TRIGRET_RET_DEFAULT;
 
 		SK_TYPE index;
 
@@ -683,6 +680,9 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 		}
 		else
 			s.ReadKeyParse(false);
+
+	jump_in:
+		TRIGRET_TYPE iRet = TRIGRET_RET_DEFAULT;
 
 		switch ( index )
 		{
@@ -2220,11 +2220,11 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		case SSC_StrMid:
 		{
 			TCHAR* ppArgs[3];
-			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
-			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
-			if (iQty < 3)
+			ppArgs[0] = const_cast<TCHAR*>(pszKey);
+			if (!Str_Parse(ppArgs[0], &(ppArgs[1]), ","))
 				return false;
-
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]), ","))
+				return false;
 			TCHAR* pStr = Str_TrimDoublequotes(ppArgs[0]);
 			CExpression expr(pArgs, pSrc, this);
 			int startIndex = expr.GetVal(ppArgs[1]);
@@ -2278,39 +2278,46 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		case SSC_StrGetTok:
 		{
 			TCHAR* ppArgs[3];
-			pszKey = Str_TrimEnd(const_cast<TCHAR*>(pszKey), ")");
-			size_t iQty = Str_ParseCmds(const_cast<TCHAR*>(pszKey), ppArgs, COUNTOF(ppArgs));
-			if (iQty < 3)
+			ppArgs[0] = const_cast<TCHAR*>(pszKey);
+			pszKey = Str_TrimEnd(ppArgs[0], ")");
+			if (!Str_Parse(ppArgs[0], &(ppArgs[1]), ","))
+				return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]), ","))
 				return false;
 			
 			TCHAR* pStr = Str_TrimDoublequotes(ppArgs[0]);
 			CExpression expr(pArgs, pSrc, this);
-			int index = expr.GetVal(ppArgs[1]);
+			int requestedIndex = expr.GetVal(ppArgs[1]);
 			TCHAR* pDelimiter = Str_TrimDoublequotes(ppArgs[2]);
 
-			TCHAR* token = strtok(pStr, pDelimiter);
-			if (!token)
+			TCHAR* pNext;
+			int currentIndex = 0;
+			TCHAR* pStart = pStr;
+			while (pStart != NULL && *pStart != '\0')
 			{
-				sVal = pStr;
-				return true;
+				if (ISWHITESPACE(*pDelimiter))
+				{
+					GETNONWHITESPACE(pStart);
+				}
+				pNext = strchr(pStart, *pDelimiter);
+				if (pNext != NULL)
+					pNext++;
+				if (requestedIndex == currentIndex)
+				{
+					int len = pNext != NULL ? static_cast<int>(pNext - pStart) : strlen(pStart) + 1;
+
+					sVal.SetLength(len);
+					if (len)
+						strcpylen(const_cast<TCHAR*>(sVal.GetPtr()), pStart, len);
+					sVal.SetAt(len - 1, '\0');
+					return true;
+				}
+
+				currentIndex++;
+				pStart = pNext;
 			}
 
-			while (index > 0 && token)
-			{
-				index--;
-				token = strtok(NULL, pDelimiter);
-			}
-
-			if (index == 0)
-			{
-				if (token)
-					sVal = token;
-				else
-					sVal = "";
-				return true;
-			}
-
-			return false;
+			return true;
 		}
 		case SSC_EXPLODE:
 		{

@@ -19,6 +19,11 @@ ShouldBeSameString("negative start","",<strmid("asdfqwer",-2,4)>)
 
 ShouldBeSameString("start out of range","",<strmid("asdfqwer",100,4)>)
 
+arg(start,0)
+arg(len,4)
+ShouldBeSameString("from start to middle with expressions",asdf,<strmid("asdfqwer",arg(start),arg(len))>)
+
+
 serv.smsg "\n"
 
 [function test_strgettok]
@@ -30,6 +35,23 @@ ShouldBeSameString("third",zxcv,"<strgettok("qwer,asdf,zxcv",2,",")>")
 ShouldBeSameString("out of range","","<strgettok("qwer,asdf,zxcv",3,",")>")
 ShouldBeSameString("no separator",qwerasdfzxcv,"<strgettok("qwerasdfzxcv",0,",")>")
 ShouldBeSameString("empty string","","<strgettok("",0,",")>")
+ShouldBeSameString("separator at start, first","","<strgettok("|(04)",0,"|")>")
+ShouldBeSameString("separator at start, second","(04)","<strgettok("|(04)",1,"|")>")
+ShouldBeSameString("multiple separators at start, second","","<strgettok("|||(04)",1,"|")>")
+ShouldBeSameString("separator at end","","<strgettok("(04)|",1,"|")>")
+ShouldBeSameString("unquoted separator","456","<strgettok("123|456",1,|)>")
+
+arg(idx,1)
+ShouldBeSameString("variable as an index","456","<strgettok("123|456",arg(idx),|)>")
+
+ShouldBeSameString("unquoted space at start and end","1","<strgettok( 123 ,0,2)>")
+ShouldBeSameString("quoted space at start and end"," 1","<strgettok(" 123 ",0,2)>")
+ShouldBeSameString("spaces as separator, first","1","<strgettok("     1 2 3 ",0," ")>")
+ShouldBeSameString("spaces as separators, second","2","<strgettok("     1    2 3 ",1," ")>")
+ShouldBeSameString("spaces as separators, third","3","<strgettok("     1    2   3 ",2," ")>")
+ShouldBeSameString("spaces as separators on spaces only, first","","<strgettok("    ",0," ")>")
+ShouldBeSameString("spaces as separators on spaces only, second","","<strgettok("    ",1," ")>")
+
 
 serv.smsg "\n"
 
