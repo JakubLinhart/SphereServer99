@@ -1,8 +1,8 @@
 [function test_newnpc]
 serv.smsg "test_newnpc\n"
 
-finduid(010000).newnpc(c_man)
-ShouldBeSameString("lastnewchar is set",c_man,<lastnewchar.id>)
+finduid(010000).newnpc(c_dog)
+ShouldBeSameString("lastnewchar is set",c_dog,<lastnewchar.id>)
 ShouldBeSameString("lastnewchar is uid",<lastnewchar>,<lastnewchar.uid>)
 ShouldBeTrue("act is set",<finduid(010000).act>,<lastnewchar.id>)
 lastnewchar.remove

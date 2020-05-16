@@ -35,6 +35,10 @@ attack=8
 ARMOR=12
 moverate=3
 
+on=@Create
+tag(this_tests_TRIGRUN_SINGLE_EXEC,0)
+
+
 [CHARDEF 0dc]
 mountid=i_mt_llama
 DEFNAME=c_llama
