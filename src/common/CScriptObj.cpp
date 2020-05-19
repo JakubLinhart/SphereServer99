@@ -2428,7 +2428,7 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 	TemporaryString varName;
 	if (Str_ParseVariableName(pszKey, varName))
 	{
-		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, NULL, pSrc);
+		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc);
 		if (pVar)
 		{
 			sVal = pVar->GetValStr();
@@ -2438,7 +2438,7 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 
 		if (pArgs)
 		{
-			CVarDefCont* pLocalVar = pArgs->m_VarsLocal.GetKey(varName, NULL, pSrc);
+			CVarDefCont* pLocalVar = pArgs->m_VarsLocal.GetKey(varName, pArgs, pSrc);
 			if (pLocalVar)
 			{
 				sVal = pLocalVar->GetValStr();
@@ -2447,7 +2447,7 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 			}
 		}
 
-		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, NULL, pSrc);
+		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc);
 		if (pDef)
 		{
 			if (*pszKey == '.')

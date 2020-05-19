@@ -619,11 +619,8 @@ int CVarDefMap::SetStr( LPCTSTR pszName, bool fQuoted, LPCTSTR pszVal, bool fZer
 		return -1;
 
 	TemporaryString pszBuffer;
-	if (pArgs != NULL)
-	{
-		if (ParseKey(pszName, pszBuffer, pArgs, pSrc))
-			pszName = pszBuffer;
-	}
+	if (ParseKey(pszName, pszBuffer, pArgs, pSrc))
+		pszName = pszBuffer;
 
 	if ( pszVal == NULL || pszVal[0] == '\0' )	// but not if empty
 	{

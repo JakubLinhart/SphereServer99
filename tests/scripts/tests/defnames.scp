@@ -14,6 +14,7 @@ ShouldBeSameString("constant index","value1",<defname_text[0]>)
 arg(index,1)
 ShouldBeSameString("variable index","value2",<defname_text[arg(index)]>)
 ShouldBeSameString("expression index","value3",<defname_text[arg(index)+1]>)
+ShouldBeSameString("index with underscore","value2",<defname_text_1>)
 
 ShouldBeSameString("chained call on def","DrZhor",<player.name>)
 
@@ -32,3 +33,6 @@ ShouldBeSameString("defname with chained argument",value2,<defname_text[<arg(def
 // ShouldBeSameString("chained call on indexed def","DrZhor",<playerindexed[1].name>)
 
 serv.smsg "\n"
+
+[function xxx]
+ShouldBeSameString("constant index","value1",<defname_text[0]>)
