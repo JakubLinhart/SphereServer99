@@ -1325,7 +1325,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 				pszTagName = Str_TrimEnd(pszTagName, ") \t");
 				CVarDefCont* pVarKey = m_TagDefs.GetKey(pszTagName);
 				if (!pVarKey)
-					sVal = Base_GetDef()->m_TagDefs.GetKeyStr(pszTagName, fZero);
+					sVal = Base_GetDef()->m_TagDefs.GetKeyStr(pszTagName, fZero, pArgs, pSrc);
 				else
 					sVal = pVarKey->GetValStr();
 				return true;
@@ -1342,7 +1342,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 						{
 							CVarDefCont* pVarKey = m_TagDefs.GetKey(tagName);
 							if (!pVarKey)
-								sVal = Base_GetDef()->m_TagDefs.GetKeyStr(tagName, fZero);
+								sVal = Base_GetDef()->m_TagDefs.GetKeyStr(tagName, fZero, pArgs, pSrc);
 							else
 								sVal = pVarKey->GetValStr();
 							return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
@@ -1533,7 +1533,7 @@ bool CObjBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pS
 				if (!IsStrNumeric(ppArg2))
 				{
 					LPCTSTR pszVarName = s.GetKey() + 4;
-					LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+					LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName, false, pArgs, pSrc);
 
 					if (strlen(sVal) > 0)
 					{
@@ -1541,18 +1541,18 @@ bool CObjBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pS
 						strcpy(pszBuffer, sVal);
 						strcat(pszBuffer, arg2 + 1);
 						int iValue = Exp_GetVal(pszBuffer);
-						m_TagDefs.SetNum(pszVarName, iValue, false);
+						m_TagDefs.SetNum(pszVarName, iValue, false, pArgs, pSrc);
 					}
 					else
-						m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+						m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false, pArgs, pSrc);
 				}
 				else
 				{
-					m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+					m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false, pArgs, pSrc);
 				}
 			}
 			else
-				m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false);
+				m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, arg2, false, pArgs, pSrc);
 
 			return true;
 		}
@@ -1560,7 +1560,7 @@ bool CObjBase::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pS
 	else if ( s.IsKeyHead("TAG0.", 5) )
 	{
 		bool fQuoted = false;
-		m_TagDefs.SetStr(s.GetKey() + 5, fQuoted, s.GetArgStr(&fQuoted), true);
+		m_TagDefs.SetStr(s.GetKey() + 5, fQuoted, s.GetArgStr(&fQuoted), true, pArgs, pSrc);
 		return true;
 	}
 
@@ -2037,22 +2037,22 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 						LPCTSTR ppArgs2 = ppArgs[1] + 1;
 						if (!IsStrNumeric(ppArgs2))
 						{
-							LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+							LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName, false, pArgs, pSrc);
 
 							TemporaryString pszBuffer;
 							strcpy(pszBuffer, sVal);
 							strcat(pszBuffer, ppArgs[1] + 1);
 							int iValue = Exp_GetVal(pszBuffer);
-							m_TagDefs.SetNum(pszVarName, iValue, false);
+							m_TagDefs.SetNum(pszVarName, iValue, false, pArgs, pSrc);
 						}
 						else
 						{
-							m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false);
+							m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
 						}
 					}
 					else
 					{
-						m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false);
+						m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
 					}
 				}
 				else

@@ -854,7 +854,7 @@ bool CClient::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSr
 		bool fQuoted = false;
 
 		pszKey = pszKey + (fZero ? 6 : 5);
-		m_TagDefs.SetStr(pszKey, fQuoted, s.GetArgStr(&fQuoted), fZero);
+		m_TagDefs.SetStr(pszKey, fQuoted, s.GetArgStr(&fQuoted), fZero, pArgs, pSrc);
 		return true;
 	}
 

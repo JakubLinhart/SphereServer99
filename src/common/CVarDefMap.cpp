@@ -539,13 +539,20 @@ int CVarDefMap::SetNumOverride( LPCTSTR pszKey, INT64 iVal )
 	return SetNumNew(pszKey,iVal);
 }
 
-int CVarDefMap::SetNum( LPCTSTR pszName, INT64 iVal, bool fZero )
+int CVarDefMap::SetNum( LPCTSTR pszName, INT64 iVal, bool fZero, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CVarDefMap::SetNum");
 	ASSERT(pszName);
 
 	if ( pszName[0] == '\0' )
 		return( -1 );
+
+	TemporaryString parsedKey;
+	if (pArgs != NULL)
+	{
+		if (ParseKey(pszName, parsedKey, pArgs, pSrc))
+			pszName = parsedKey;
+	}
 
 	if ( fZero && (iVal == 0) )
 	{
@@ -604,12 +611,19 @@ int CVarDefMap::SetStrOverride( LPCTSTR pszKey, LPCTSTR pszVal )
 	return SetStrNew(pszKey,pszVal);
 }
 
-int CVarDefMap::SetStr( LPCTSTR pszName, bool fQuoted, LPCTSTR pszVal, bool fZero )
+int CVarDefMap::SetStr( LPCTSTR pszName, bool fQuoted, LPCTSTR pszVal, bool fZero, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CVarDefMap::SetStr");
 	// ASSUME: This has been clipped of unwanted beginning and trailing spaces.
 	if ( !pszName || !pszName[0] )
 		return -1;
+
+	TemporaryString pszBuffer;
+	if (pArgs != NULL)
+	{
+		if (ParseKey(pszName, pszBuffer, pArgs, pSrc))
+			pszName = pszBuffer;
+	}
 
 	if ( pszVal == NULL || pszVal[0] == '\0' )	// but not if empty
 	{
@@ -718,12 +732,9 @@ int CVarDefMap::SetRef(LPCTSTR pszName, CScriptObj *pRef, bool fZero)
 	return static_cast<int>(std::distance(m_Container.begin(), iResult));
 }
 
-CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTextConsole* pSrc ) const
+bool CVarDefMap::ParseKey(LPCTSTR pszKey, String& parsedKey, CScriptTriggerArgs* pArgs, CTextConsole* pSrc) const
 {
-	ADDTOCALLSTACK("CVarDefMap::GetKey");
-	CVarDefCont * pReturn = NULL;
-
-	if ( pszKey )
+	if (pszKey)
 	{
 		TCHAR* varKey = const_cast<TCHAR*>(pszKey);
 		TCHAR* bracketStart = const_cast<TCHAR*>(strchr(pszKey, '['));
@@ -734,7 +745,7 @@ CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTe
 			bracketStart++;
 
 			INT64 index = 0;
-			CExpression* expr = new CExpression(pArgs, pSrc);
+			CExpression expr(pArgs, pSrc);
 
 			if (bracketEnd)
 			{
@@ -742,21 +753,34 @@ CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTe
 				size_t len = bracketEnd - bracketStart;
 				strncpy(strIndex, bracketStart, len);
 				strIndex.setAt(len, '\0');
-				index = expr->GetVal(strIndex);
+				index = expr.GetVal(strIndex);
 			}
 			else
-				index = expr->GetVal(bracketStart);
-
-			delete expr;
+				index = expr.GetVal(bracketStart);
 
 			TemporaryString pszPrefix;
 			strncpy(pszPrefix, pszKey, prefixLen);
 			pszPrefix.setAt(prefixLen, '\0');
 
-			TemporaryString pszBuffer;
-			sprintf(pszBuffer, "%s[%d]", static_cast<TCHAR*>(pszPrefix), index);
-			varKey = pszBuffer;
+			sprintf(parsedKey, "%s_%d", static_cast<TCHAR*>(pszPrefix), index);
+			return true;
 		}
+	}
+
+	return false;
+}
+
+CVarDefCont * CVarDefMap::GetKey( LPCTSTR pszKey, CScriptTriggerArgs* pArgs, CTextConsole* pSrc ) const
+{
+	ADDTOCALLSTACK("CVarDefMap::GetKey");
+	CVarDefCont * pReturn = NULL;
+
+	if ( pszKey )
+	{
+		TCHAR* varKey = const_cast<TCHAR*>(pszKey);
+		TemporaryString pszBuffer;
+		if (ParseKey(pszKey, pszBuffer, pArgs, pSrc))
+			varKey = pszBuffer;
 
 		CVarDefContTest * pVarBase = new CVarDefContTest(varKey);
 		DefSet::const_iterator i = m_Container.find(pVarBase);
@@ -776,10 +800,10 @@ INT64 CVarDefMap::GetKeyNum( LPCTSTR pszKey ) const
 	return pVar ? pVar->GetValNum() : 0;
 }
 
-LPCTSTR CVarDefMap::GetKeyStr( LPCTSTR pszKey, bool fZero ) const
+LPCTSTR CVarDefMap::GetKeyStr( LPCTSTR pszKey, bool fZero, CScriptTriggerArgs* pArgs, CTextConsole* pSrc ) const
 {
 	ADDTOCALLSTACK("CVarDefMap::GetKeyStr");
-	CVarDefCont * pVar = GetKey(pszKey);
+	CVarDefCont * pVar = GetKey(pszKey, pArgs, pSrc);
 	if ( pVar == NULL )
 		return (fZero ? "0" : "");
 	return pVar->GetValStr();

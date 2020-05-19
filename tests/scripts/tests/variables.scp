@@ -28,6 +28,14 @@ arg.localVariable2=asdf
 ShouldBeSameString("unspecified local variable read","asdf",<localVariable2>)
 arg(localVariable[2],asdf)
 ShouldBeSameString("indexed local variable with expression index",asdf,<arg(localVariable[1+1])>)
+arg(localVariableIndex,3)
+arg(localVariable[arg(localVariableIndex)],qwerrewq)
+ShouldBeSameString("indexed local variable with variable index",qwerrewq,<arg(localVariable[3])>)
+arg(localVariable_4,hjhjjh)
+ShouldBeSameString("indexed local variable with underscore",hjhjjh,<arg(localVariable_4)>)
+arg(localVariableIndex,5)
+arg(localVariable_5,ggghhh)
+ShouldBeSameString("indexed local variable, write with underscore, read with variable index",ggghhh,<arg(localVariable[arg(localVariableIndex)])>)
 arg(localVariable2,"asdf")
 ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<arg(localVariable2)><arg(localVariable2)><arg(localVariable2)>)
 arg.localVariable2="asdf"
@@ -91,6 +99,16 @@ var.variable2=asdf
 ShouldBeSameString("unspecified global variable sharp read",asdf,<variable2>)
 var.variable[2]=asdf
 ShouldBeSameString("indexed variable with expression index",asdf,<variable[1+1]>)
+
+arg(variableIndex,3)
+var(globalVariable[arg(variableIndex)],qwerrewq)
+ShouldBeSameString("indexed local variable with variable index",qwerrewq,<var(globalVariable[3])>)
+var(globalVariable_4,hjhjjh)
+ShouldBeSameString("indexed local variable with underscore",hjhjjh,<var(globalVariable_4)>)
+arg(variableIndex,5)
+var(globalVariable_5,ggghhh)
+ShouldBeSameString("indexed local variable, write with underscore, read with variable index",ggghhh,<var(globalVariable[arg(variableIndex)])>)
+
 var(variable2,"asdf")
 ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<var(variable2)><var(variable2)><var(variable2)>)
 var.variable2="asdf"
@@ -143,3 +161,8 @@ ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 // ShouldBeSameString("chained call",DrZhor,<var(variable2).name>)
 
 serv.smsg "\n"
+
+[function xxx]
+arg(variableIndex,3)
+var(globalVariable[arg(variableIndex)],qwerrewq)
+ShouldBeSameString("indexed local variable with variable index",qwerrewq,<var(globalVariable[3])>)

@@ -41,8 +41,24 @@ ShouldBeSameString("doublequoted expression","1+1","<finduid(010000).tag(tag4)>"
 
 finduid(010000).tag.remove(nonexistingtag)
 ShouldBeSameString("eval of nonexisting tag",0,<eval finduid(010000).tag(nonexistingtag)>)
+finduid(010000).tag.remove(nonexistingtag[1])
+ShouldBeSameString("eval of nonexisting tag",0,<eval finduid(010000).tag(nonexistingtag[1])>)
 finduid(010000).tag.nonexistingtag=#+1
 ShouldBeSameString("increment of nonexisting tag","#+1",<finduid(010000).tag(nonexistingtag)>)
+
+finduid(010000).tag(indexedtag[10],321)
+ShouldBeSameString("set/get indexed tag value, brackets","321",<finduid(010000).tag(indexedtag[10])>)
+finduid(010000).tag(indexedtag_10,123)
+ShouldBeSameString("set/get indexed tag value, underscore","123",<finduid(010000).tag(indexedtag_10)>)
+finduid(010000).tag(indexedtag_9,333)
+ShouldBeSameString("set/get indexed tag value, underscore/brackets","333",<finduid(010000).tag(indexedtag[9])>)
+arg(index,11)
+finduid(010000).tag(indexedtag[arg(index)],321)
+ShouldBeSameString("set/get indexed tag value","321",<finduid(010000).tag(indexedtag[11])>)
+arg(index,12)
+// Doesn't work on Sphere99
+// finduid(010000).tag(indexedtag_arg(index),666)
+// ShouldBeSameString("set/get indexed tag value, underscore","321",<finduid(010000).tag(indexedtag[12])>)
 
 var(function_was_called,0)
 finduid(010000).tag(localTag,#010000)

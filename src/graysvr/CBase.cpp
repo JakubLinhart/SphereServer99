@@ -375,7 +375,7 @@ bool CBaseBaseDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc
 			if (pszKey[3] == '.' || pszKey[3] == ' ')
 			{
 				pszKey += 4;
-				sVal = m_TagDefs.GetKeyStr(pszKey, fZero);
+				sVal = m_TagDefs.GetKeyStr(pszKey, fZero, pArgs, pSrc);
 				return true;
 			}
 			else if (pszKey[3] == '(')
@@ -384,7 +384,7 @@ bool CBaseBaseDef::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc
 				TemporaryString tagName;
 				if (Str_ParseArgumentList(pszKey, tagName))
 				{
-					sVal = m_TagDefs.GetKeyStr(tagName, fZero);
+					sVal = m_TagDefs.GetKeyStr(tagName, fZero, pArgs, pSrc);
 					return true;
 				}
 			}
@@ -432,22 +432,22 @@ bool CBaseBaseDef::r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pA
 				LPCTSTR ppArgs2 = ppArgs[1] + 1;
 				if (!IsStrNumeric(ppArgs2))
 				{
-					LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName);
+					LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName, false, pArgs, pSrc);
 
 					TemporaryString pszBuffer;
 					strcpy(pszBuffer, sVal);
 					strcat(pszBuffer, ppArgs[1] + 1);
 					int iValue = Exp_GetVal(pszBuffer);
-					m_TagDefs.SetNum(pszVarName, iValue, false);
+					m_TagDefs.SetNum(pszVarName, iValue, false, pArgs, pSrc);
 				}
 				else
 				{
-					m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false);
+					m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
 				}
 			}
 			else
 			{
-				m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false);
+				m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
 			}
 		}
 		else
@@ -486,13 +486,13 @@ bool CBaseBaseDef::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole
 	if ( s.IsKeyHead("TAG.", 4) )
 	{
 		bool fQuoted = false;
-		m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, s.GetArgStr(&fQuoted), false);
+		m_TagDefs.SetStr(s.GetKey() + 4, fQuoted, s.GetArgStr(&fQuoted), false, pArgs, pSrc);
 		return true;
 	}
 	if ( s.IsKeyHead("TAG0.", 5) )
 	{
 		bool fQuoted = false;
-		m_TagDefs.SetStr(s.GetKey() + 5, fQuoted, s.GetArgStr(&fQuoted), true);
+		m_TagDefs.SetStr(s.GetKey() + 5, fQuoted, s.GetArgStr(&fQuoted), true, pArgs, pSrc);
 		return true;
 	}
 

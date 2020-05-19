@@ -177,16 +177,17 @@ public:
 	LPCTSTR FindValStr( LPCTSTR pVal ) const;
 
 	int SetNumNew( LPCTSTR pszKey, INT64 iVal );
-	int SetNum( LPCTSTR pszKey, INT64 iVal, bool fZero = false );
+	int SetNum( LPCTSTR pszKey, INT64 iVal, bool fZero = false, CScriptTriggerArgs* pArgs = NULL, CTextConsole* pSrc = NULL);
 	int SetStrNew( LPCTSTR pszKey, LPCTSTR pszVal );
-	int SetStr( LPCTSTR pszKey, bool fQuoted, LPCTSTR pszVal, bool fZero = false );
+	int SetStr( LPCTSTR pszKey, bool fQuoted, LPCTSTR pszVal, bool fZero = false, CScriptTriggerArgs* pArgs = NULL, CTextConsole* pSrc = NULL);
 	int SetRefNew(LPCTSTR pszKey, CScriptObj *pRef);
 	int SetRef(LPCTSTR pszKey, CScriptObj *pRef, bool fZero = false);
 
 	CVarDefCont * GetAt( size_t at ) const;
 	CVarDefCont * GetKey( LPCTSTR pszKey, CScriptTriggerArgs *pArgs = NULL, CTextConsole *pSrc = NULL ) const;
+	bool ParseKey(LPCTSTR pszKey, String& parsedKey, CScriptTriggerArgs* pArgs, CTextConsole* pSrc) const;
 	INT64 GetKeyNum( LPCTSTR pszKey ) const;
-	LPCTSTR GetKeyStr( LPCTSTR pszKey, bool fZero = false ) const;
+	LPCTSTR GetKeyStr( LPCTSTR pszKey, bool fZero = false, CScriptTriggerArgs* pArgs = NULL, CTextConsole* pSrc = NULL) const;
 	CVarDefCont * GetParseKey( LPCTSTR & pArgs ) const;
 	CVarDefCont * CheckParseKey( LPCTSTR & pszArgs ) const;
 	bool GetParseVal( LPCTSTR & pArgs, long long * plVal ) const;
