@@ -161,8 +161,3 @@ ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 // ShouldBeSameString("chained call",DrZhor,<var(variable2).name>)
 
 serv.smsg "\n"
-
-[function xxx]
-arg(variableIndex,3)
-var(globalVariable[arg(variableIndex)],qwerrewq)
-ShouldBeSameString("indexed local variable with variable index",qwerrewq,<var(globalVariable[3])>)
