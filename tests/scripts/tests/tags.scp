@@ -60,6 +60,16 @@ arg(index,12)
 // finduid(010000).tag(indexedtag_arg(index),666)
 // ShouldBeSameString("set/get indexed tag value, underscore","321",<finduid(010000).tag(indexedtag[12])>)
 
+arg(index,2)
+arg(indexOfIndex[2],1)
+finduid(010000).tag(indexedTag[indexOfIndex[index]],zzz)
+ShouldBeSameString("set/get nested index",zzz,<finduid(010000).tag(indexedTag[arg(indexOfIndex[index])])>)
+ShouldBeSameString("set/get nested index - constant index read",zzz,<finduid(010000).tag(indexedTag[1])>)
+
+finduid(010000).tag(indexedTag[2],xxx)
+ShouldBeSameString("function call index",xxx,<finduid(010000).tag(indexedTag[return_first_arg(2)])>)
+ShouldBeSameString("function call index with two arguments",xxx,<finduid(010000).tag(indexedTag[return_first_arg(2,123)])>)
+
 var(function_was_called,0)
 finduid(010000).tag(localTag,#010000)
 finduid(010000).tag(localTag).f_was_function_call
@@ -79,6 +89,7 @@ ShouldBeSameString("tag on unspecified local var",onunspecifiedlocalvar,<player.
 // finduid(010000).tag(tag3,#010000)
 // ShouldBeSameString("chained call on tag","DrZhor",<finduid(010000).tag3.name>)
 
+
 serv.smsg "\n"
 
 [function test_tags_nonchained]
@@ -94,6 +105,10 @@ tag(localTag,"f_was_function")
 src=<finduid(010000)>
 <src.tag(localTag)>_call
 ShouldBeSameString("tag in macro r_verb",yes,<var(function_was_called)>)
+
+tag(tagWithIndex,2)
+tag(tagWithValue[tag(tagWithIndex)],value3)
+ShouldBeSameString("index with unchained tag",value3,<tag(tagWithValue[tag(tagWithIndex)])>)
 
 [function test_tags_on_arguments]
 argv(0).tag(testtag,testvalue)

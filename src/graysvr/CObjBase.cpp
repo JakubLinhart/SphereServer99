@@ -1340,7 +1340,7 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 					{
 						if (Str_ParseArgumentEnd(pszKey, true))
 						{
-							CVarDefCont* pVarKey = m_TagDefs.GetKey(tagName);
+							CVarDefCont* pVarKey = m_TagDefs.GetKey(tagName, pArgs, pSrc, this);
 							if (!pVarKey)
 								sVal = Base_GetDef()->m_TagDefs.GetKeyStr(tagName, fZero, pArgs, pSrc, this);
 							else
