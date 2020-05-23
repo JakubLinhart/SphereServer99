@@ -45,6 +45,3 @@ serv.smsg "\n"
 
 [function test_defnames_on_chained_call]
 ShouldBeSameString("index with unchained tag",value3,<defname_text[tag(tagWithIndex)]>)
-
-[function xxx]
-ShouldBeSameString("function call index",value3,<defname_text[return_first_arg(2)]>)
