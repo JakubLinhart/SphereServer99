@@ -848,7 +848,7 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 
 			bool fRes = false;
 			if (m_pArgs != NULL)
-				fRes = m_pArgs->r_WriteVarVal(Str_TrimEnd(const_cast<TCHAR*>(pszTmpArgs), " \t"), sVal, m_pSrc);
+				fRes = m_pArgs->r_WriteVarVal(Str_TrimEnd(const_cast<TCHAR*>(pszTmpArgs), " \t"), sVal, m_pSrc, m_pObj);
 
 			if (!fRes && m_pObj != NULL)
 				fRes = m_pObj->r_WriteVal(Str_TrimEnd(const_cast<TCHAR*>(pszTmpArgs), " \t"), sVal, m_pSrc, m_pArgs);

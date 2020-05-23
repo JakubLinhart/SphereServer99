@@ -52,3 +52,6 @@ endif
 
 [function f_identity_args]
 return<args>
+
+[function return_first_arg]
+return<argv(0)>

@@ -1073,7 +1073,7 @@ bool CAccount::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			if ( pszKey[3] != '.' )
 				return false;
 			pszKey += 4;
-			sVal = m_TagDefs.GetKeyStr(pszKey, fZero, pArgs, pSrc);
+			sVal = m_TagDefs.GetKeyStr(pszKey, fZero, pArgs, pSrc, this);
 			return true;
 		}
 		case AC_TAGCOUNT:

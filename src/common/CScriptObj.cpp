@@ -237,7 +237,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerForLoop(CScript &s, int iType, CTextConsole *p
 				if ( g_Cfg.m_iMaxLoopTimes && (iLoopsMade >= g_Cfg.m_iMaxLoopTimes) )
 					goto toomanyloops;
 
-				pArgs->m_VarsLocal.SetNum(sLoopVar, i, false, pArgs, pSrc);
+				pArgs->m_VarsLocal.SetNum(sLoopVar, i, false, pArgs, pSrc, this);
 				TRIGRET_TYPE iRet = OnTriggerRun(s, TRIGRUN_SECTION_TRUE, pSrc, pArgs, psResult);
 				if ( iRet == TRIGRET_BREAK )
 				{
@@ -261,7 +261,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerForLoop(CScript &s, int iType, CTextConsole *p
 				if ( g_Cfg.m_iMaxLoopTimes && (iLoopsMade >= g_Cfg.m_iMaxLoopTimes) )
 					goto toomanyloops;
 
-				pArgs->m_VarsLocal.SetNum(sLoopVar, i, false, pArgs, pSrc);
+				pArgs->m_VarsLocal.SetNum(sLoopVar, i, false, pArgs, pSrc, this);
 				TRIGRET_TYPE iRet = OnTriggerRun(s, TRIGRUN_SECTION_TRUE, pSrc, pArgs, psResult);
 				if ( iRet == TRIGRET_BREAK )
 				{
@@ -1030,7 +1030,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 				}
 
 				CScript* pScript = pSafeScript != NULL ? pSafeScript : &s;
-				if ( !pArgs->r_Verb(*pScript, pSrc, pArgs) )
+				if ( !pArgs->r_Verb(*pScript, pSrc, this) )
 				{
 					EXC_SET("verb");
 					bool fRes = r_Verb(*pScript, pSrc, pArgs);
@@ -1193,7 +1193,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 					pszKey -= 4;
 			}
 
-			if (pArgs && pArgs->r_WriteVarVal(pszKey, sVal, pSrc))
+			if (pArgs && pArgs->r_WriteVarVal(pszKey, sVal, pSrc, this))
 				fRes = true;
 			
 			if (!fRes)
@@ -1477,7 +1477,7 @@ bool CScriptObj::r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* 
 		case SSC_VAR0:
 		{
 			bool fQuoted = false;
-			g_Exp.m_VarGlobals.SetStr(pszKey + 5, fQuoted, s.GetArgStr(&fQuoted), true, pArgs, pSrc);
+			g_Exp.m_VarGlobals.SetStr(pszKey + 5, fQuoted, s.GetArgStr(&fQuoted), true, pArgs, pSrc, this);
 			return true;
 		}
 		case SSC_LIST:
@@ -1641,13 +1641,13 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 		TemporaryString varName;
 		if (Str_ParseVariableName(pszKey, varName))
 		{
-			CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc);
+			CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc, this);
 			if (pVar)
 			{
 				sVal = pVar->GetValStr();
 				return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
 			}
-			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc);
+			CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc, this);
 			if (pDef)
 			{
 				if (*pszKey == '.')
@@ -1857,7 +1857,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 				{
 					if (Str_ParseArgumentEnd(pszKey, false))
 					{
-						CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc);
+						CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc, this);
 						if (pVar)
 							sVal = pVar->GetValStr();
 						else if (fZero)
@@ -1878,7 +1878,7 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			fZero = true;
 		case SSC_DEF:
 		{
-			CVarDefCont *pVar = g_Exp.m_VarDefs.GetKey(pszKey, pArgs, pSrc);
+			CVarDefCont *pVar = g_Exp.m_VarDefs.GetKey(pszKey, pArgs, pSrc, this);
 			if ( pVar )
 				sVal = pVar->GetValStr();
 			else if ( fZero )
@@ -2428,7 +2428,7 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 	TemporaryString varName;
 	if (Str_ParseVariableName(pszKey, varName))
 	{
-		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc);
+		CVarDefCont* pVar = g_Exp.m_VarGlobals.GetKey(varName, pArgs, pSrc, this);
 		if (pVar)
 		{
 			sVal = pVar->GetValStr();
@@ -2438,7 +2438,7 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 
 		if (pArgs)
 		{
-			CVarDefCont* pLocalVar = pArgs->m_VarsLocal.GetKey(varName, pArgs, pSrc);
+			CVarDefCont* pLocalVar = pArgs->m_VarsLocal.GetKey(varName, pArgs, pSrc, this);
 			if (pLocalVar)
 			{
 				sVal = pLocalVar->GetValStr();
@@ -2447,7 +2447,7 @@ bool CScriptObj::r_VerbGlobal(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs
 			}
 		}
 
-		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc);
+		CVarDefCont* pDef = g_Exp.m_VarDefs.GetKey(varName, pArgs, pSrc, this);
 		if (pDef)
 		{
 			if (*pszKey == '.')
@@ -2724,11 +2724,11 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 						strcpy(pszBuffer, pszKey + 4);
 						strcat(pszBuffer, args + 1);
 						int iValue = Exp_GetVal(pszBuffer);
-						g_Exp.m_VarGlobals.SetNum(pszKey + 4, iValue, false, pArgs, pSrc);
+						g_Exp.m_VarGlobals.SetNum(pszKey + 4, iValue, false, pArgs, pSrc, this);
 					}
 					else
 					{
-						g_Exp.m_VarGlobals.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false, pArgs, pSrc);
+						g_Exp.m_VarGlobals.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false, pArgs, pSrc, this);
 					}
 					return true;
 				}
@@ -2759,22 +2759,22 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 							LPCTSTR ppArgs1 = ppArgs[1] + 1;
 							if (!IsStrNumeric(ppArgs1))
 							{
-								LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName, false, pArgs, pSrc);
+								LPCTSTR sVal = g_Exp.m_VarGlobals.GetKeyStr(pszVarName, false, pArgs, pSrc, this);
 
 								TemporaryString pszBuffer;
 								strcpy(pszBuffer, sVal);
 								strcat(pszBuffer, pszValue + 1);
 								int iValue = Exp_GetVal(pszBuffer);
-								g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false, pArgs, pSrc);
+								g_Exp.m_VarGlobals.SetNum(pszVarName, iValue, false, pArgs, pSrc, this);
 							}
 							else
 							{
-								g_Exp.m_VarGlobals.SetStr(pszVarName, fQuoted, ppArgs[1], false, pArgs, pSrc);
+								g_Exp.m_VarGlobals.SetStr(pszVarName, fQuoted, ppArgs[1], false, pArgs, pSrc, this);
 							}
 						}
 						else
 						{
-							g_Exp.m_VarGlobals.SetStr(pszVarName, fQuoted, Str_TrimDoublequotes(ppArgs[1]), false, pArgs, pSrc);
+							g_Exp.m_VarGlobals.SetStr(pszVarName, fQuoted, Str_TrimDoublequotes(ppArgs[1]), false, pArgs, pSrc, this);
 						}
 					}
 					else
@@ -3096,7 +3096,7 @@ LPCTSTR CScriptTriggerArgs::GetArgV(int iKey)
 	return m_v.GetAt(static_cast<size_t>(iKey));
 }
 
-bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc)
+bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptObj *pObj)
 {
 	ADDTOCALLSTACK("CScriptTriggerArgs::r_WriteVarVal");
 	EXC_TRY("WriteVarVal");
@@ -3105,7 +3105,7 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 	LPCTSTR pszOriginalKey = pszKey;
 	if (Str_ParseVariableName(pszKey, varName))
 	{
-		CVarDefCont* pVar = m_VarsLocal.GetKey(varName, this, pSrc);
+		CVarDefCont* pVar = m_VarsLocal.GetKey(varName, this, pSrc, pObj);
 		if (pVar)
 		{
 			sVal = pVar->GetValStr();
@@ -3122,7 +3122,7 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 		if (*pszKey == '.')
 		{
 			pszKey++;
-			sVal = m_VarsLocal.GetKeyStr(pszKey, false, this, pSrc);
+			sVal = m_VarsLocal.GetKeyStr(pszKey, false, this, pSrc, this);
 			return true;
 		}
 		else
@@ -3133,7 +3133,7 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 				if (Str_ParseVariableName(pszKey, varName))
 				{
 					Str_ParseArgumentEnd(pszKey, true);
-					sVal = m_VarsLocal.GetKeyStr(varName, false, this, pSrc);
+					sVal = m_VarsLocal.GetKeyStr(varName, false, this, pSrc, this);
 					return r_WriteValChained(pszKey, sVal, pSrc, this);
 				}
 			}
@@ -3242,7 +3242,7 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 			break;
 		}
 		default:
-			CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey, this, pSrc);
+			CVarDefCont* pVar = m_VarsLocal.GetKey(pszKey, this, pSrc, this);
 			if (pVar)
 			{
 				EXC_SET("nonspecificvar");
@@ -3268,7 +3268,7 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 	return false;
 }
 
-bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
+bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptObj* pObj)
 {
 	ADDTOCALLSTACK("CScriptTriggerArgs::r_Verb");
 	EXC_TRY("Verb");
@@ -3284,7 +3284,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 		{
 			pszKey++;
 			CScript subS(pszKey, s.GetArgStr());
-			return pObj->r_Verb(subS, pSrc, pArgs);
+			return pObj->r_Verb(subS, pSrc, this);
 		}
 	}
 	pszKey = pszOrigKey;
@@ -3294,7 +3294,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 	else if ( !strnicmp("LOCAL.", pszKey, 6) )
 	{
 		bool fQuoted = false;
-		m_VarsLocal.SetStr(s.GetKey() + 6, fQuoted, s.GetArgStr(&fQuoted), false, pArgs, pSrc);
+		m_VarsLocal.SetStr(s.GetKey() + 6, fQuoted, s.GetArgStr(&fQuoted), false, this, pSrc, pObj);
 		return true;
 	}
 	else if (!stricmp("argv", pszKey))
@@ -3337,11 +3337,11 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 				strcat(pszBuffer, args + 1);
 				CExpression expr(this, pSrc, NULL);
 				int iValue = expr.GetVal(pszBuffer);
-				m_VarsLocal.SetNum(pszKey + 4, iValue, false, pArgs, pSrc);
+				m_VarsLocal.SetNum(pszKey + 4, iValue, false, this, pSrc, pObj);
 			}
 			else
 			{
-				m_VarsLocal.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false, pArgs, pSrc);
+				m_VarsLocal.SetStr(pszKey + 4, fQuoted, s.GetArgStr(&fQuoted), false, this, pSrc, pObj);
 			}
 			return true;
 		}
@@ -3372,22 +3372,22 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 					LPCTSTR ppArgs1 = ppArgs[1] + 1;
 					if (!IsStrNumeric(ppArgs1))
 					{
-						LPCTSTR sVal = m_VarsLocal.GetKeyStr(pszVarName, false, pArgs, pSrc);
+						LPCTSTR sVal = m_VarsLocal.GetKeyStr(pszVarName, false, this, pSrc, pObj);
 
 						TemporaryString pszBuffer;
 						strcpy(pszBuffer, sVal);
 						strcat(pszBuffer, pszValue + 1);
 						int iValue = Exp_GetVal(pszBuffer);
-						m_VarsLocal.SetNum(pszVarName, iValue, false, pArgs, pSrc);
+						m_VarsLocal.SetNum(pszVarName, iValue, false, this, pSrc, pObj);
 					}
 					else
 					{
-						m_VarsLocal.SetStr(pszVarName, fQuoted, ppArgs[1], false, pArgs, pSrc);
+						m_VarsLocal.SetStr(pszVarName, fQuoted, ppArgs[1], false, this, pSrc, pObj);
 					}
 				}
 				else
 				{
-					m_VarsLocal.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
+					m_VarsLocal.SetStr(pszVarName, fQuoted, pszValue, false, this, pSrc, pObj);
 				}
 			}
 			else
@@ -3399,7 +3399,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 					if (pObj)
 					{
 						CScript subS(pszRawArgs);
-						return pObj->r_Verb(subS, pSrc, pArgs);
+						return pObj->r_Verb(subS, pSrc, this);
 					}
 				}
 			}
@@ -3432,7 +3432,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 						return false;
 
 					CScript script(pszKey, s.GetArgStr());
-					return pObj->r_Verb(script, pSrc, pArgs);
+					return pObj->r_Verb(script, pSrc, this);
 				}
 			}
 		}
@@ -3479,7 +3479,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 					return false;
 
 				CScript script(pszTemp, s.GetArgStr());
-				return m_pO1->r_Verb(script, pSrc, pArgs);
+				return m_pO1->r_Verb(script, pSrc, this);
 			}
 			return false;
 		}
@@ -3487,7 +3487,7 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 		case AGC_TRYSRV:
 		{
 			CScript try_script(s.GetArgStr());
-			if ( r_Verb(try_script, pSrc, pArgs) )
+			if ( r_Verb(try_script, pSrc, this) )
 				return true;
 		}
 		case AGC_V:
@@ -3499,14 +3499,14 @@ bool CScriptTriggerArgs::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerAr
 			if (*pszCmd == '.')
 			{
 				pszCmd++;
-				CExpression expr(pArgs, pSrc, NULL);
+				CExpression expr(this, pSrc, pObj);
 				long varIndex = expr.GetVal(varIndexStr);
 				LPCTSTR varValue = this->GetArgV(varIndex);
 				CObjBase* pObj = static_cast<CGrayUID>(expr.GetVal(varValue)).ObjFind();
 				if (pObj)
 				{
 					CScript subS(pszCmd);
-					return pObj->r_LoadVal(subS, pArgs, pSrc);
+					return pObj->r_LoadVal(subS, this, pSrc);
 				}
 			}
 			break;

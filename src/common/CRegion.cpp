@@ -619,7 +619,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 				if (pszKey[3] == '.' || pszKey[3] == ' ')
 				{
 					pszKey += 4;
-					sVal = m_TagDefs.GetKeyStr(pszKey, fZero, pArgs, pSrc);
+					sVal = m_TagDefs.GetKeyStr(pszKey, fZero, pArgs, pSrc, this);
 					return true;
 				}
 				else if (pszKey[3] == '(')
@@ -628,7 +628,7 @@ bool CRegionBase::r_WriteVal( LPCTSTR pszKey, CGString & sVal, CTextConsole * pS
 					TemporaryString tagName;
 					if (Str_ParseArgumentList(pszKey, tagName))
 					{
-						sVal = m_TagDefs.GetKeyStr(tagName, fZero, pArgs, pSrc);
+						sVal = m_TagDefs.GetKeyStr(tagName, fZero, pArgs, pSrc, this);
 						return true;
 					}
 				}
@@ -678,14 +678,14 @@ bool CRegionBase::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsol
 	{
 		SetModified( REGMOD_TAGS );
 		bool fQuoted = false; 
-		m_TagDefs.SetStr( s.GetKey()+ 4, fQuoted, s.GetArgStr( &fQuoted ), false, pArgs, pSrc );
+		m_TagDefs.SetStr( s.GetKey()+ 4, fQuoted, s.GetArgStr( &fQuoted ), false, pArgs, pSrc, this );
 		return( true );
 	}
 	if ( s.IsKeyHead( "TAG0.", 5 ))
 	{
 		SetModified( REGMOD_TAGS );
 		bool fQuoted = false; 
-		m_TagDefs.SetStr( s.GetKey()+ 5, fQuoted, s.GetArgStr( &fQuoted ), false, pArgs, pSrc );
+		m_TagDefs.SetStr( s.GetKey()+ 5, fQuoted, s.GetArgStr( &fQuoted ), false, pArgs, pSrc, this );
 		return( true );
 	}
 
@@ -1000,22 +1000,22 @@ bool CRegionBase::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* 
 					LPCTSTR ppArgs2 = ppArgs[1] + 1;
 					if (!IsStrNumeric(ppArgs2))
 					{
-						LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName, false, pArgs, pSrc);
+						LPCTSTR sVal = m_TagDefs.GetKeyStr(pszVarName, false, pArgs, pSrc, this);
 
 						TemporaryString pszBuffer;
 						strcpy(pszBuffer, sVal);
 						strcat(pszBuffer, ppArgs[1] + 1);
 						int iValue = Exp_GetVal(pszBuffer);
-						m_TagDefs.SetNum(pszVarName, iValue, false, pArgs, pSrc);
+						m_TagDefs.SetNum(pszVarName, iValue, false, pArgs, pSrc, this);
 					}
 					else
 					{
-						m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
+						m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc, this);
 					}
 				}
 				else
 				{
-					m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc);
+					m_TagDefs.SetStr(pszVarName, fQuoted, pszValue, false, pArgs, pSrc, this);
 				}
 			}
 			else

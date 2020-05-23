@@ -6,6 +6,8 @@
 #include "CVarDefMap.h"
 #include "CVarFloat.h"
 
+class CScriptObj;
+
 enum TRIGRUN_TYPE
 {
 	TRIGRUN_SECTION_EXEC,	// Execute this section (first line already read)
@@ -191,8 +193,8 @@ public:
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	bool r_LoadVal(CScript &s, CTextConsole* pSrc);
 	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
-	bool r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
-	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
+	bool r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptObj* pObj);
+	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptObj *pObj);
 	LPCTSTR GetArgV(int iKey);
 
 	void getArgNs(INT64 *piVar1 = NULL, INT64 *piVar2 = NULL, INT64 *piVar3 = NULL)		// puts ARGN's into the specified variables
