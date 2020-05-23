@@ -800,7 +800,7 @@ INT64 CVarDefMap::GetKeyNum( LPCTSTR pszKey ) const
 LPCTSTR CVarDefMap::GetKeyStr( LPCTSTR pszKey, bool fZero, CScriptTriggerArgs* pArgs, CTextConsole* pSrc, CScriptObj* pObj) const
 {
 	ADDTOCALLSTACK("CVarDefMap::GetKeyStr");
-	CVarDefCont * pVar = GetKey(pszKey, pArgs, pSrc);
+	CVarDefCont * pVar = GetKey(pszKey, pArgs, pSrc, pObj);
 	if ( pVar == NULL )
 		return (fZero ? "0" : "");
 	return pVar->GetValStr();

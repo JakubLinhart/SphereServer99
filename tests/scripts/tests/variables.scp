@@ -33,6 +33,18 @@ arg(localVariable[arg(localVariableIndex)],qwerrewq)
 ShouldBeSameString("indexed local variable with variable index",qwerrewq,<arg(localVariable[3])>)
 arg(localVariable_4,hjhjjh)
 ShouldBeSameString("indexed local variable with underscore",hjhjjh,<arg(localVariable_4)>)
+
+arg(index,2)
+arg(indexOfIndex[2],1)
+arg(localVariable[indexOfIndex[index]],zzz)
+ShouldBeSameString("nested index",zzz,<arg(localVariable[arg(indexOfIndex[index])])>)
+ShouldBeSameString("nested index - unspecified index read",zzz,<localVariable[indexOfIndex[index]]>)
+ShouldBeSameString("nested index - constant index read",zzz,<localVariable[1]>)
+
+arg(localVariable[2],xxx)
+ShouldBeSameString("function call index",xxx,<localVariable[return_first_arg(2)]>)
+ShouldBeSameString("function call index with two arguments",xxx,<localVariable[return_first_arg(2,123)]>)
+
 arg(localVariableIndex,5)
 arg(localVariable_5,ggghhh)
 ShouldBeSameString("indexed local variable, write with underscore, read with variable index",ggghhh,<arg(localVariable[arg(localVariableIndex)])>)
@@ -72,6 +84,8 @@ var(localVar3,321)
 arg(localVar3,123)
 ShouldBeSameString("local variable has higher priority than global variable",123,<localVar3>)
 
+finduid(010000).test_variables_local_on_chained_call
+
 serv.smsg "\n"
 
 [function test_variables_global]
@@ -108,6 +122,17 @@ ShouldBeSameString("indexed local variable with underscore",hjhjjh,<var(globalVa
 arg(variableIndex,5)
 var(globalVariable_5,ggghhh)
 ShouldBeSameString("indexed local variable, write with underscore, read with variable index",ggghhh,<var(globalVariable[arg(variableIndex)])>)
+
+arg(index,2)
+arg(indexOfIndex[2],1)
+var(globalVariable[indexOfIndex[index]],zzz)
+ShouldBeSameString("nested index",zzz,<var(globalVariable[arg(indexOfIndex[index])])>)
+ShouldBeSameString("nested index - unspecified index read",zzz,<globalVariable[indexOfIndex[index]]>)
+ShouldBeSameString("nested index - constant index read",zzz,<globalVariable[1]>)
+
+arg(globalVariable[2],xxx)
+ShouldBeSameString("function call index",xxx,<globalVariable[return_first_arg(2)]>)
+ShouldBeSameString("function call index with two arguments",xxx,<globalVariable[return_first_arg(2,123)]>)
 
 var(variable2,"asdf")
 ShouldBeSameString("no doublequotes for doublequoted value",asdfasdfasdf,<var(variable2)><var(variable2)><var(variable2)>)
@@ -148,6 +173,8 @@ ShouldBeSameString("set direct chained global variable value containing commas o
 // globalSavedVariable has to be stored in save file
 ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 
+finduid(010000).test_variables_global_on_chained_call
+
 // Doesn't work on Sphere99
 // var(variable3,123)
 // var.remove.variable3
@@ -161,3 +188,15 @@ ShouldBeSameString("saved global variable",123,<var(globalSavedVariable)>)
 // ShouldBeSameString("chained call",DrZhor,<var(variable2).name>)
 
 serv.smsg "\n"
+
+[function test_variables_local_on_chained_call]
+tag(tagWithIndex,2)
+arg(localVariable[tag(tagWithIndex)],value3)
+ShouldBeSameString("index with unchained tag",value3,<arg(localVariable[tag(tagWithIndex)])>)
+ShouldBeSameString("index with unchained tag - unspecified",value3,<localVariable[tag(tagWithIndex)]>)
+
+[function test_variables_global_on_chained_call]
+tag(tagWithIndex,2)
+var(globalVariable[tag(tagWithIndex)],value3)
+ShouldBeSameString("index with unchained tag",value3,<var(globalVariable[tag(tagWithIndex)])>)
+ShouldBeSameString("index with unchained tag - unspecified",value3,<globalVariable[tag(tagWithIndex)]>)

@@ -3133,7 +3133,7 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 				if (Str_ParseVariableName(pszKey, varName))
 				{
 					Str_ParseArgumentEnd(pszKey, true);
-					sVal = m_VarsLocal.GetKeyStr(varName, false, this, pSrc, this);
+					sVal = m_VarsLocal.GetKeyStr(varName, false, this, pSrc, pObj);
 					return r_WriteValChained(pszKey, sVal, pSrc, this);
 				}
 			}
