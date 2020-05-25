@@ -6,7 +6,6 @@ items.scp
 chars.scp
 tests/
 testFramework.scp
-cmds.scp
 
 [MAP 0]
 // This is the default map0.mul file.

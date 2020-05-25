@@ -1,0 +1,34 @@
+[defnames dialogy]
+d_def_skvira          3
+d_def_okraj           10
+br		"<br>"
+
+[function dialog_prvni]
+tag(icount,0)
+tag(rowcount,100)
+tag(nexty,<d_def_okraj>+<d_def_skvira>)
+resizepic(0,0,9250,<tag(sirka)>,<tag(vyska)>)
+
+[function test_dialog]
+dialog d_house_menu
+
+[DIALOG d_house_menu]
+30,0
+serv.smsg("d_house_menu uid: '<uid>', argo: '<argo>', argo.uid: '<argo.uid>'\n")
+tag(housenumber,10)
+tag(housename,housename)
+argo.settext(10,"Dum cislo <?eval tag(housenumber)?><br><?safe tag(housename)?>")
+argo.gumppic(100,100,100)
+argo.htmlgump(120,120,100,60,100,0,0)
+argo.tag(sirka,260)
+argo.tag(vyska,260)
+
+argo.dialog_prvni
+var(lastposx,5)
+var(lastposy,6)
+argo.texta(lastposx+5,test_dialog_return(15),955,Majitel:,,,)
+
+src.sysmessage("test_dialog done")
+
+[function test_dialog_return]
+return<args>

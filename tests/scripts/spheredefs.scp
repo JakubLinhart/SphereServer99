@@ -31,6 +31,7 @@ t_sign_gump			56 	// = Things like grave stones and sign plaques
 t_gold				72 	// = gold coin
 t_eq_memory_obj		74 	// = A Char has a memory link to some object. (I am fighting with someone. This records the fight.)
 t_eq_horse			76 	// = equipped horse object represents a riding horse to the client.
+t_message			88 	// = user written message item. (for bboard ussually)
 t_eq_bank_box		114 	// = an equipped bank box
 t_spellicon			133
 t_eq_script			176	// Pure scriptable item equipped.

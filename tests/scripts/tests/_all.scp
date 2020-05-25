@@ -55,3 +55,16 @@ return<args>
 
 [function return_first_arg]
 return<argv(0)>
+
+[plevel 1]
+test_all_client
+test_memory_client
+test_regions_client
+test_typedef_client
+test_player_client
+test_mounts_client
+test_timers_client
+
+test_spelleffect_invisibility
+
+test_dialog

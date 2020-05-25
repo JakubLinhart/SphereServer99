@@ -200,4 +200,8 @@ id=i_memory
 type=t_eq_script
 name=created memory
 
+[ITEMDEF 0eb0]
+// Unused item is used for BBoard messages.
+TYPE=T_MESSAGE
+
 [EOF]

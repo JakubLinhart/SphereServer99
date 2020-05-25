@@ -1193,7 +1193,7 @@ public:
 	size_t GumpAddText(LPCTSTR pszText);		// Add text to the text section, return insertion index
 
 	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
 
 private:
