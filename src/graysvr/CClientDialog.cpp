@@ -35,10 +35,12 @@ enum GUMPCTL_TYPE	// controls we can put in a gump.
 
 	GUMPCTL_RADIO,			// 6 = x,y,gump1,gump2,starting state,id
 	GUMPCTL_RESIZEPIC,		// 5 = x,y,gumpback,sx,sy	// can come first if multi page. put up some background gump
+	GUMPCTL_SETLOCATION,
 	GUMPCTL_SETTEXT,
 	GUMPCTL_TEXT,			// 4 = x,y,color?,startstringindex	// put some text here.
 	GUMPCTL_TEXTA,
 	GUMPCTL_TEXTENTRY,
+	GUMPCTL_TEXTENTRYA,
 	GUMPCTL_TEXTENTRYLIMITED,
 	GUMPCTL_TILEPIC,		// 3 = x,y,item	// put item tiles in the dlg.
 	GUMPCTL_TILEPICHUE,		// NEW: x,y,item,color
@@ -85,10 +87,12 @@ LPCTSTR const CDialogDef::sm_szLoadKeys[GUMPCTL_QTY+1] =
 
 	"radio",
 	"resizepic",
+	"setlocation",
 	"settext",
 	"text",
 	"texta",
 	"textentry",
+	"textentrya",
 	"textentrylimited",
 	"tilepic",
 	"tilepichue",
@@ -176,6 +180,28 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			return true;
 		}
 		case GUMPCTL_BUTTON:			// 7 = X,Y,Down gump,Up gump,pressable(1/0),page,id
+		{
+			TCHAR* ppArgs[7];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[3], &(ppArgs[4]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[4], &(ppArgs[5]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[5], &(ppArgs[6]))) return false;
+
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int downGump = expr.GetVal(ppArgs[2]);
+			int upGump = expr.GetVal(ppArgs[3]);
+			int pressable = expr.GetVal(ppArgs[4]);
+			int page = expr.GetVal(ppArgs[5]);
+			int id = expr.GetVal(ppArgs[6]);
+
+			m_sControls[m_iControls].Format("Button %d %d %d %d %d %d %d", x, y, downGump, upGump, pressable, page, id);
+			m_iControls++;
+			return true;
+		}
 		case GUMPCTL_BUTTONTILEART:		// 11 = X,Y,Down gump,Up gump,pressable(1/0),page,id,tileart,hue,X,Y
 		{
 			if ( m_iControls >= (COUNTOF(m_sControls) - 1) )
@@ -388,15 +414,22 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			if ( m_iControls >= (COUNTOF(m_sControls) - 1) )
 				return false;
 
-			GET_RELATIVE( x, m_iOriginX );
-			GET_RELATIVE( y, m_iOriginY );
-			GET_ABSOLUTE( down );
-			GET_ABSOLUTE( up );
-			GET_ABSOLUTE( state );
-			GET_ABSOLUTE( id );
+			TCHAR* ppArgs[6];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[3], &(ppArgs[4]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[4], &(ppArgs[5]))) return false;
 
-			m_sControls[m_iControls].Format( "checkbox %d %d %d %d %d %d", x, y, down, up, state, id );
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int checkGump = expr.GetVal(ppArgs[2]);
+			int uncheckGump = expr.GetVal(ppArgs[3]);
+			int unk1 = expr.GetVal(ppArgs[4]);
+			int id = expr.GetVal(ppArgs[5]);
 
+			m_sControls[m_iControls].Format("CheckBox %d %d %d %d %d %d", x, y, checkGump, uncheckGump, unk1, id);
 			m_iControls++;
 			return true;
 		}
@@ -453,6 +486,17 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 		case GUMPCTL_NODISPOSE:
 			m_bNoDispose = true;
 			break;
+		case GUMPCTL_SETLOCATION:
+		{
+			TCHAR* ppArgs[2];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+
+			m_x = expr.GetVal(ppArgs[0]);
+			m_y = expr.GetVal(ppArgs[1]);
+
+			return true;
+		}
 		case GUMPCTL_SETTEXT:
 		{
 			TCHAR* ppArgs[2];
@@ -464,6 +508,30 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 				return false;
 			m_sText[textIndex] = Str_TrimDoublequotes(ppArgs[1]);
 			return true;
+		}
+		case GUMPCTL_TEXTENTRYA:
+		{
+			TCHAR* ppArgs[7];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[3], &(ppArgs[4]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[4], &(ppArgs[5]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[5], &(ppArgs[6]))) return false;
+
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int width = expr.GetVal(ppArgs[2]);
+			int maxLength = expr.GetVal(ppArgs[3]);
+			int unk1 = expr.GetVal(ppArgs[4]);
+			int id = expr.GetVal(ppArgs[5]);
+			int textIndex = expr.GetVal(ppArgs[6]);
+
+			m_sControls[m_iControls].Format("TextEntry %d %d %d %d %d %d %d", x, y, width, maxLength, unk1, id, textIndex);
+			m_iControls++;
+
+			return 1;
 		}
 		case GUMPCTL_CROPPEDTEXT:
 		case GUMPCTL_TEXT:
