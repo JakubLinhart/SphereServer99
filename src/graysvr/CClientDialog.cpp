@@ -25,6 +25,7 @@ enum GUMPCTL_TYPE	// controls we can put in a gump.
 	GUMPCTL_GUMPPIC,		// 3 = x,y,gumpID	 hue=color// put gumps in the dlg.
 	GUMPCTL_GUMPPICTILED,		// x, y, gumpID, w, h, hue=color
 	GUMPCTL_HTMLGUMP,		// 7 = x,y,sx,sy, 0 0 0
+	GUMPCTL_HTMLGUMPA,
 
 	// Not really controls but more attributes.
 	GUMPCTL_NOCLOSE,		// 0 = The gump cannot be closed by right clicking.
@@ -78,6 +79,7 @@ LPCTSTR const CDialogDef::sm_szLoadKeys[GUMPCTL_QTY+1] =
 	"gumppic",
 	"gumppictiled",
 	"htmlgump",
+	"htmlgumpa",
 
 	"noclose",
 	"nodispose",
@@ -336,6 +338,36 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 
 			size_t iText = GumpAddText( *pszArgs ? pszArgs : "" );
 			m_sControls[m_iControls].Format( "croppedtext %d %d %d %d %d %" FMTSIZE_T, x, y, w, h, hue, iText );
+			m_iControls++;
+			return true;
+		}
+		case GUMPCTL_HTMLGUMPA:
+		{
+			if (m_iControls >= (COUNTOF(m_sControls) - 1))
+				return false;
+			if (m_iTexts >= (COUNTOF(m_sText) - 1))
+				return false;
+
+			TCHAR* ppArgs[7];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
+			if (!Str_Parse(ppArgs[3], &(ppArgs[4]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[4], &(ppArgs[5]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[5], &(ppArgs[6]))) return false;
+
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int w = expr.GetVal(ppArgs[2]);
+			int h = expr.GetVal(ppArgs[3]);
+
+			int idx = GumpAddText(Str_TrimDoublequotes(ppArgs[4]));
+
+			int unk1 = expr.GetVal(ppArgs[5]);
+			int unk2 = expr.GetVal(ppArgs[6]);
+
+			m_sControls[m_iControls].Format("HTMLGump %d %d %d %d %d %d %d", x, y, w, h, idx, unk1, unk2);
 			m_iControls++;
 			return true;
 		}
@@ -628,8 +660,7 @@ CDialogDef::CDialogDef( RESOURCE_ID rid ) :
 	m_bNoDispose = false;
 }
 
-
-bool	CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+bool CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CDialogDef::r_WriteVal");
 	if ( !m_pObj )
@@ -637,15 +668,13 @@ bool	CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, 
 	return m_pObj->r_WriteVal( pszKey, sVal, pSrc, pArgs );
 }
 
-
-bool		CDialogDef::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
+bool CDialogDef::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
 {
 	ADDTOCALLSTACK("CDialogDef::r_LoadVal");
 	if ( !m_pObj )
 		return false;
 	return m_pObj->r_LoadVal( s, pArgs, pSrc);
 }
-
 
 bool CDialogDef::GumpSetup( int iPage, CClient * pClient, CObjBase * pObjSrc, LPCTSTR Arguments )
 {
@@ -692,9 +721,23 @@ bool CDialogDef::GumpSetup( int iPage, CClient * pClient, CObjBase * pObjSrc, LP
 	TCHAR * pszBuf = s.GetKeyBuffer();
 	m_pObj->ParseText( pszBuf, pClient->GetChar() );
 
-	Str_ParseCmds( pszBuf, iSizes, COUNTOF(iSizes) );
-	m_x		= static_cast<int>(iSizes[0]);
-	m_y		= static_cast<int>(iSizes[1]);
+	TCHAR* ppArgs[2];
+	bool hasPosition = false;
+	if (Str_ParseCmds(pszBuf, ppArgs, COUNTOF(iSizes)) == 2)
+	{
+		if (IsSimpleNumberString(ppArgs[0]) && IsSimpleNumberString(ppArgs[1]))
+		{
+			m_x = Exp_GetLLVal(ppArgs[0]);
+			m_y = Exp_GetLLVal(ppArgs[1]);
+			hasPosition = true;
+		}
+	}
+
+	if (!hasPosition)
+	{
+		if (!ResourceLock(s))
+			return false;
+	}
 
 	Args.m_pO1 = this;
 	m_iTexts = 101;

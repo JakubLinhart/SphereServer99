@@ -9,15 +9,25 @@ tag(rowcount,100)
 tag(nexty,<d_def_okraj>+<d_def_skvira>)
 resizepic(0,0,9250,<tag(sirka)>,<tag(vyska)>)
 
+[function test_dialog_writeval]
+resizepic(10,25,9345,123,234)
+return 123
+
 [function dialog_textpos]
 return <argv(0)>,<argv(1)>
 
 [function test_dialog]
-dialog d_house_menu
+dialog d_house_menu2
+
+[DIALOG d_house_menu2]
+// arg(res,<argo.test_dialog_writeval>)
+argo.test_dialog_writeval
+
+src.sysmessage("test_dialog done")
 
 [DIALOG d_house_menu]
 30,0
-argo.SetLocation=20,20
+argo.setlocation=20,20
 tag(housenumber,10)
 tag(housename,housename)
 argo.gumppic(100,100,100)
@@ -34,6 +44,8 @@ argo.setText(100,10)
 argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,100)
 argo.button(d_def_okraj+d_def_skvira*3,83-23,0fb7,0fb9,1,0,1)
 argo.checkBox(<argo.dialog_textpos(16,80)>,210,211,30,3)
+argo.HTMLGUMPa(20,20,600,200,"test htmlgumpa",0,0)
+
 
 src.sysmessage("test_dialog done")
 
