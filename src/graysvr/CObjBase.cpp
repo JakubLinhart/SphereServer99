@@ -700,6 +700,8 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 
 
 		CScriptTriggerArgs Args(pszArgs ? pszArgs : "");
+		if (pArgs)
+			Args.m_pO1 = pArgs->m_pO1;
 		if ( r_Call(pszKey, pSrc, &Args, &sVal) )
 			return true;
 		if ( Base_GetDef()->r_WriteVal(pszKey, sVal, pSrc, pArgs) )

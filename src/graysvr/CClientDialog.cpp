@@ -665,6 +665,10 @@ bool CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, 
 	ADDTOCALLSTACK("CDialogDef::r_WriteVal");
 	if ( !m_pObj )
 		return false;
+
+	if (r_Call(pszKey, pSrc, pArgs, &sVal))
+		return true;
+
 	return m_pObj->r_WriteVal( pszKey, sVal, pSrc, pArgs );
 }
 
@@ -719,7 +723,7 @@ bool CDialogDef::GumpSetup( int iPage, CClient * pClient, CObjBase * pObjSrc, LP
 	// starting x,y location.
 	INT64 iSizes[2];
 	TCHAR * pszBuf = s.GetKeyBuffer();
-	m_pObj->ParseText( pszBuf, pClient->GetChar() );
+	Args.m_pO1 = this;
 
 	TCHAR* ppArgs[2];
 	bool hasPosition = false;
