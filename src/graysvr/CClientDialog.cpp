@@ -257,13 +257,20 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 		}
 		case GUMPCTL_GUMPPICTILED:
 		{
-			GET_RELATIVE( x, m_iOriginX );
-			GET_RELATIVE( y, m_iOriginY );
-			GET_ABSOLUTE( sX );
-			GET_ABSOLUTE( sY );
-			GET_ABSOLUTE( id );
+			TCHAR* ppArgs[5];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[3], &(ppArgs[4]))) return false;
 
-			m_sControls[m_iControls].Format( "gumppictiled %d %d %d %d %d", x, y, sX, sY, id );
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int sx = expr.GetVal(ppArgs[2]);
+			int sy = expr.GetVal(ppArgs[3]);
+			int id = expr.GetVal(ppArgs[4]);
+
+			m_sControls[m_iControls].Format( "GumpPicTiled %d %d %d %d %d", x, y, sx, sy, id );
 			m_iControls++;
 			return true;
 		}
@@ -287,19 +294,34 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			return true;
 		}
 		case GUMPCTL_TILEPIC:
+		{
+			TCHAR* ppArgs[3];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int id = expr.GetVal(ppArgs[2]);
+
+			m_sControls[m_iControls].Format("tilepic %d %d %d", x, y, id);
+			m_iControls++;
+			return true;
+		}
 		case GUMPCTL_TILEPICHUE:
 		{
-			GET_RELATIVE( x, m_iOriginX );
-			GET_RELATIVE( y, m_iOriginY );
-			GET_ABSOLUTE( id );
-			SKIP_ALL( pszArgs );
+			TCHAR* ppArgs[4];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) ppArgs[3] = "0";
 
-			// TilePic don't use args, TilePicHue yes :)
-			if ( index == GUMPCTL_TILEPIC )
-				m_sControls[m_iControls].Format( "tilepic %d %d %d", x, y, id );
-			else
-				m_sControls[m_iControls].Format( "tilepichue %d %d %d%s%s", x, y, id, *pszArgs ? " " : "", *pszArgs ? pszArgs : "" );
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int id = expr.GetVal(ppArgs[2]);
+			int color = expr.GetVal(ppArgs[3]);
 
+			m_sControls[m_iControls].Format( "TilePicHue %d %d %d %d", x, y, id, color);
 			m_iControls++;
 			return true;
 		}
@@ -353,8 +375,8 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
 			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
 			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
-			if (!Str_Parse(ppArgs[3], &(ppArgs[4]))) return false;
-			if (!Str_ParseExpressionArgument(ppArgs[4], &(ppArgs[5]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[3], &(ppArgs[4]))) return false;
+			if (!Str_Parse(ppArgs[4], &(ppArgs[5]), ",")) return false;
 			if (!Str_ParseExpressionArgument(ppArgs[5], &(ppArgs[6]))) return false;
 
 			int x = expr.GetVal(ppArgs[0]);
@@ -566,10 +588,27 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			return 1;
 		}
 		case GUMPCTL_CROPPEDTEXT:
-		case GUMPCTL_TEXT:
 		case GUMPCTL_TEXTENTRY:
 		case GUMPCTL_TEXTENTRYLIMITED:
 			break;
+		case GUMPCTL_TEXT:
+		{
+			TCHAR* ppArgs[4];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
+
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int unk1 = expr.GetVal(ppArgs[2]);
+			int index = expr.GetVal(ppArgs[2]);
+
+			m_sControls[m_iControls].Format("Text %d %d %d %d", x, y, unk1, index);
+			m_iControls++;
+
+			return true;
+		}
 		case GUMPCTL_TEXTA:
 		{
 			TCHAR* ppArgs[4];
@@ -582,7 +621,7 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			int y = expr.GetVal(ppArgs[1]);
 			int unk1 = expr.GetVal(ppArgs[2]);
 
-			int index = GumpAddText(ppArgs[3]);
+			int index = GumpAddText(Str_TrimDoublequotes(ppArgs[3]));
 			
 			m_sControls[m_iControls].Format("Text %d %d %d %d", x, y, unk1, index);
 			m_iControls++;

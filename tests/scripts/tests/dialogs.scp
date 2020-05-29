@@ -17,11 +17,11 @@ return 123
 return <argv(0)>,<argv(1)>
 
 [function test_dialog]
-dialog d_house_menu2
+dialog d_house_menu
 
 [DIALOG d_house_menu2]
 // arg(res,<argo.test_dialog_writeval>)
-argo.test_dialog_writeval
+arg(res,<argo.test_dialog_writeval>)
 
 src.sysmessage("test_dialog done")
 
@@ -44,8 +44,12 @@ argo.setText(100,10)
 argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,100)
 argo.button(d_def_okraj+d_def_skvira*3,83-23,0fb7,0fb9,1,0,1)
 argo.checkBox(<argo.dialog_textpos(16,80)>,210,211,30,3)
-argo.HTMLGUMPa(20,20,600,200,"test htmlgumpa",0,0)
-
+argo.HTMLGUMPa(20,20,600,200,test htmlgumpa,0,0)
+argo.tilepic(95,16,6173)
+argo.tilepichue(95,16,6173)
+argo.tilepichue(95,16,6173,123)
+argo.gumppictiled(10,20,30,40,50)
+argo.gumppictiled 50 40 30 20 10
 
 src.sysmessage("test_dialog done")
 
