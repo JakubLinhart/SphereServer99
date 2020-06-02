@@ -2806,6 +2806,36 @@ bool CScriptObj::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArg
 	return false;
 }
 
+bool CScriptObj::r_CallRaw(LPCTSTR pszKey, CTextConsole* pSrc,  CScriptTriggerArgs* pArgs, CGString* psVal, TRIGRET_TYPE* piRet)
+{
+	LPCTSTR pszArgs = strchr(pszKey, '(');
+	if (pszArgs)
+	{
+		LPCTSTR pszArgsStart = pszArgs;
+		Str_SkipArgumentList(pszArgs);
+		TemporaryString sArgsTmp;
+		strncpy(sArgsTmp, pszArgsStart, pszArgs - pszArgsStart - 1);
+		sArgsTmp.setAt(pszArgs - pszArgsStart - 1, '\0');
+		pszArgs = sArgsTmp;
+		pszArgs++;
+	}
+	else
+	{
+		pszArgs = strchr(pszKey, ' ');
+		if (pszArgs)
+			SKIP_SEPARATORS(pszArgs);
+	}
+
+
+	CScriptTriggerArgs Args(pszArgs ? pszArgs : "");
+	if (pArgs)
+		Args.m_pO1 = pArgs->m_pO1;
+	if (r_Call(pszKey, pSrc, &Args, psVal))
+		return true;
+
+	return false;
+}
+
 bool CScriptObj::r_Call(LPCTSTR pszFunction, CTextConsole *pSrc, CScriptTriggerArgs *pArgs, CGString *psVal, TRIGRET_TYPE *piRet)
 {
 	ADDTOCALLSTACK("CScriptObj::r_Call");

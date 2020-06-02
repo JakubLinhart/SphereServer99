@@ -10,20 +10,19 @@ tag(nexty,<d_def_okraj>+<d_def_skvira>)
 resizepic(0,0,9250,<tag(sirka)>,<tag(vyska)>)
 
 [function test_dialog_writeval]
-resizepic(10,25,9345,123,234)
+resizepic(argv(0),argv(1),9345,123,234)
 return 123
 
 [function dialog_textpos]
 return <argv(0)>,<argv(1)>
 
 [function test_dialog]
-dialog d_house_menu
-
-[DIALOG d_house_menu2]
-// arg(res,<argo.test_dialog_writeval>)
-arg(res,<argo.test_dialog_writeval>)
+dialog d_house_menu2
 
 src.sysmessage("test_dialog done")
+
+[DIALOG d_house_menu2]
+arg(res,<argo.test_dialog_writeval(333,666)>)
 
 [DIALOG d_house_menu]
 30,0
@@ -34,6 +33,11 @@ argo.gumppic(100,100,100)
 argo.htmlgump(120,120,100,60,100,0,0)
 argo.tag(sirka,260)
 argo.tag(vyska,260)
+
+argo.tag(xxx,123)
+tag(xxx,124)
+src.tag(xxx,321)
+serv.smsg("argo: '<argo.tag(xxx)>', src: '<src.tag(xxx)>', '<tag(xxx)>'\n")
 
 argo.dialog_prvni
 var(lastposx,5)
@@ -46,10 +50,15 @@ argo.button(d_def_okraj+d_def_skvira*3,83-23,0fb7,0fb9,1,0,1)
 argo.checkBox(<argo.dialog_textpos(16,80)>,210,211,30,3)
 argo.HTMLGUMPa(20,20,600,200,test htmlgumpa,0,0)
 argo.tilepic(95,16,6173)
+tilepic(96,17,6174)
 argo.tilepichue(95,16,6173)
+tilepichue(96,17,6174)
 argo.tilepichue(95,16,6173,123)
 argo.gumppictiled(10,20,30,40,50)
+gumppictiled(11,21,31,41,51)
 argo.gumppictiled 50 40 30 20 10
+
+arg(res,<argo.test_dialog_writeval(333,666)>)
 
 src.sysmessage("test_dialog done")
 

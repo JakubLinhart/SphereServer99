@@ -147,12 +147,15 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 	if ( index < 0 )
 	{
 		CGString sVal;
-		CScriptTriggerArgs Args(s.GetArgRaw());
-		if ( r_Call(s.GetKey(), pSrc, &Args, &sVal) )
-			return true;
+
+		return m_tagHolder.r_Verb(s, pSrc, pArgs, this);
 		if (!m_pObj)
 			return CResourceLink::r_Verb(s, pSrc, pArgs);
-		return m_pObj->r_Verb(s, pSrc, pArgs);
+		if (m_pObj->r_Verb(s, pSrc, pArgs))
+			return true;
+		CScriptTriggerArgs Args(s.GetArgRaw());
+		if (r_Call(s.GetKey(), pSrc, &Args, &sVal))
+			return true;
 	}
 	
 	LPCTSTR pszArgs	= s.GetArgStr();
@@ -704,9 +707,17 @@ bool CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, 
 	ADDTOCALLSTACK("CDialogDef::r_WriteVal");
 	if ( !m_pObj )
 		return false;
-
-	if (r_Call(pszKey, pSrc, pArgs, &sVal))
+	
+	if (r_CallRaw(pszKey, pSrc, pArgs, &sVal))
 		return true;
+	if (m_tagHolder.r_WriteVal(pszKey, sVal, pSrc, pArgs, this))
+		return true;
+	//
+	//CScriptTriggerArgs Args(pszKey);
+	//if (pArgs)
+	//	Args.m_pO1 = pArgs->m_pO1;
+	//if (r_Call(pszKey, pSrc, &Args, &sVal))
+	//	return true;
 
 	return m_pObj->r_WriteVal( pszKey, sVal, pSrc, pArgs );
 }

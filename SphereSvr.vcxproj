@@ -178,6 +178,7 @@ if defined GitRev (
     <ClCompile Include="src\common\CVarFloat.cpp" />
     <ClCompile Include="src\common\sqlite\SQLite.cpp" />
     <ClCompile Include="src\common\sqlite\sqlite3.c" />
+    <ClCompile Include="src\graysvr\CTagHolder.cpp" />
     <ClCompile Include="src\network\network.cpp" />
     <ClCompile Include="src\network\packet.cpp" />
     <ClCompile Include="src\network\receive.cpp" />

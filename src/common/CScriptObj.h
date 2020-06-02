@@ -128,7 +128,8 @@ public:
 	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);	// execute command from script
 	virtual bool r_VerbChained(CScript& s, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 
-	bool r_Call(LPCTSTR pszFunction, CTextConsole *pSrc, CScriptTriggerArgs *pArgs, CGString *psVal = NULL, TRIGRET_TYPE *piRet = NULL);
+	bool r_Call(LPCTSTR pszFunction, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CGString* psVal = NULL, TRIGRET_TYPE* piRet = NULL);
+	bool r_CallRaw(LPCTSTR pszKey, CTextConsole* pSrc, CScriptTriggerArgs* pArgs = NULL, CGString* psVal = NULL, TRIGRET_TYPE* piRet = NULL);
 	bool r_SetVal(LPCTSTR pszKey, LPCTSTR pszVal)
 	{
 		CScript s(pszKey, pszVal);
@@ -140,6 +141,17 @@ public:
 private:
 	CScriptObj(const CScriptObj &copy);
 	CScriptObj &operator=(const CScriptObj &other);
+};
+
+class CTagHolder
+{
+public:
+	CVarDefMap m_TagDefs;		// attach extra tags here
+
+public:
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CScriptObj *pObj);
+	virtual bool r_WriteValChained(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CScriptObj* pObj);
+	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CScriptObj *pObj);	// execute command from script
 };
 
 class CScriptTriggerArgs : public CScriptObj

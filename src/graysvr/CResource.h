@@ -1199,6 +1199,7 @@ public:
 private:
 	CDialogDef(const CDialogDef &copy);
 	CDialogDef &operator=(const CDialogDef &other);
+	CTagHolder m_tagHolder;
 };
 
 ///////////////////////////////////////////////////////////
