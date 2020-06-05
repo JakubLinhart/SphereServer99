@@ -22,7 +22,11 @@ dialog d_house_menu2
 src.sysmessage("test_dialog done")
 
 [DIALOG d_house_menu2]
-arg(res,<argo.test_dialog_writeval(333,666)>)
+SetLocation=220,200
+argo.tag(xxx,123)
+tag(xxx,124)
+// src.tag(xxx,321)
+serv.smsg("argo: '<argo.tag(xxx)>', src: '<src.tag(xxx)>', '<tag(xxx)>'\n")
 
 [DIALOG d_house_menu]
 30,0
