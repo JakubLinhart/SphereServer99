@@ -1192,14 +1192,34 @@ public:
 	bool GumpSetup(int iPage, CClient *pClientSrc, CObjBase *pObj, LPCTSTR pszArguments = "");
 	size_t GumpAddText(LPCTSTR pszText);		// Add text to the text section, return insertion index
 
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
-	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, bool bSetup);
+	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
+	bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, bool setup);
 
 private:
 	CDialogDef(const CDialogDef &copy);
 	CDialogDef &operator=(const CDialogDef &other);
 	CTagHolder m_tagHolder;
+};
+
+class CDialogDefSetup : public CScriptObj
+{
+public:
+	CDialogDef* m_pDef;
+
+public:
+	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
+	virtual bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+
+	LPCTSTR GetName() const
+	{
+		if (m_pDef)
+			return m_pDef->GetName();
+		return "NA";
+	}
 };
 
 ///////////////////////////////////////////////////////////

@@ -55,6 +55,26 @@ enum GUMPCTL_TYPE	// controls we can put in a gump.
 	GUMPCTL_QTY
 };
 
+bool CDialogDefSetup::r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+{
+	ADDTOCALLSTACK("CDialogDefSetup::r_Verb");
+
+	return m_pDef->r_Verb(s, pSrc, pArgs, true);
+}
+
+bool CDialogDefSetup::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
+{
+	ADDTOCALLSTACK("CDialogDefSetup::r_WriteVal");
+
+	return m_pDef->r_WriteVal(pszKey, sVal, pSrc, pArgs, true);
+}
+
+bool CDialogDefSetup::r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
+{
+	ADDTOCALLSTACK("CDialogDefSetup::r_LoadVal");
+
+	return m_pDef->r_LoadVal(s, pArgs, pSrc);
+}
 
 //*******************************************
 // -CDialogDef
@@ -135,8 +155,12 @@ size_t CDialogDef::GumpAddText( LPCTSTR pszText )
 	else													\
 		c = Exp_GetSingle( pszArgs );			
 	
+bool CDialogDef::r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)	// some command on this object as a target
+{
+	return r_Verb(s, pSrc, pArgs, false);
+}
 
-bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs)	// some command on this object as a target
+bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* pArgs, bool setup)	// some command on this object as a target
 {
 	ADDTOCALLSTACK("CDialogDef::r_Verb");
 	EXC_TRY("Verb");
@@ -148,11 +172,20 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 	{
 		CGString sVal;
 
-		return m_tagHolder.r_Verb(s, pSrc, pArgs, this);
+		if (!setup)
+		{
+			if (m_tagHolder.r_Verb(s, pSrc, pArgs, this))
+				return true;
+		}
 		if (!m_pObj)
 			return CResourceLink::r_Verb(s, pSrc, pArgs);
 		if (m_pObj->r_Verb(s, pSrc, pArgs))
 			return true;
+		if (setup)
+		{
+			if (m_tagHolder.r_Verb(s, pSrc, pArgs, this))
+				return true;
+		}
 		CScriptTriggerArgs Args(s.GetArgRaw());
 		if (r_Call(s.GetKey(), pSrc, &Args, &sVal))
 			return true;
@@ -704,22 +737,32 @@ CDialogDef::CDialogDef( RESOURCE_ID rid ) :
 
 bool CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
 {
+	return r_WriteVal(pszKey, sVal, pSrc, pArgs, false);
+}
+
+bool CDialogDef::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, bool bSetup)
+{
 	ADDTOCALLSTACK("CDialogDef::r_WriteVal");
 	if ( !m_pObj )
 		return false;
 	
+	if (!bSetup)
+	{
+		if (m_tagHolder.r_WriteVal(pszKey, sVal, pSrc, pArgs, this))
+			return true;
+	}
+	if (m_pObj->r_WriteVal(pszKey, sVal, pSrc, pArgs))
+		return true;
 	if (r_CallRaw(pszKey, pSrc, pArgs, &sVal))
 		return true;
-	if (m_tagHolder.r_WriteVal(pszKey, sVal, pSrc, pArgs, this))
-		return true;
-	//
-	//CScriptTriggerArgs Args(pszKey);
-	//if (pArgs)
-	//	Args.m_pO1 = pArgs->m_pO1;
-	//if (r_Call(pszKey, pSrc, &Args, &sVal))
-	//	return true;
 
-	return m_pObj->r_WriteVal( pszKey, sVal, pSrc, pArgs );
+	if (bSetup)
+	{
+		if (m_tagHolder.r_WriteVal(pszKey, sVal, pSrc, pArgs, this))
+			return true;
+	}
+
+	return false;
 }
 
 bool CDialogDef::r_LoadVal( CScript & s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc)
@@ -795,7 +838,9 @@ bool CDialogDef::GumpSetup( int iPage, CClient * pClient, CObjBase * pObjSrc, LP
 
 	Args.m_pO1 = this;
 	m_iTexts = 101;
-	if ( OnTriggerRunVal( s, TRIGRUN_SECTION_TRUE, pClient->GetChar(), &Args ) == TRIGRET_RET_TRUE )
+	CDialogDefSetup dlgSetup;
+	dlgSetup.m_pDef = this;
+	if ( dlgSetup.OnTriggerRunVal( s, TRIGRUN_SECTION_TRUE, pClient->GetChar(), &Args ) == TRIGRET_RET_TRUE )
 		return false;
 	return true;
 }

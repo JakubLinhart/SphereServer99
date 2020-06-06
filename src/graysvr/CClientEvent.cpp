@@ -856,7 +856,7 @@ bool CClient::Event_Command(LPCTSTR pszCommand, TALKMODE_TYPE mode)
 		else
 		{
 			CScript s(pszCommand);
-			if ( !m_pChar->r_Verb(s, m_pChar, NULL) )
+			if ( !m_pChar->r_Verb(s, this, NULL) )
 				SysMessageDefault(DEFMSG_CMD_INVALID);
 		}
 	}
