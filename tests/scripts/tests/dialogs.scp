@@ -1,54 +1,44 @@
-[defnames dialogy]
-d_def_skvira          3
-d_def_okraj           10
-br		"<br>"
+[function test_dialogs_client]
+serv.smsg "test_dialogs_client\n"
 
-[function dialog_prvni]
-tag(icount,0)
-tag(rowcount,100)
-tag(nexty,<d_def_okraj>+<d_def_skvira>)
-resizepic(0,0,9250,<tag(sirka)>,<tag(vyska)>)
+dialog d_test_dialog
 
-[function test_dialog_writeval]
-resizepic(argv(0),argv(1),9345,123,234)
-return 123
+serv.smsg "\n"
+src.sysmessage("test_dialogs_client done")
 
-[function dialog_textpos]
-return <argv(0)>,<argv(1)>
+[dialog d_test_dialog]
+argo.tag(tag1,123)
+ShouldBeSameString("can get/set argo tag",123,<argo.tag(tag1)>)
 
-[function test_dialog]
-dialog d_house_menu2
+tag(tag1,124)
+ShouldBeSameString("can get/set unprefixed tag",124,<tag(tag1)>)
+ShouldBeSameString("unprefixed is the same as src tag",124,<src.tag(tag1)>)
 
-src.sysmessage("test_dialog done")
+src.tag(tag1,321)
+ShouldBeSameString("can get/set src tag",321,<src.tag(tag1)>)
+ShouldBeSameString("src is the same as unprefixed tag",321,<src.tag(tag1)>)
+ShouldBeSameString("unprefixed and src tags doesn't change arg tag",123,<argo.tag(tag1)>)
 
-[DIALOG d_house_menu2]
-SetLocation=220,200
-argo.tag(xxx,123)
-tag(xxx,124)
-// src.tag(xxx,321)
-serv.smsg("argo: '<argo.tag(xxx)>', src: '<src.tag(xxx)>', '<tag(xxx)>'\n")
+[function test_dialogs_client_gump_generation]
+serv.smsg "test_dialogs_client_gump_generation\n"
 
-[DIALOG d_house_menu]
+dialog(d_test_dialog)
+
+src.sysmessage "test_dialogs_client_gump_generation done"
+serv.smsg "\n"
+
+
+[DIALOG d_test_dialog]
 30,0
 argo.setlocation=20,20
-tag(housenumber,10)
-tag(housename,housename)
 argo.gumppic(100,100,100)
 argo.htmlgump(120,120,100,60,100,0,0)
-argo.tag(sirka,260)
-argo.tag(vyska,260)
 
-argo.tag(xxx,123)
-tag(xxx,124)
-src.tag(xxx,321)
-serv.smsg("argo: '<argo.tag(xxx)>', src: '<src.tag(xxx)>', '<tag(xxx)>'\n")
+argo.dialog_prvni(955,960)
+dialog_prvni(960,970)
+arg(res,<argo.test_dialog_writeval(333,666)>)
 
-argo.dialog_prvni
-var(lastposx,5)
-var(lastposy,6)
-argo.texta(lastposx+5,test_dialog_return(15),955,Majitel:,,,)
-
-argo.setText(100,10)
+argo.setText(100,arg(res))
 argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,100)
 argo.button(d_def_okraj+d_def_skvira*3,83-23,0fb7,0fb9,1,0,1)
 argo.checkBox(<argo.dialog_textpos(16,80)>,210,211,30,3)
@@ -62,9 +52,26 @@ argo.gumppictiled(10,20,30,40,50)
 gumppictiled(11,21,31,41,51)
 argo.gumppictiled 50 40 30 20 10
 
-arg(res,<argo.test_dialog_writeval(333,666)>)
-
 src.sysmessage("test_dialog done")
 
 [function test_dialog_return]
 return<args>
+
+[defnames dialogy]
+d_def_skvira          3
+d_def_okraj           10
+br		"<br>"
+
+[function dialog_prvni]
+var(lastposx,5)
+var(lastposy,6)
+argo.texta(lastposx+5,test_dialog_return(15),argv(0),Majitel:)
+texta(lastposx+10,test_dialog_return(30),argv(1),Majitel2:)
+
+[function test_dialog_writeval]
+resizepic(argv(0),argv(1),9345,123,234)
+argo.resizepic(argv(0),argv(1),9345,123,234)
+return 123
+
+[function dialog_textpos]
+return <argv(0)>,<argv(1)>

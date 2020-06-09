@@ -4,6 +4,10 @@ test_regions_client
 test_typedef_client
 test_mounts_client
 test_timers_client
+test_dialogs_client
+test_dialogs_client_gump_generation
+
+src.sysmessage "test_all_client done"
 
 [function test_all]
 tst_start_suite
@@ -67,4 +71,5 @@ test_timers_client
 
 test_spelleffect_invisibility
 
-test_dialog
+test_dialogs_client
+test_dialogs_client_gump_generation
