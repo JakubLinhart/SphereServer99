@@ -953,7 +953,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 			case SK_DOSWITCH:
 			{
 				EXC_SET("dorand/doswitch");
-				INT64 iVal = s.GetArgLLVal();
+				INT64 iVal = s.GetArgLLVal(pArgs, pSrc, this);
 				if ( index == SK_DORAND )
 					iVal = Calc_GetRandLLVal(iVal);
 				for ( ; ; --iVal )

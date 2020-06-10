@@ -1,0 +1,44 @@
+[function test_doswitch]
+serv.smsg "test_doswitch\n"
+
+doswitch 0
+    arg(result,"it is zero")
+    arg(result,"it is one")
+enddo
+ShouldBeSameString("0 means first command","it is zero",<arg(result)>)
+
+doswitch(1)
+    arg(result,"it is zero")
+    arg(result,"it is one")
+enddo
+ShouldBeSameString("constant index with parentheses","it is one",<arg(result)>)
+
+arg(result,"nothing")
+doswitch 3
+    arg(result,"it is zero")
+    arg(result,"it is one")
+enddo
+ShouldBeSameString("index more than commands count","nothing",<arg(result)>)
+
+arg(result,"nothing2")
+doswitch -1
+    arg(result,"it is zero")
+    arg(result,"it is one")
+enddo
+ShouldBeSameString("negative index","nothing2",<arg(result)>)
+
+arg(index,1)
+doswitch arg(index)
+    arg(result,"it is zero")
+    arg(result,"it is one")
+enddo
+ShouldBeSameString("variable index","it is one",<arg(result)>)
+
+arg(index,1)
+doswitch(arg(index))
+    arg(result,"it is zero")
+    arg(result,"it is one")
+enddo
+ShouldBeSameString("variable index with parentheses","it is one",<arg(result)>)
+
+serv.smsg "\n"
