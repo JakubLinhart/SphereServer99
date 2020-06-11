@@ -19,4 +19,10 @@ while ()
 endwhile
 ShouldBeSameString("doesn't execute body when condition is empty",321,<arg(localVar)>)
 
+arg(localVar,)
+while arg(localVar)
+    arg(localVar,123)
+endwhile
+ShouldBeSameString("doesn't execute body when control variable is empty","",<arg(localVar)>)
+
 serv.smsg "\n"
