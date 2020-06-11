@@ -499,6 +499,17 @@ size_t Str_TrimEndWhitespace(TCHAR * pStr, size_t len)
 	return(len);
 }
 
+TCHAR* Str_TrimLast(TCHAR* pStr, LPCTSTR pszSep)
+{
+	size_t len = strlen(pStr);
+
+	len--;
+	if (len >= 0 && strchr(pszSep, pStr[len]))
+		pStr[len] = '\0';
+
+	return (pStr);
+}
+
 TCHAR * Str_TrimEnd(TCHAR* pStr, LPCTSTR pszSep)
 {
 	size_t len = strlen(pStr);
@@ -688,7 +699,7 @@ bool Str_Parse(TCHAR * pLine, TCHAR ** ppLine2, LPCTSTR pszSep, bool fTrim)
 	if (ppLine2 != NULL)
 	{
 		if (bBracket)
-			*ppLine2 = Str_TrimEnd(pLine, ") \t");
+			*ppLine2 = Str_TrimLast(pLine, ") \t");
 		else
 		{
 			if (fTrim)

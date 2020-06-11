@@ -56,12 +56,21 @@ arg(localVariable2, asdf)
 ShouldBeSameString("value prefixed with whitespace"," asdf",<arg(localVariable2)>)
 arg(localVariable2,"asdf ")
 ShouldBeSameString("doublequoted value with trailing whitespace","asdf ","<arg(localVariable2)>")
+arg(localVariable2,1+1)
+ShouldBeSameString("expression","2","<arg(localVariable2)>")
+arg(localVariable2,(1+1))
+ShouldBeSameString("expression with parenthesis","2","<arg(localVariable2)>")
+arg(localVariable2,(1+arg(localVariable2)))
+ShouldBeSameString("expression with variable and parenthesis","(1+arg(localVariable2))","<arg(localVariable2)>")
 arg(localVariable2,"1+1")
 ShouldBeSameString("doublequoted expression","1+1","<arg(localVariable2)>")
 ShouldBeSameString("nonexisting variable value","","<arg(nonExistingLocalVariable)>")
 
 ShouldBeSameString("empty string from any chaining of undefined variable","","<arg(foundID2).morex.asdf>")
 ShouldBeSameString("empty string from any chaining of undefined variable - chained","","<arg.foundID2.morex.asdf>")
+
+arg(localVariable2,())
+ShouldBeSameString("parentheses","()","<arg(localVariable2)>")
 
 arg(localVariable2,#010000)
 ShouldBeSameString("local variable chained call",DrZhor,<arg(localVariable2).name>)
@@ -119,6 +128,9 @@ ShouldBeSameString("indexed variable with expression index",asdf,<variable[1+1]>
 
 ShouldBeSameString("empty string from any chaining of undefined variable","","<var(foundID2).morex.asdf>")
 ShouldBeSameString("empty string from any chaining of undefined variable - chained","","<var.foundID2.morex.asdf>")
+
+var(globalVariable2,())
+ShouldBeSameString("parentheses","()","<var(globalVariable2)>")
 
 arg(variableIndex,3)
 var(globalVariable[arg(variableIndex)],qwerrewq)
@@ -206,3 +218,7 @@ tag(tagWithIndex,2)
 var(globalVariable[tag(tagWithIndex)],value3)
 ShouldBeSameString("index with unchained tag",value3,<var(globalVariable[tag(tagWithIndex)])>)
 ShouldBeSameString("index with unchained tag - unspecified",value3,<globalVariable[tag(tagWithIndex)]>)
+
+[function xxx]
+var(globalVariable2,())
+ShouldBeSameString("parentheses","()","<var(globalVariable2)>")

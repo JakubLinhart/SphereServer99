@@ -468,6 +468,7 @@ int Str_IndexOf(TCHAR * pStr1, TCHAR * pStr2, int offset = 0);
 
 TCHAR* Str_TrimDoublequotes(TCHAR* pStr);
 
+TCHAR* Str_TrimLast(TCHAR* pStr, LPCTSTR pszSep);
 TCHAR* Str_TrimEnd(TCHAR* pStr, LPCTSTR pszSep);
 bool Str_ParseExpressionArgument(TCHAR* pLine, TCHAR** ppArg = NULL, LPCTSTR pSep = NULL);
 /**
