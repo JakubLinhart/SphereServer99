@@ -60,6 +60,9 @@ arg(localVariable2,"1+1")
 ShouldBeSameString("doublequoted expression","1+1","<arg(localVariable2)>")
 ShouldBeSameString("nonexisting variable value","","<arg(nonExistingLocalVariable)>")
 
+ShouldBeSameString("empty string from any chaining of undefined variable","","<arg(foundID2).morex.asdf>")
+ShouldBeSameString("empty string from any chaining of undefined variable - chained","","<arg.foundID2.morex.asdf>")
+
 arg(localVariable2,#010000)
 ShouldBeSameString("local variable chained call",DrZhor,<arg(localVariable2).name>)
 ShouldBeSameString("unspecific local variable chained call",DrZhor,<localVariable2.name>)
@@ -113,6 +116,9 @@ var.variable2=asdf
 ShouldBeSameString("unspecified global variable sharp read",asdf,<variable2>)
 var.variable[2]=asdf
 ShouldBeSameString("indexed variable with expression index",asdf,<variable[1+1]>)
+
+ShouldBeSameString("empty string from any chaining of undefined variable","","<var(foundID2).morex.asdf>")
+ShouldBeSameString("empty string from any chaining of undefined variable - chained","","<var.foundID2.morex.asdf>")
 
 arg(variableIndex,3)
 var(globalVariable[arg(variableIndex)],qwerrewq)

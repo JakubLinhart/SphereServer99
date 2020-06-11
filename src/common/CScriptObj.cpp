@@ -1862,6 +1862,8 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 							sVal = pVar->GetValStr();
 						else if (fZero)
 							sVal.FormatVal(0);
+						if (sVal.IsEmpty())
+							return true;
 						return r_WriteValChained(pszKey, sVal, pSrc, pArgs);
 					}
 				}
@@ -3164,6 +3166,8 @@ bool CScriptTriggerArgs::r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextCons
 				{
 					Str_ParseArgumentEnd(pszKey, true);
 					sVal = m_VarsLocal.GetKeyStr(varName, false, this, pSrc, pObj);
+					if (sVal.IsEmpty())
+						return true;
 					return r_WriteValChained(pszKey, sVal, pSrc, this);
 				}
 			}
