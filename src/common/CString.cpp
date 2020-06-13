@@ -568,7 +568,7 @@ bool Str_ParseExpressionArgument(TCHAR* pLine, TCHAR** ppLine2, LPCTSTR pszSep)
 	int macroLevel = 0;
 	int parenthesesLevel = 0;
 	bool ignoreMacros = strchr(pszSep, '<');
-	for (; ; pLine++)
+	for (; *pLine != '\0' ; pLine++)
 	{
 		ch = *pLine;
 		if (ch == '(')

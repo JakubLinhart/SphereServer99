@@ -73,6 +73,9 @@ else
   tst_success("multiple arguments - argv(6) - non-suplied argument")
 endif
 
+arg(index,1)
+ShouldBeSameString("multiple arguments - variable index",3,<eval argv(index+1)>)
+
 [function test_arguments]
 serv.smsg "test_arguments\n"
 

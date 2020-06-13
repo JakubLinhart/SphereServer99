@@ -22,6 +22,9 @@ ShouldBeSamestring("global variable from macro",123,<safe var(v4)>)
 ShouldBeSamestring("global variable from macro, safe with dot",123,<safe.var(v4)>)
 ShouldBeSamestring("global variable from macro, safe with parentheses",123,<safe(var(v4))>)
 
+ShouldBeSamestring("failed safe is 0 at expression start",10,<eval safe(asdf)+10>)
+ShouldBeSamestring("failed safe is 0 at expression end",10,<eval 10+safe(asdf)>)
+
 ShouldBeSamestring("non-existing variable from macro","","<safe var(nonexistingvar)>")
 ShouldBeSamestring("failure from macro","",<safe thisisafailure>)
 

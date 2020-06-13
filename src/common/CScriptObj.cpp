@@ -3215,19 +3215,22 @@ bool CScriptTriggerArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole
 		EXC_SET("argv");
 		pszKey += 4;
 
-		bool bChainedArguments = *pszKey == '.';
-		pszKey++;
-
-		size_t iQty = getArgumentsCount();
-
-		if ( *pszKey == '\0' )
+		INT64 iKey;
+		CExpression expr(this, pSrc, NULL);
+		if (*pszKey == '.')
 		{
-			sVal.FormatVal(static_cast<long>(iQty));
-			return true;
+			pszKey++;
+			iKey = 0;
+		}
+		else
+		{
+			TemporaryString tmpArgs;
+			if (!Str_ParseArgumentList(pszKey, tmpArgs))
+				return false;
+			iKey = expr.GetVal(tmpArgs);
 		}
 
-		CExpression expr(this, pSrc, NULL);
-		INT64 iKey = bChainedArguments ? 0 : expr.GetVal(pszKey);
+		getArgumentsCount();
 		if ( (iKey < 0) || !m_v.IsValidIndex(static_cast<size_t>(iKey)) )
 		{
 			sVal = "";
