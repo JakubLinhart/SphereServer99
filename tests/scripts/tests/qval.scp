@@ -2,9 +2,11 @@
 serv.smsg("test_qval\n")
 
 ShouldBeSameString("true",true,<qval(1,true,false)>)
-ShouldBeSameString("true - doublequoted",true,<qval(1,"true","false")>)
+ShouldBeSameString("true - arguments doublequoted",true,<qval(1,"true","false")>)
+ShouldBeSameString("true - doublequoted, arguments doublequoted",true,"<qval(1,"true","false")>")
 ShouldBeSameString("false",false,<qval(0,true,false)>)
-ShouldBeSameString("false - doublequoted",false,<qval(0,"true","false")>)d
+ShouldBeSameString("false - arguments doublequoted",false,<qval(0,"true","false")>)
+ShouldBeSameString("false - doublequoted, arguments doublequoted",false,"<qval(0,"true","false")>")
 
 ShouldBeSameString("true - with expression",true,<qval(0+1,true,false)>)
 ShouldBeSameString("false - with expression",false,<qval(1-1,true,false)>)

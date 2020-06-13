@@ -1920,9 +1920,9 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			Str_Parse(ppArgs[0], &(ppArgs[1]), ",");
 
 			if (conditionValue)
-				sVal = ppArgs[0];
+				sVal = Str_TrimDoublequotes(ppArgs[0]);
 			else
-				sVal = ppArgs[1];
+				sVal = Str_TrimDoublequotes(ppArgs[1]);
 			return true;
 		}
 		case SSC_ISBIT:
