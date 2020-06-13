@@ -638,7 +638,7 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			int x = expr.GetVal(ppArgs[0]);
 			int y = expr.GetVal(ppArgs[1]);
 			int unk1 = expr.GetVal(ppArgs[2]);
-			int index = expr.GetVal(ppArgs[2]);
+			int index = expr.GetVal(ppArgs[3]);
 
 			m_sControls[m_iControls].Format("Text %d %d %d %d", x, y, unk1, index);
 			m_iControls++;
