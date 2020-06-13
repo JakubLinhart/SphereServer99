@@ -44,6 +44,11 @@ ShouldBeSameString("decimal point - add",33,<eval(1.1+2.2)>)
 ShouldBeSameString("decimal point - sub",-11,<eval(1.1-2.2)>)
 ShouldBeSameString("decimal point - mult",242,<eval(1.1*2.2)>)
 
+arg(arg1,1)
+arg(arg2,1+arg(arg1))
+arg(arg3,1+arg(arg2))
+ShouldBeSameString("recursive expression",4,<eval 1+arg(arg3)>)
+
 test_expressions_with_arguments(10)
 
 // Doesn't work on Sphere99.

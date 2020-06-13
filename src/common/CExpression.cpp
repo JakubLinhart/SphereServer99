@@ -863,7 +863,7 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 			{
 				pszArgs += argsLen;
 				LPCTSTR pszVal = sVal.GetPtr();
-				INT64 iVal = GetSingle(pszVal);
+				INT64 iVal = GetVal(pszVal);
 				return iVal;
 			}
 
