@@ -38,6 +38,7 @@ test_while
 test_safe
 test_findres
 test_finduid
+test_findtype
 test_newitem
 test_newnpc
 test_findid

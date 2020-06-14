@@ -1,0 +1,21 @@
+[function test_findtype]
+serv.smsg "test_findtype\n"
+
+arg(found,<finduid(010000).findtype(t_container).type>)
+ShouldBeSameString("found",t_container,<arg(found)>)
+
+arg(found,<finduid(010000).findtype(t_spell)>)
+ShouldBeSameString("not found","",<arg(found)>)
+
+arg(found,<finduid(010000).findtype(t_spell).type>)
+ShouldBeSameString("not found - chained","",<arg(found)>)
+
+arg(typeName,"t_spell")
+arg(found,<finduid(010000).findtype(<arg(typeName)>)>)
+ShouldBeSameString("not found - macro argument","",<arg(found)>)
+
+arg(contVar,#040000001)
+arg(found,<eval arg(contVar).findtype(t_spell)>)
+ShouldBeSameString("not found - eval",0,<arg(found)>)
+
+serv.smsg "\n"
