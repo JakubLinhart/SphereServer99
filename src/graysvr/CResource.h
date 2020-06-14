@@ -1164,6 +1164,8 @@ private:
 ///////////////////////////////////////////////////////////
 // CDialogDef
 
+class CDialogDefSetup;
+
 class CDialogDef : public CResourceLink
 {
 public:
@@ -1194,9 +1196,9 @@ public:
 
 	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
-	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, bool bSetup);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CDialogDefSetup *pDlgSetup);
 	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
-	bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, bool setup);
+	bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CDialogDefSetup* pDlgSetup);
 
 private:
 	CDialogDef(const CDialogDef &copy);
@@ -1213,6 +1215,7 @@ public:
 	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	virtual bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_WriteValBase(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 
 	LPCTSTR GetName() const
 	{

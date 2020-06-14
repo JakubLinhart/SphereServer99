@@ -1,12 +1,12 @@
 [function test_dialogs_client]
 serv.smsg "test_dialogs_client\n"
 
-dialog d_test_dialog
+dialog d_test_dialogs_client
 
 serv.smsg "\n"
 src.sysmessage("test_dialogs_client done")
 
-[dialog d_test_dialog]
+[dialog d_test_dialogs_client]
 argo.tag(tag1,123)
 ShouldBeSameString("can get/set argo tag",123,<argo.tag(tag1)>)
 
@@ -17,25 +17,47 @@ ShouldBeSameString("unprefixed is the same as src tag",124,<src.tag(tag1)>)
 src.tag(tag1,321)
 ShouldBeSameString("can get/set src tag",321,<src.tag(tag1)>)
 ShouldBeSameString("src is the same as unprefixed tag",321,<src.tag(tag1)>)
-ShouldBeSameString("unprefixed and src tags doesn't change arg tag",123,<argo.tag(tag1)>)
+ShouldBeSameString("unprefixed and src tags doesn't change argo tag",123,<argo.tag(tag1)>)
+
+argo.tag(test_dialog_core_argo_tag,333)
+argo.test_dialog_core_argo
+
+argo.tag(test_dialog_core_argo2_tag,222)
+arg(result,<argo.test_dialog_core_argo2>)
+
+[function test_dialog_core_argo]
+ShouldBeSameString("r_writeVal runs on dialog instance first",333,<eval tag(test_dialog_core_argo_tag)>)
+
+tag(index,123)
+tag(indexedTag[123],"indexedTagValue")
+ShouldBeSameString("r_writeVal evaluates tag index inside argo context",indexedTagValue,<tag(indexedTag[tag(index)])>)
+
+tag(indexedTag2[tag(index)],"indexedTag2Value")
+ShouldBeSameString("r_verb evaluates tag index inside argo context",indexedTag2Value,<tag(indexedTag2[123])>)
+
+[function test_dialog_core_argo2]
+ShouldBeSameString("r_writeVal runs on dialog instance first - invoked from argo.r_writeVal",222,<eval tag(test_dialog_core_argo2_tag)>)
 
 [function test_dialogs_client_gump_generation]
 serv.smsg "test_dialogs_client_gump_generation\n"
 
-dialog(d_test_dialog)
+dialog(d_test_dialogs_client_gump_generation)
 
 src.sysmessage "test_dialogs_client_gump_generation done"
 serv.smsg "\n"
 
 
-[DIALOG d_test_dialog]
+[DIALOG d_test_dialogs_client_gump_generation]
 30,0
 argo.setlocation=20,20
 argo.gumppic(100,100,100)
 argo.htmlgump(120,120,100,60,100,0,0)
 
+argo.tag(argoIndex,123)
+argo.tag(argoTag[argo.tag(argoIndex)],"This is indexed tag value")
+argo.tag(argoTag[argo.tag(argoIndex)+1],"This is second indexed tag value")
+argo.tag(argoId[tag(argoIndex)],9345)
 argo.dialog_prvni(955,960)
-dialog_prvni(960,970)
 arg(res,<argo.test_dialog_writeval(333,666)>)
 
 argo.setText(100,arg(res))
@@ -65,12 +87,11 @@ br		"<br>"
 [function dialog_prvni]
 var(lastposx,5)
 var(lastposy,6)
-argo.texta(lastposx+5,test_dialog_return(15),argv(0),Majitel:)
-texta(lastposx+10,test_dialog_return(30),argv(1),Majitel2:)
+texta(lastposx+10,test_dialog_return(30),argv(1),<tag(argoTag[tag(argoIndex)])>)
 
 [function test_dialog_writeval]
-resizepic(argv(0),argv(1),9345,123,234)
-argo.resizepic(argv(0),argv(1),9345,123,234)
+resizepic(argv(0),argv(1),tag(argoId[tag(argoIndex)]),123,234)
+texta(lastposx+10,test_dialog_return(30),argv(1),<tag(argoTag[tag(argoIndex)+1])>)
 return 123
 
 [function dialog_textpos]
