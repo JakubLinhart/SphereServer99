@@ -1,0 +1,41 @@
+[function test_dialogs_specific_button_client]
+dialog(d_test_dialogs_specific_button_client)
+src.sysmessage "test_dialogs_specific_button_client done"
+
+[dialog d_test_dialogs_specific_button_client]
+argo.button(70,260,2445,2445,1,0,1)
+argo.checkbox(0,0,210,211,0,1)
+argo.checkbox(0,0,210,211,0,2)
+argo.tag(d_test_dialogs_specific_button_client_argo_tag,123)
+tag(d_test_dialogs_specific_button_client_tag,321)
+src.tag(d_test_dialogs_specific_button_client_src_tag,111)
+
+[dialog d_test_dialogs_specific_button_client button]
+on=1
+serv.smsg("test_dialogs_specific_button_client\n")
+
+ShouldBeSameString("set argn",1,"<argn>")
+ShouldBeSameString("argo tag",123,<argo.tag(d_test_dialogs_specific_button_client_argo_tag)>)
+ShouldBeSameString("tag",321,<tag(d_test_dialogs_specific_button_client_tag)>)
+ShouldBeSameString("src tag",111,<src.tag(d_test_dialogs_specific_button_client_src_tag)>)
+ShouldBeSameString("src and current object are same",<src.uid>,<uid>)
+ShouldBeSameString("selected checkbox",1,<argChk(1)>)
+ShouldBeSameString("not selected checkbox","",<argChk(2)>)
+
+serv.smsg "\n"
+
+
+[function test_dialogs_any_button_client]
+dialog(d_test_dialogs_any_button_client)
+src.sysmessage "test_dialogs_any_button_client done"
+
+[dialog d_test_dialogs_any_button_client]
+argo.button(70,260,2445,2445,1,0,1)
+
+[dialog d_test_dialogs_any_button_client button]
+on=@anybutton
+serv.smsg("d_test_dialogs_any_button_client\n")
+
+ShouldBeSameString("set argn",3,"<argn>")
+
+serv.smsg "\n"

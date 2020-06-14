@@ -1,12 +1,17 @@
 [function test_dialogs_client]
 serv.smsg "test_dialogs_client\n"
 
-dialog d_test_dialogs_client
+dialog(d_test_dialogs_client,first,second,third)
 
 serv.smsg "\n"
 src.sysmessage("test_dialogs_client done")
 
 [dialog d_test_dialogs_client]
+ShouldBeSameString("args contains only first argument","first",<args>)
+ShouldBeSameString("argv(0)","first",<argv(0)>)
+ShouldBeSameString("argv(1)","second",<argv(1)>)
+ShouldBeSameString("argv(2)","third",<argv(2)>)
+
 argo.tag(tag1,123)
 ShouldBeSameString("can get/set argo tag",123,<argo.tag(tag1)>)
 
@@ -38,61 +43,3 @@ ShouldBeSameString("r_verb evaluates tag index inside argo context",indexedTag2V
 [function test_dialog_core_argo2]
 ShouldBeSameString("r_writeVal runs on dialog instance first - invoked from argo.r_writeVal",222,<eval tag(test_dialog_core_argo2_tag)>)
 
-[function test_dialogs_client_gump_generation]
-serv.smsg "test_dialogs_client_gump_generation\n"
-
-dialog(d_test_dialogs_client_gump_generation)
-
-src.sysmessage "test_dialogs_client_gump_generation done"
-serv.smsg "\n"
-
-
-[DIALOG d_test_dialogs_client_gump_generation]
-30,0
-argo.setlocation=20,20
-argo.gumppic(100,100,100)
-argo.htmlgump(120,120,100,60,100,0,0)
-
-argo.tag(argoIndex,123)
-argo.tag(argoTag[argo.tag(argoIndex)],"This is indexed tag value")
-argo.tag(argoTag[argo.tag(argoIndex)+1],"This is second indexed tag value")
-argo.tag(argoId[tag(argoIndex)],9345)
-argo.dialog_prvni(955,960)
-arg(res,<argo.test_dialog_writeval(333,666)>)
-
-argo.setText(100,arg(res))
-argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,100)
-argo.button(d_def_okraj+d_def_skvira*3,83-23,0fb7,0fb9,1,0,1)
-argo.checkBox(<argo.dialog_textpos(16,80)>,210,211,30,3)
-argo.HTMLGUMPa(20,20,600,200,test htmlgumpa,0,0)
-argo.tilepic(95,16,6173)
-tilepic(96,17,6174)
-argo.tilepichue(95,16,6173)
-tilepichue(96,17,6174)
-argo.tilepichue(95,16,6173,123)
-argo.gumppictiled(10,20,30,40,50)
-gumppictiled(11,21,31,41,51)
-argo.gumppictiled 50 40 30 20 10
-
-src.sysmessage("test_dialog done")
-
-[function test_dialog_return]
-return<args>
-
-[defnames dialogy]
-d_def_skvira          3
-d_def_okraj           10
-br		"<br>"
-
-[function dialog_prvni]
-var(lastposx,5)
-var(lastposy,6)
-texta(lastposx+10,test_dialog_return(30),argv(1),<tag(argoTag[tag(argoIndex)])>)
-
-[function test_dialog_writeval]
-resizepic(argv(0),argv(1),tag(argoId[tag(argoIndex)]),123,234)
-texta(lastposx+10,test_dialog_return(30),argv(1),<tag(argoTag[tag(argoIndex)+1])>)
-return 123
-
-[function dialog_textpos]
-return <argv(0)>,<argv(1)>

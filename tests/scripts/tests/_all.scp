@@ -75,3 +75,5 @@ test_spelleffect_invisibility
 
 test_dialogs_client
 test_dialogs_client_gump_generation
+test_dialogs_specific_button_client
+test_dialogs_any_button_client
