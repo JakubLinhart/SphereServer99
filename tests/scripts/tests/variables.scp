@@ -218,7 +218,3 @@ tag(tagWithIndex,2)
 var(globalVariable[tag(tagWithIndex)],value3)
 ShouldBeSameString("index with unchained tag",value3,<var(globalVariable[tag(tagWithIndex)])>)
 ShouldBeSameString("index with unchained tag - unspecified",value3,<globalVariable[tag(tagWithIndex)]>)
-
-[function xxx]
-var(globalVariable2,())
-ShouldBeSameString("parentheses","()","<var(globalVariable2)>")

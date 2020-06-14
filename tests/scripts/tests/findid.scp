@@ -27,5 +27,13 @@ else
   tst_fail("in if condition in chained function")
 endif
 
+ShouldBeSameString("find by argv - not found","",<test_findid_by_argv(i_memory)>)
+ShouldBeSameString("find by argv - found","#040000001",<test_findid_by_argv(i_backpack)>)
+
 [function test_findid_chained_dagger]
 ShouldBeSameString("find equiped item in chained function",i_dagger,<id>)
+
+[function test_findid_by_argv]
+arg(najemcont,#010000)
+arg(foundID,<arg(najemcont).findid(<argv(0)>)>)
+return<arg(foundID)>
