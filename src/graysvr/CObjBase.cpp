@@ -2568,23 +2568,15 @@ bool CObjBase::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)
 			if ( !pClientSrc )
 				return false;
 
-			TCHAR *ppArgs[3];		// maximum parameters in one line
-			size_t iArgQty = Str_ParseCmds(s.GetArgStr(), ppArgs, COUNTOF(ppArgs));
-			if ( iArgQty < 1 )
-				return false;
+			TCHAR *ppArgs[1];		// maximum parameters in one line
+			LPCTSTR pszArgs = s.GetArgStr();
+			GETNONWHITESPACE(pszArgs);
+			TemporaryString args;
+			Str_ParseArgumentList(pszArgs, args);
+			if (!Str_Parse(args, ppArgs, ","))
+				ppArgs[0] = NULL;
 
-			if ( index == OV_SDIALOG )
-			{
-				DWORD context = static_cast<DWORD>(g_Cfg.ResourceGetIDType(RES_DIALOG, ppArgs[0]));
-				if ( pClientSrc->m_NetState->isClientKR() )
-					context = g_Cfg.GetKRDialog(context);
-				context &= 0xFFFFFF;
-
-				CClient::OpenedGumpsMap_t::iterator itGumpFound = pClientSrc->m_mapOpenedGumps.find(static_cast<int>(context));
-				if ( pCharSrc && (itGumpFound != pClientSrc->m_mapOpenedGumps.end()) && ((*itGumpFound).second > 0) )
-					break;
-			}
-			pClientSrc->Dialog_Setup(CLIMODE_DIALOG, g_Cfg.ResourceGetIDType(RES_DIALOG, ppArgs[0]), (iArgQty > 1) ? Exp_GetVal(ppArgs[1]) : 0, this, ppArgs[2]);
+			pClientSrc->Dialog_Setup(CLIMODE_DIALOG, g_Cfg.ResourceGetIDType(RES_DIALOG, args), 0, this, ppArgs[0]);
 			break;
 		}
 		case OV_DIALOGCLOSE:
