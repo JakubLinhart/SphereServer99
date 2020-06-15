@@ -1770,26 +1770,20 @@ bool CDialogResponseArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsol
 	if ( !strnicmp(pszKey, "ARGCHK", 6) )
 	{
 		pszKey += 6;
-		SKIP_SEPARATORS(pszKey);
 
 		size_t iQty = m_CheckArray.GetCount();
-		if ( pszKey[0] == '\0' )
-		{
-			sVal.FormatVal(iQty);
-			return true;
-		}
-		else if ( !strnicmp(pszKey, "ID", 2) )
-		{
-			pszKey += 2;
-			if ( (iQty > 0) && m_CheckArray[0] )
-				sVal.FormatVal(m_CheckArray[0]);
-			else
-				sVal.FormatVal(-1);
-			return true;
-		}
 
-		DWORD dwNum = static_cast<DWORD>(Exp_GetLLSingle(pszKey));
-		SKIP_SEPARATORS(pszKey);
+		GETNONWHITESPACE(pszKey);
+		if (!Str_ParseArgumentStart(pszKey, false))
+			return false;
+		if (!Str_ParseExpressionArgument(const_cast<TCHAR*>(pszKey), NULL, NULL))
+			return false;
+
+		CExpression expr(this, pSrc, this);
+		DWORD dwNum = static_cast<DWORD>(expr.GetVal(pszKey));
+
+		Str_ParseArgumentEnd(pszKey, false);
+
 		for ( size_t i = 0; i < iQty; ++i )
 		{
 			if ( dwNum == m_CheckArray[i] )
@@ -1798,7 +1792,7 @@ bool CDialogResponseArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsol
 				return true;
 			}
 		}
-		sVal = "0";
+		sVal = "";
 		return true;
 	}
 	if ( !strnicmp(pszKey, "ARGTXT", 6) )

@@ -204,7 +204,7 @@ public:
 
 	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
 	bool r_LoadVal(CScript &s, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
 	bool r_WriteVarVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptObj* pObj);
 	bool r_Verb(CScript &s, CTextConsole *pSrc, CScriptObj *pObj);
 	LPCTSTR GetArgV(int iKey);

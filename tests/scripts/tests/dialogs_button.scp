@@ -20,6 +20,7 @@ ShouldBeSameString("tag",321,<tag(d_test_dialogs_specific_button_client_tag)>)
 ShouldBeSameString("src tag",111,<src.tag(d_test_dialogs_specific_button_client_src_tag)>)
 ShouldBeSameString("src and current object are same",<src.uid>,<uid>)
 ShouldBeSameString("selected checkbox",1,<argChk(1)>)
+ShouldBeSameString("selected checkbox without parentheses",1,<argChk 1>)
 ShouldBeSameString("not selected checkbox","",<argChk(2)>)
 
 serv.smsg "\n"

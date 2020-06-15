@@ -205,7 +205,7 @@ public:
 	{
 		return "ARGD";
 	}
-	bool r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * pSrc );
+	virtual bool r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * pSrc );
 
 public:
 	CDialogResponseArgs() { };
