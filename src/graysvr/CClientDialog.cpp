@@ -977,25 +977,16 @@ TRIGRET_TYPE CClient::Dialog_OnButton(RESOURCE_ID_BASE rid, DWORD dwButtonID, CO
 	if ( !g_Cfg.ResourceLock(s, RESOURCE_ID(RES_DIALOG, rid.GetResIndex(), RES_DIALOG_BUTTON)) )
 		return TRIGRET_ENDIF;
 
-	INT64 piCmd[3];
 	while ( s.ReadKeyParse() )
 	{
 		if ( !s.IsKeyHead("ON", 2) )
 			continue;
 
-		size_t iArgs = Str_ParseCmds(s.GetArgStr(), piCmd, COUNTOF(piCmd));
-		if ( iArgs == 0 )
-			continue;
-		else if ( iArgs == 1 )
+		TCHAR* pKey = s.GetArgStr();
+		if (stricmp(pKey, "@anybutton"))
 		{
-			// Single button value
-			if ( dwButtonID != static_cast<DWORD>(piCmd[0]) )
-				continue;
-		}
-		else
-		{
-			// Range of button values
-			if ( (dwButtonID < static_cast<DWORD>(piCmd[0])) || (dwButtonID > static_cast<DWORD>(piCmd[1])) )
+			INT64 iCmd = Exp_GetLLSingle(pKey);
+			if ( dwButtonID != static_cast<DWORD>(iCmd) )
 				continue;
 		}
 
