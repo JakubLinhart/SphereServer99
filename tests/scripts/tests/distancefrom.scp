@@ -1,0 +1,12 @@
+[function test_distancefrom]
+serv.smsg("test_distancefrom\n")
+
+arg(llama,0D728B)
+
+ShouldBeSameString("distance",1,<finduid(010000).distancefrom(finduid(arg(llama)))>)
+
+finduid(010000).newnpc(c_dog)
+ShouldBeSameString("commutativity",<lastnewchar.distancefrom(arg(llama))>,<finduid(arg(llama)).distancefrom(lastnewchar)>)
+lastnewchar.remove
+
+serv.smsg("\n")

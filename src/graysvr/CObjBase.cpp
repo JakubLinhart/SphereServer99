@@ -1018,28 +1018,18 @@ bool CObjBase::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CS
 			}
 			return false;
 		}
-		case OC_DISTANCE:
 		case OC_DISTANCEFROM:
 		{
-			pszKey += 8;
-			SKIP_SEPARATORS(pszKey);
-			GETNONWHITESPACE(pszKey);
+			pszKey += 12;
 
-			CObjBase *pThis = IsTopLevel() ? this : static_cast<CObjBase *>(GetTopLevelObj());
-			CObjBase *pObj = pSrc->GetChar();
+			CObjBase* pThis = IsTopLevel() ? this : static_cast<CObjBase*>(GetTopLevelObj());
+			CObjBase* pObj = pSrc->GetChar();
 
-			if ( *pszKey )
+			TemporaryString pszArg;
+			if (Str_ParseArgumentList(pszKey, pszArg))
 			{
-				CPointMap pt = g_Cfg.GetRegionPoint(pszKey);
-
-				if ( pt.IsValidPoint() )
-				{
-					if ( !pThis->GetTopPoint().IsValidPoint() )
-						return false;
-					sVal.FormatVal(pThis->GetTopDist(pt));
-					return true;
-				}
-				pObj = static_cast<CGrayUID>(Exp_GetVal(pszKey)).ObjFind();
+				CExpression expr(pArgs, pSrc, this);
+				pObj = static_cast<CGrayUID>(expr.GetVal(pszArg)).ObjFind();
 			}
 
 			if ( pObj && !pObj->IsTopLevel() )
