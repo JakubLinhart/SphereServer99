@@ -20,8 +20,11 @@ argo.tag(argoId[tag(argoIndex)],9345)
 argo.dialog_prvni(955,960)
 arg(res,<argo.test_dialog_writeval(333,666)>)
 
-argo.setText(100,arg(res))
-argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,100)
+argo.setText(110,<arg(res)>)
+argo.text(<argo.dialog_textpos(0,0)>,0481,110)
+argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,110)
+textentry 150 120 340 347 2116 1 1
+argo.textentry(151,121,340,347,2116,1,1)
 argo.button(d_def_okraj+d_def_skvira*3,83-23,0fb7,0fb9,1,0,1)
 argo.checkBox(<argo.dialog_textpos(16,80)>,210,211,30,3)
 argo.HTMLGUMPa(20,20,600,200,test htmlgumpa,0,0)
@@ -33,6 +36,8 @@ argo.tilepichue(95,16,6173,123)
 argo.gumppictiled(10,20,30,40,50)
 gumppictiled(11,21,31,41,51)
 argo.gumppictiled 50 40 30 20 10
+checkertrans(10,10,600+20,430)
+argo.checkertrans 20 20 630 440
 
 src.sysmessage("test_dialog done")
 

@@ -558,15 +558,22 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 		{
 			if ( m_iControls >= (COUNTOF(m_sControls) - 1) )
 				return false;
+			TCHAR* ppArgs[4];
+			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
+			if (!Str_ParseExpressionArgument(ppArgs[0], &(ppArgs[1]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[1], &(ppArgs[2]))) return false;
+			if (!Str_ParseExpressionArgument(ppArgs[2], &(ppArgs[3]))) return false;
 
-			GET_RELATIVE( x, m_iOriginX );
-			GET_RELATIVE( y, m_iOriginY );
-			GET_ABSOLUTE( width );
-			GET_ABSOLUTE( height );
+			int x = expr.GetVal(ppArgs[0]);
+			int y = expr.GetVal(ppArgs[1]);
+			int width = expr.GetVal(ppArgs[2]);
+			int height = expr.GetVal(ppArgs[3]);
 
-			m_sControls[m_iControls].Format( "checkertrans %d %d %d %d", x, y, width, height );
+			m_sControls[m_iControls].Format("CheckerTrans %d %d %d %d", x, y, width, height);
 			m_iControls++;
+
 			return true;
+
 		}
 		case GUMPCTL_DORIGIN:
 		{
@@ -611,9 +618,12 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			if (textIndex > COUNTOF(m_sText))
 				return false;
 			m_sText[textIndex] = Str_TrimDoublequotes(ppArgs[1]);
+			if (m_iTexts < textIndex + 1)
+				m_iTexts = textIndex + 1;
 			return true;
 		}
 		case GUMPCTL_TEXTENTRYA:
+		case GUMPCTL_TEXTENTRY:
 		{
 			TCHAR* ppArgs[7];
 			ppArgs[0] = const_cast<TCHAR*>(pszArgs);
@@ -638,7 +648,6 @@ bool CDialogDef::r_Verb( CScript & s, CTextConsole * pSrc, CScriptTriggerArgs* p
 			return 1;
 		}
 		case GUMPCTL_CROPPEDTEXT:
-		case GUMPCTL_TEXTENTRY:
 		case GUMPCTL_TEXTENTRYLIMITED:
 			break;
 		case GUMPCTL_TEXT:
