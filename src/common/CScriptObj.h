@@ -116,7 +116,8 @@ public:
 	TRIGRET_TYPE OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextConsole *pSrc, CScriptTriggerArgs *pArgs, CGString *psResult);
 	TRIGRET_TYPE OnTriggerRunVal(CScript &s, TRIGRUN_TYPE trigger, CTextConsole *pSrc, CScriptTriggerArgs *pArgs);
 
-	size_t ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags = 0, CScriptTriggerArgs *pArgs = NULL);
+	size_t ParseText(TCHAR* pszResponse, CTextConsole* pSrc, int iFlags = 0, CScriptTriggerArgs* pArgs = NULL);
+	size_t ParseText(TCHAR* pszResponse, CTextConsole* pSrc, int iFlags, CScriptTriggerArgs* pArgs, bool &bEscaped);
 
 	virtual bool r_GetRef(LPCTSTR& pszKey, CScriptObj*& pRef);
 	virtual bool r_GetRefNew(LPCTSTR& pszKey, CScriptObj*& pRef, LPCTSTR pszRawArgs, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);

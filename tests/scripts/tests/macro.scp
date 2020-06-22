@@ -20,6 +20,30 @@ ShouldBeSameString("escaped - multiple","123",<?macrofun?><?macrofun?><?macrofun
 var(macrofunindex,0)
 ShouldBeSameString("escaped - nested","145",<?macrofun?><?macrofun(<?macrofun(<?macrofun?>)?>)?><?macrofun?>)
 
+arg(someText,someTextValue)
+arg(defname,i_backpack)
+arg(defnameVar,arg(defname))
+ShouldBeSameString("switches to escaped mode","<switches_to_escaped_mode_text>","<?safe?><arg(someText)>")
+ShouldBeSameString("evaluates escaped macro when in escaped mode","<evaluates_escaped_macro_when_in_escaped_mode_text>","<?safe?><someText><?arg(someText)?>")
+ShouldBeSameString("nested escaped macro switches outer scope to escaped mode","<nested_escaped_macro_switches_outer_scope_to_escaped_mode_text>","<arg(someText)<?safe?>>")
+ShouldBeSameString("macro nested inside escaped macro is not in escaped mode","i_backpack","<?<arg(defnameVar)>?>")
+ShouldBeSameString("outer escaped macro doesn't influence macro nested in followup escaped macro","<?safe?><bla>i_backpack<bla>","<?safe?><bla><?<arg(defnameVar)>?><bla>")
+
+
+ShouldBeSameString("escaped macro - text",someTextValue,"<?arg(someText)?>")
+ShouldBeSameString("escaped macro - text",i_backpack,"<?arg(defName)?>")
+
+arg(someExpression,1+1)
+arg(a,123)
+arg(b,321)
+ShouldBeSameString("macro - constant expression",2,<some_constant_expression_text>)
+ShouldBeSameString("macro - variable expression","arg(a)+arg(b)",<some_variable_expression_text>)
+ShouldBeSameString("escaped macro - constant expression","2","<?some_constant_expression_text?>")
+ShouldBeSameString("escaped macro - variable expression","arg(a)+arg(b)","<?some_variable_expression_text?>")
+
+ShouldBeSameString("macro - defname","i_backpack","<arg(defname)>")
+ShouldBeSameString("escaped macro - defname","i_backpack","<?arg(defname)?>")
+
 arg(localvar1,"f_was_function")
 var(function_was_called,no)
 <arg(localvar1)>_call
@@ -55,3 +79,17 @@ ShouldBeSameString("macro r_verb - with args - end","yesyes",<var(function_was_c
 // ShouldBeSameString("escaped - nested, combined","267",<?macrofun(<macrofun>)?><?macrofun(<?macrofun(<macrofun(<?macrofun?>)>)?>)?><?macrofun?>)
 
 serv.smsg "\n"
+
+[defnames]
+switches_to_escaped_mode_text                                   <arg(someText)>
+switches_to_escaped_mode_defname                                <i_backpack>
+evaluates_escaped_macro_when_in_escaped_mode_text               <someText>someTextValue
+nested_escaped_macro_switches_outer_scope_to_escaped_mode_text  <arg(someText)>
+some_constant_expression_text                                   1+1
+some_variable_expression_text                                   arg(a)+arg(b)
+
+[function xxx]
+serv.smsg "<split2bytes(13)>\n"
+
+[function split2bytes]
+return"<?hval(<argv(0)> >> 8)?> <?hval(<argv(0)>&0ff)?>"

@@ -1075,7 +1075,13 @@ TRIGRET_TYPE CScriptObj::OnTriggerRunVal(CScript &s, TRIGRUN_TYPE trigger, CText
 	return TRIGRET_RET_DEFAULT;
 }
 
-size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags, CScriptTriggerArgs *pArgs)
+size_t CScriptObj::ParseText(TCHAR* pszResponse, CTextConsole* pSrc, int iFlags, CScriptTriggerArgs* pArgs)
+{
+	bool bEscaped = false;
+	return ParseText(pszResponse, pSrc, iFlags, pArgs, bEscaped);
+}
+
+size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags, CScriptTriggerArgs *pArgs, bool &bEscaped)
 {
 	ADDTOCALLSTACK("CScriptObj::ParseText");
 	// Take in a line of text that may have fields that can be replaced with operators here
@@ -1091,8 +1097,6 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 	static int sm_iReentrant = 0;
 	static bool sm_fBrackets = false;	// allowed to span multi lines
-
-	bool escaped = false;
 
 	if ( (iFlags & 2) == 0 )
 		sm_fBrackets = false;
@@ -1110,6 +1114,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 	size_t i = 0;
 	EXC_TRY("ParseText");
+	bool inEscapedMacro = false;
 	for ( i = 0; pszResponse[i]; ++i )
 	{
 		TCHAR ch = pszResponse[i];
@@ -1118,17 +1123,24 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 		{
 			if ( ch == chBegin )	// found the start
 			{
+				bool ignore = bEscaped;
 				if ((pszResponse[i + 1] == '?'))
 				{
 					i++;
-					escaped = true;
+					inEscapedMacro = true;
+					ignore = false;
 				}
+				else
+					inEscapedMacro = false;
 
-				if ( !(isalnum(pszResponse[i + 1]) || (pszResponse[i + 1] == '<')) )
-					continue;
+				if (!ignore)
+				{
+					if (!(isalnum(pszResponse[i + 1]) || (pszResponse[i + 1] == '<')))
+						continue;
 
-				iBegin = i;
-				sm_fBrackets = true;
+					iBegin = i;
+					sm_fBrackets = true;
+				}
 			}
 			continue;
 		}
@@ -1145,7 +1157,10 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 			}
 			++sm_iReentrant;
 			sm_fBrackets = false;
-			size_t iLen = ParseText(pszResponse + i, pSrc, 2, pArgs);
+			bool nestedEscaped = false;
+			size_t iLen = ParseText(pszResponse + i, pSrc, 2, pArgs, nestedEscaped);
+			if (nestedEscaped)
+				bEscaped = true;
 			sm_fBrackets = true;
 			--sm_iReentrant;
 			i += iLen;
@@ -1154,11 +1169,15 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 		if ( ch == chEnd )
 		{
-			if (escaped && ch == '>' && *(pszResponse + i - 1) != '?')
+			if (bEscaped && ch == '>' && *(pszResponse + i - 1) != '?')
 				continue;
+			if (inEscapedMacro)
+				bEscaped = true;
 
+			if (!sm_fBrackets)
+				continue;
 			sm_fBrackets = false;
-			if (escaped)
+			if (inEscapedMacro)
 			{
 				pszResponse[i - 1] = '\0';
 				pszKey = static_cast<LPCTSTR>(pszResponse) + iBegin + 1;
@@ -1168,6 +1187,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 				pszResponse[i] = '\0';
 				pszKey = static_cast<LPCTSTR>(pszResponse) + iBegin + 1;
 			}
+			inEscapedMacro = false;
 
 			EXC_SET("writeval");
 			CGString sVal;
@@ -1189,6 +1209,8 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 					Str_ParseArgumentList(pszKey, *safeArguments);
 					pszKey = *safeArguments;
 				}
+				else if (*pszKey == '\0')
+					fSafe = true;
 				else
 					pszKey -= 4;
 			}
@@ -1221,7 +1243,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 			EXC_SET("mem shifting");
 			size_t iLen = sVal.GetLength();
-			if (escaped)
+			if (bEscaped)
 			{
 				memmove(pszResponse + iBegin + iLen - 1, pszResponse + i + 1, strlen(pszResponse + i + 1) + 1);
 				memcpy(pszResponse + iBegin - 1, static_cast<LPCTSTR>(sVal), iLen);
@@ -1233,8 +1255,6 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 				memcpy(pszResponse + iBegin, static_cast<LPCTSTR>(sVal), iLen);
 				i = iBegin + iLen - 1;
 			}
-			escaped = false;
-
 			if ( (iFlags & 2) != 0 )	// just do this one then bail out
 				return i;
 		}
