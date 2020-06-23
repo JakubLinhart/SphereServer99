@@ -40,6 +40,7 @@ ShouldBeSameString("macro - constant expression",2,<some_constant_expression_tex
 ShouldBeSameString("macro - variable expression","arg(a)+arg(b)",<some_variable_expression_text>)
 ShouldBeSameString("escaped macro - constant expression","2","<?some_constant_expression_text?>")
 ShouldBeSameString("escaped macro - variable expression","arg(a)+arg(b)","<?some_variable_expression_text?>")
+ShouldBeSameString("escaped macro can contain bit shift right",02,<?hval(600 >> 8)?>)
 
 ShouldBeSameString("macro - defname","i_backpack","<arg(defname)>")
 ShouldBeSameString("escaped macro - defname","i_backpack","<?arg(defname)?>")
@@ -87,9 +88,3 @@ evaluates_escaped_macro_when_in_escaped_mode_text               <someText>someTe
 nested_escaped_macro_switches_outer_scope_to_escaped_mode_text  <arg(someText)>
 some_constant_expression_text                                   1+1
 some_variable_expression_text                                   arg(a)+arg(b)
-
-[function xxx]
-serv.smsg "<split2bytes(13)>\n"
-
-[function split2bytes]
-return"<?hval(<argv(0)> >> 8)?> <?hval(<argv(0)>&0ff)?>"

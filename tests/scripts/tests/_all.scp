@@ -46,6 +46,7 @@ test_findlayer
 test_containers
 test_equip
 test_defnames
+test_distancefrom
 
 tst_end_suite
 

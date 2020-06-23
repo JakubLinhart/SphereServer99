@@ -1169,7 +1169,7 @@ size_t CScriptObj::ParseText(TCHAR *pszResponse, CTextConsole *pSrc, int iFlags,
 
 		if ( ch == chEnd )
 		{
-			if (bEscaped && ch == '>' && *(pszResponse + i - 1) != '?')
+			if ((inEscapedMacro || bEscaped) && ch == '>' && *(pszResponse + i - 1) != '?')
 				continue;
 			if (inEscapedMacro)
 				bEscaped = true;
