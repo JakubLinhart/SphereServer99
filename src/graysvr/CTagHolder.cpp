@@ -4,7 +4,13 @@ bool CTagHolder::r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArg
 {
 	LPCTSTR pszKey = s.GetKey();
 
-	if (!stricmp(pszKey, "TAG"))
+	if (!stricmp(pszKey, "TAG.REMOVE"))
+	{
+		LPCTSTR pszArgs = s.GetArgStr();
+		m_TagDefs.DeleteKey(pszArgs);
+		return true;
+	}
+	else if (!stricmp(pszKey, "TAG"))
 	{
 		bool fQuoted = false;
 		TCHAR* ppArgs[2];

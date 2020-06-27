@@ -27,6 +27,9 @@ ShouldBeSameString("unprefixed and src tags doesn't change argo tag",123,<argo.t
 argo.tag(test_dialog_core_argo_tag,333)
 argo.test_dialog_core_argo
 
+argo.tag.remove(test_dialog_core_argo_tag)
+ShouldBeSameString("can remove argo tag","","<argo.tag(test_dialog_core_argo_tag)>")
+
 argo.tag(test_dialog_core_argo2_tag,222)
 arg(result,<argo.test_dialog_core_argo2>)
 

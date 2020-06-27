@@ -6,11 +6,11 @@ Test("Dialogs", () =>
 });
 
 
-// Test("Dialogs", () =>
-// {
-//     ExecuteCommand("test_dialogs_client_gump_generation");
-//     UO.LastGumpInfo();
-// });
+Test("Dialogs", () =>
+{
+    ExecuteCommand("test_dialogs_client_gump_generation");
+    UO.LastGumpInfo();
+});
 
 Test("Dialogs - trigger specific button", () =>
 {
