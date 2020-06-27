@@ -59,6 +59,14 @@ bool CDialogDefSetup::r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs*
 {
 	ADDTOCALLSTACK("CDialogDefSetup::r_Verb");
 
+	LPCTSTR pszKey = s.GetKey();
+	if (!strnicmp(pszKey, "cont.", 5))
+	{
+		pszKey += 5;
+		CScript subS(pszKey, s.GetArgRaw());
+		return m_pDef->m_pObj->r_Verb(subS, pSrc, pArgs);
+	}
+
 	return m_pDef->r_Verb(s, pSrc, pArgs, this);
 }
 
@@ -70,6 +78,20 @@ bool CDialogDefSetup::r_WriteValBase(LPCTSTR pszKey, CGString& sVal, CTextConsol
 bool CDialogDefSetup::r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs)
 {
 	ADDTOCALLSTACK("CDialogDefSetup::r_WriteVal");
+
+	if (m_pDef->m_pObj != NULL)
+	{
+		if (!strcmpi(pszKey, "cont"))
+		{
+			sVal.FormatUid(m_pDef->m_pObj->GetUID());
+			return true;
+		}
+		else if (!strnicmp(pszKey, "cont.", 5))
+		{
+			pszKey += 5;
+			return m_pDef->m_pObj->r_WriteVal(pszKey, sVal, pSrc, pArgs);
+		}
+	}
 
 	return m_pDef->r_WriteVal(pszKey, sVal, pSrc, pArgs, this);
 }

@@ -12,6 +12,13 @@ ShouldBeSameString("argv(0)","first",<argv(0)>)
 ShouldBeSameString("argv(1)","second",<argv(1)>)
 ShouldBeSameString("argv(2)","third",<argv(2)>)
 
+ShouldBeSameString("argo.cont is the same as src",<src>,<argo.cont>)
+ShouldBeSameString("argo.cont chained r_WriteVal",<src.name>,<argo.cont.name>)
+argo.cont.tag(test_dialog_cont_cont_tag,123)
+ShouldBeSameString("argo.cont chained r_Verb",123,<argo.cont.tag(test_dialog_cont_cont_tag)>)
+argo.cont.test_dialog_cont_cont
+ShouldBeSameString("argo.cont chained call",321,<argo.cont.tag(test_dialog_cont_cont_tag)>)
+
 argo.tag(tag1,123)
 ShouldBeSameString("can get/set argo tag",123,<argo.tag(tag1)>)
 
@@ -46,3 +53,5 @@ ShouldBeSameString("r_verb evaluates tag index inside argo context",indexedTag2V
 [function test_dialog_core_argo2]
 ShouldBeSameString("r_writeVal runs on dialog instance first - invoked from argo.r_writeVal",222,<eval tag(test_dialog_core_argo2_tag)>)
 
+[function test_dialog_cont_cont]
+tag(test_dialog_cont_cont_tag,321)
