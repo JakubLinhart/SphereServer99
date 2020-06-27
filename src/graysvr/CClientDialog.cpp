@@ -999,7 +999,18 @@ TRIGRET_TYPE CClient::Dialog_OnButton(RESOURCE_ID_BASE rid, DWORD dwButtonID, CO
 				continue;
 		}
 
+		CResourceDef* pRes = g_Cfg.ResourceGetDef(rid);
+		CDialogDef* pDlg = dynamic_cast<CDialogDef*>(pRes);
+		if (!pDlg)
+		{
+			DEBUG_ERR(("Invalid RES_DIALOG\n"));
+			return TRIGRET_RET_DEFAULT;
+		}
+
 		pArgs->m_iN1 = dwButtonID;
+		CDialogDefSetup dlgSetup;
+		dlgSetup.m_pDef = pDlg;
+		pArgs->m_pO1 = &dlgSetup;
 		return pObj->OnTriggerRunVal(s, TRIGRUN_SECTION_TRUE, m_pChar, pArgs);
 	}
 	return TRIGRET_ENDIF;
