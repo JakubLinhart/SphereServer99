@@ -2,6 +2,7 @@
 serv.smsg("test_regions\n")
 
 ShouldBeSameString("region - name","Moina Filya","<finduid(010000).region.name>")
+ShouldBeTrue("region - uid and default reference equality","finduid(010000).region==finduid(010000).region.uid")
 ShouldBeSameString("region - mapplane",10,"<finduid(010000).region.mapplane>")
 ShouldBeSameString("region - p","5412,2556,15,10","<finduid(010000).region.p>")
 ShouldBeSameString("region - flags",0812,"<finduid(010000).region.flags>")
@@ -15,5 +16,5 @@ ShouldBeSameString("region - set tag chained",123,"<finduid(010000).region.tag(s
 finduid(010000).region.tag(sometag,321)
 ShouldBeSameString("region - set tag with parentheses",321,"<finduid(010000).region.tag(sometag)>")
 
-
 serv.smsg("\n")
+src.sysmessage("test_regions_client done")

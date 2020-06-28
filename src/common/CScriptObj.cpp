@@ -1643,11 +1643,17 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 				sVal.FormatUid(static_cast<DWORD>(pObj->GetUID()));
 			else
 			{
-				CResourceDef* pResDef = dynamic_cast<CResourceDef*>(pRef);
-				if (pResDef)
-					sVal.Format("%s", pResDef->GetResourceName());
+				CRegionBase* pRegion = dynamic_cast<CRegionBase*>(pRef);
+				if (pRegion)
+					sVal.FormatUid(static_cast<DWORD>(pRegion->GetResourceID()));
 				else
-					sVal.FormatUid(1);
+				{
+					CResourceDef* pResDef = dynamic_cast<CResourceDef*>(pRef);
+					if (pResDef)
+						sVal.Format("%s", pResDef->GetResourceName());
+					else
+						sVal.FormatUid(1);
+				}
 			}
 
 			return true;
