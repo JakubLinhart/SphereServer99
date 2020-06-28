@@ -611,6 +611,9 @@ bool Str_ParseExpressionArgument(TCHAR* pLine, TCHAR** ppLine2, LPCTSTR pszSep)
 		}
 	}
 
+	if (*pLine == '\0')
+		return false;
+
 	*pLine++ = '\0';
 	if (IsSpace(ch))	// space separators might have other seps as well ?
 	{
