@@ -33,3 +33,17 @@ public void ShouldBeTrue(string comment, bool result)
     else
         Fail(comment);
 }
+
+public void LastGumpInfo()
+{
+    UO.LastGumpInfo();
+
+    UO.Log("Texts:");
+    var i = 0;
+    foreach (var text in UO.CurrentGump.TextLines)
+    {
+        if (!string.IsNullOrEmpty(text))
+            UO.Log($"{i}: {text}");
+        i++;
+    }
+}

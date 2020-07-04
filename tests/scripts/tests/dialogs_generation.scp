@@ -20,6 +20,7 @@ argo.tag(argoId[tag(argoIndex)],9345)
 argo.dialog_prvni(955,960)
 arg(res,<argo.test_dialog_writeval(333,666)>)
 
+argo.setText(0,"this comes from setText")
 argo.setText(110,<arg(res)>)
 argo.text(<argo.dialog_textpos(0,0)>,0481,110)
 argo.textEntryA(<argo.dialog_textpos(10,40)>,150,20,152,1,110)
@@ -39,7 +40,28 @@ argo.gumppictiled 50 40 30 20 10
 checkertrans(10,10,600+20,430)
 argo.checkertrans 20 20 630 440
 
+arg(d_test_dialogs_variable,"this comes from setup variable")
+
 src.sysmessage("test_dialog done")
+
+[DIALOG d_test_dialogs_client_gump_generation text]
+this is static text
+Variable value: <?arg(d_test_dialogs_variable)?>
+
+[function test_dialogs_client_gump_settexts]
+serv.smsg "test_dialogs_client_gump_settexts\n"
+
+dialog(d_test_dialogs_client_gump_settexts)
+
+src.sysmessage "test_dialogs_client_gump_settexts done"
+serv.smsg "\n"
+
+[DIALOG d_test_dialogs_client_gump_settexts]
+argo.setText(0,"this is first text at index 0")
+argo.setText(10,"this is second text at index 10")
+
+argo.text(0,10,0481,0)
+argo.text(0,20,0481,10)
 
 [function test_dialog_return]
 return<args>

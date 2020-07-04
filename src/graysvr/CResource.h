@@ -9,118 +9,118 @@ class CClient;
 class CServerDef;
 class CWebPageDef;
 
-typedef CServerDef *CServerRef;
+typedef CServerDef* CServerRef;
 #define HRES_INVALID_INDEX false
 #define HRES_INVALID_HANDLE false
 
 enum OF_TYPE	// option flags
 {
-	OF_NoDClickTarget			= 0x00001,
-	OF_NoSmoothSailing			= 0x00002,
-	OF_ScaleDamageByDurability	= 0x00004,
-	OF_Command_Sysmsgs			= 0x00008,
-	OF_PetSlots					= 0x00010,
-	OF_OSIMultiSight			= 0x00020,
-	OF_Items_AutoName			= 0x00040,
-	OF_FileCommands				= 0x00080,
-	OF_NoItemNaming				= 0x00100,
-	OF_NoHouseMuteSpeech		= 0x00200,
-	OF_MapBoundarySailing		= 0x00800,
-	OF_Flood_Protection			= 0x01000,
-	OF_Buffs					= 0x02000,
-	OF_NoPrefix					= 0x04000,
-	OF_DyeType					= 0x08000,
-	OF_DrinkIsFood				= 0x10000,
-	OF_NoDClickTurn				= 0x20000
+	OF_NoDClickTarget = 0x00001,
+	OF_NoSmoothSailing = 0x00002,
+	OF_ScaleDamageByDurability = 0x00004,
+	OF_Command_Sysmsgs = 0x00008,
+	OF_PetSlots = 0x00010,
+	OF_OSIMultiSight = 0x00020,
+	OF_Items_AutoName = 0x00040,
+	OF_FileCommands = 0x00080,
+	OF_NoItemNaming = 0x00100,
+	OF_NoHouseMuteSpeech = 0x00200,
+	OF_MapBoundarySailing = 0x00800,
+	OF_Flood_Protection = 0x01000,
+	OF_Buffs = 0x02000,
+	OF_NoPrefix = 0x04000,
+	OF_DyeType = 0x08000,
+	OF_DrinkIsFood = 0x10000,
+	OF_NoDClickTurn = 0x20000
 };
 
 enum EF_TYPE	// experimental flags
 {
-	EF_NoDiagonalCheckLOS		= 0x00001,
-	EF_DynamicBackgroundSave	= 0x00002,
-	EF_ItemStacking				= 0x00004,
-	EF_ItemStackDrop			= 0x00008,
-	EF_FastWalkPrevention		= 0x00010,
-	EF_Intrinsic_Locals			= 0x00020,
-	EF_Item_Strict_Comparison	= 0x00040,
-	EF_AllowTelnetPacketFilter	= 0x00200,
-	EF_Script_Profiler			= 0x00400,
-	EF_UsePingServer			= 0x08000,
-	EF_FixCanSeeInClosedConts	= 0x20000
+	EF_NoDiagonalCheckLOS = 0x00001,
+	EF_DynamicBackgroundSave = 0x00002,
+	EF_ItemStacking = 0x00004,
+	EF_ItemStackDrop = 0x00008,
+	EF_FastWalkPrevention = 0x00010,
+	EF_Intrinsic_Locals = 0x00020,
+	EF_Item_Strict_Comparison = 0x00040,
+	EF_AllowTelnetPacketFilter = 0x00200,
+	EF_Script_Profiler = 0x00400,
+	EF_UsePingServer = 0x08000,
+	EF_FixCanSeeInClosedConts = 0x20000
 };
 
 enum MAGICFLAGS_TYPE
 {
-	MAGICF_NODIRCHANGE			= 0x0001,	// Not rotate player when casting/targeting
-	MAGICF_PRECAST				= 0x0002,	// Precasting (cast spell before target prompt)
-	MAGICF_IGNOREAR				= 0x0004,	// Magic damage ignore ar
-	MAGICF_CANHARMSELF			= 0x0008,	// Magic can do damage on self
-	MAGICF_STACKSTATS			= 0x0010,	// Different stat spells don't cancel each other out
-	MAGICF_FREEZEONCAST			= 0x0020,	// No movement whilst casting
-	MAGICF_SUMMONWALKCHECK		= 0x0040,	// Summoned creatures should be able to walk on the target location (e.g. water creatures to be summoned on water)
-	MAGICF_NOFIELDSOVERWALLS	= 0x0080,	// Field spells cannot cross over blocking objects
-	MAGICF_NOANIM				= 0x0100,	// Auto SPELLFLAG_NO_ANIM in every spell
-	MAGICF_OSIFORMULAS			= 0x0200,	// Calculate spell damage and duration based on OSI formulas
-	MAGICF_NOCASTFROZENHANDS	= 0x0400,	// Can't cast spells if got paralyzed holding something on hands
-	MAGICF_POLYMORPHSTATS		= 0x0800,	// Polymorph spells give out stats based on base chars (old behaviour backwards)
-	MAGICF_OVERRIDEFIELDS		= 0x1000	// Prevent cast multiple field spells on the same tile, making the new field tile remove the previous field
+	MAGICF_NODIRCHANGE = 0x0001,	// Not rotate player when casting/targeting
+	MAGICF_PRECAST = 0x0002,	// Precasting (cast spell before target prompt)
+	MAGICF_IGNOREAR = 0x0004,	// Magic damage ignore ar
+	MAGICF_CANHARMSELF = 0x0008,	// Magic can do damage on self
+	MAGICF_STACKSTATS = 0x0010,	// Different stat spells don't cancel each other out
+	MAGICF_FREEZEONCAST = 0x0020,	// No movement whilst casting
+	MAGICF_SUMMONWALKCHECK = 0x0040,	// Summoned creatures should be able to walk on the target location (e.g. water creatures to be summoned on water)
+	MAGICF_NOFIELDSOVERWALLS = 0x0080,	// Field spells cannot cross over blocking objects
+	MAGICF_NOANIM = 0x0100,	// Auto SPELLFLAG_NO_ANIM in every spell
+	MAGICF_OSIFORMULAS = 0x0200,	// Calculate spell damage and duration based on OSI formulas
+	MAGICF_NOCASTFROZENHANDS = 0x0400,	// Can't cast spells if got paralyzed holding something on hands
+	MAGICF_POLYMORPHSTATS = 0x0800,	// Polymorph spells give out stats based on base chars (old behaviour backwards)
+	MAGICF_OVERRIDEFIELDS = 0x1000	// Prevent cast multiple field spells on the same tile, making the new field tile remove the previous field
 };
 
 enum REVEALFLAGS_TYPE
 {
-	REVEALF_DETECTINGHIDDEN		= 0x01,		// Reveal when someone use Detecting Hidden skill
-	REVEALF_LOOTINGSELF			= 0x02,		// Reveal when loot self bodies
-	REVEALF_LOOTINGOTHERS		= 0x04,		// Reveal when loot others bodies
-	REVEALF_SPEAK				= 0x08,		// Reveal when speak
-	REVEALF_SPELLCAST			= 0x10		// Reveal when cast spells
+	REVEALF_DETECTINGHIDDEN = 0x01,		// Reveal when someone use Detecting Hidden skill
+	REVEALF_LOOTINGSELF = 0x02,		// Reveal when loot self bodies
+	REVEALF_LOOTINGOTHERS = 0x04,		// Reveal when loot others bodies
+	REVEALF_SPEAK = 0x08,		// Reveal when speak
+	REVEALF_SPELLCAST = 0x10		// Reveal when cast spells
 };
 
 enum CHATFLAGS_TYPE
 {
-	CHATF_AUTOJOIN				= 0x01,		// Auto join first static channel available (new chat system: join after client login / old chat system: join after open chat window)
-	CHATF_CHANNELCREATION		= 0x02,		// Enable channel creation
-	CHATF_CHANNELMODERATION		= 0x04,		// Enable channel moderation (old chat system only)
-	CHATF_CUSTOMNAMES			= 0x08,		// Enable custom name selection when open chat window for the first time (old chat system only)
-	CHATF_GLOBALCHAT			= 0x10		// Enable global chat system on clients >= 7.0.62.2 (INCOMPLETE)
+	CHATF_AUTOJOIN = 0x01,		// Auto join first static channel available (new chat system: join after client login / old chat system: join after open chat window)
+	CHATF_CHANNELCREATION = 0x02,		// Enable channel creation
+	CHATF_CHANNELMODERATION = 0x04,		// Enable channel moderation (old chat system only)
+	CHATF_CUSTOMNAMES = 0x08,		// Enable custom name selection when open chat window for the first time (old chat system only)
+	CHATF_GLOBALCHAT = 0x10		// Enable global chat system on clients >= 7.0.62.2 (INCOMPLETE)
 };
 
 enum RACIALFLAGS_TYPE
 {
-	RACIALF_HUMAN_STRONGBACK	= 0x001,	// Increase carrying capacity (+60 stones of weight)
-	RACIALF_HUMAN_TOUGH			= 0x002,	// Regenerate hitpoints faster (+2 Hit Point Regeneration)
-	RACIALF_HUMAN_WORKHORSE		= 0x004,	// Find more resources while gathering hides, ore and lumber
-	RACIALF_HUMAN_JACKOFTRADES	= 0x008,	// Skill calculations always consider 20.0 minimum ability on untrained skills
-	RACIALF_ELF_NIGHTSIGHT		= 0x010,	// Permanent night sight effect
-	RACIALF_ELF_DIFFTRACK		= 0x020,	// Increase difficulty to be tracked while hidden/invisible
-	RACIALF_ELF_WISDOM			= 0x040,	// Permanent max mana bonus (+20 Mana Increase)
-	RACIALF_GARG_FLY			= 0x080,	// Enable gargoyle fly ability (FEATURE_AOS_UPDATE_B is required to enable gargoyle ability book)
-	RACIALF_GARG_BERSERK		= 0x100,	// Increase ferocity in situations of danger (15% Damage Increase + 3% Spell Damage Increase for each 20hp lost)
-	RACIALF_GARG_DEADLYAIM		= 0x200,	// Throwing calculations always consider 20.0 minimum ability when untrained
-	RACIALF_GARG_MYSTICINSIGHT	= 0x400		// Mysticism calculations always consider 30.0 minimum ability when untrained
+	RACIALF_HUMAN_STRONGBACK = 0x001,	// Increase carrying capacity (+60 stones of weight)
+	RACIALF_HUMAN_TOUGH = 0x002,	// Regenerate hitpoints faster (+2 Hit Point Regeneration)
+	RACIALF_HUMAN_WORKHORSE = 0x004,	// Find more resources while gathering hides, ore and lumber
+	RACIALF_HUMAN_JACKOFTRADES = 0x008,	// Skill calculations always consider 20.0 minimum ability on untrained skills
+	RACIALF_ELF_NIGHTSIGHT = 0x010,	// Permanent night sight effect
+	RACIALF_ELF_DIFFTRACK = 0x020,	// Increase difficulty to be tracked while hidden/invisible
+	RACIALF_ELF_WISDOM = 0x040,	// Permanent max mana bonus (+20 Mana Increase)
+	RACIALF_GARG_FLY = 0x080,	// Enable gargoyle fly ability (FEATURE_AOS_UPDATE_B is required to enable gargoyle ability book)
+	RACIALF_GARG_BERSERK = 0x100,	// Increase ferocity in situations of danger (15% Damage Increase + 3% Spell Damage Increase for each 20hp lost)
+	RACIALF_GARG_DEADLYAIM = 0x200,	// Throwing calculations always consider 20.0 minimum ability when untrained
+	RACIALF_GARG_MYSTICINSIGHT = 0x400		// Mysticism calculations always consider 30.0 minimum ability when untrained
 };
 
 enum COMBATFLAGS_TYPE
 {
-	COMBAT_NODIRCHANGE			= 0x0001,	// Not rotate player when fighting (like was in 0.51a)
-	COMBAT_FACECOMBAT			= 0x0002,	// Allow faced combat only (recommended)
-	COMBAT_PREHIT				= 0x0004,	// Allow prehit for close combat. first hit is instant (delay 0.1sec)
-	COMBAT_ELEMENTAL_ENGINE		= 0x0008,	// Use DAM*/RES* to split damage/resist into Physical/Fire/Cold/Poison/Energy (AOS) instead use old AR (pre-AOS)
-	COMBAT_MAXITEMDURABILITY	= 0x0010,	// Make damageable items get destroyed when lose max durability instead current durability (OSI-like)
-	COMBAT_DCLICKSELF_UNMOUNTS	= 0x0020,	// Unmount horse when dclicking self while in warmode
-	COMBAT_ALLOWHITFROMSHIP		= 0x0040,	// Allow attacking opponents from ships
-	COMBAT_NOPETDESERT			= 0x0080,	// Allow pet owner attack own pet without make it desert its owner
-	COMBAT_ARCHERYCANMOVE		= 0x0100,	// Allow firing bow while moving
-	COMBAT_STAYINRANGE			= 0x0200,	// Abort attack swing when out of range instead of waiting to come back in range
-	COMBAT_ATTACKONNOTICE		= 0x0400,	// Make target instantly attack back when notice someone trying to attack it
-	COMBAT_NPC_NOATTACKMSG		= 0x0800,	// Disable *is attacking* message on NPCs
-	COMBAT_STACKARMOR			= 0x1000,	// If a region is covered by more than one armor part, all AR will count
-	COMBAT_NOPOISONHIT			= 0x2000	// Disables old (55i like) poisoning style (0~100% chance based on Poisoning skill for monsters, or 50% chance for poisoned weapons)
+	COMBAT_NODIRCHANGE = 0x0001,	// Not rotate player when fighting (like was in 0.51a)
+	COMBAT_FACECOMBAT = 0x0002,	// Allow faced combat only (recommended)
+	COMBAT_PREHIT = 0x0004,	// Allow prehit for close combat. first hit is instant (delay 0.1sec)
+	COMBAT_ELEMENTAL_ENGINE = 0x0008,	// Use DAM*/RES* to split damage/resist into Physical/Fire/Cold/Poison/Energy (AOS) instead use old AR (pre-AOS)
+	COMBAT_MAXITEMDURABILITY = 0x0010,	// Make damageable items get destroyed when lose max durability instead current durability (OSI-like)
+	COMBAT_DCLICKSELF_UNMOUNTS = 0x0020,	// Unmount horse when dclicking self while in warmode
+	COMBAT_ALLOWHITFROMSHIP = 0x0040,	// Allow attacking opponents from ships
+	COMBAT_NOPETDESERT = 0x0080,	// Allow pet owner attack own pet without make it desert its owner
+	COMBAT_ARCHERYCANMOVE = 0x0100,	// Allow firing bow while moving
+	COMBAT_STAYINRANGE = 0x0200,	// Abort attack swing when out of range instead of waiting to come back in range
+	COMBAT_ATTACKONNOTICE = 0x0400,	// Make target instantly attack back when notice someone trying to attack it
+	COMBAT_NPC_NOATTACKMSG = 0x0800,	// Disable *is attacking* message on NPCs
+	COMBAT_STACKARMOR = 0x1000,	// If a region is covered by more than one armor part, all AR will count
+	COMBAT_NOPOISONHIT = 0x2000	// Disables old (55i like) poisoning style (0~100% chance based on Poisoning skill for monsters, or 50% chance for poisoned weapons)
 };
 
 enum TOOLTIPMODE_TYPE
 {
-	TOOLTIPMODE_SENDFULL		= 0x0,		// Always send full tooltip
-	TOOLTIPMODE_SENDVERSION		= 0x1		// Send only tooltip version and wait for client to request full tooltip
+	TOOLTIPMODE_SENDFULL = 0x0,		// Always send full tooltip
+	TOOLTIPMODE_SENDVERSION = 0x1		// Send only tooltip version and wait for client to request full tooltip
 };
 
 #define DAMAGE_GOD			0x00001	// Nothing can block this.
@@ -185,8 +185,8 @@ public:
 	}
 	int GetRandomLinear(int iPercent) const;
 
-	bool Load(TCHAR *pszDef);
-	const TCHAR *Write() const;
+	bool Load(TCHAR* pszDef);
+	const TCHAR* Write() const;
 };
 
 ///////////////////////////////////////////////////////////
@@ -215,12 +215,12 @@ public:
 	int GetRandom() const;
 	int GetRandomLinear(int iPercent) const;
 
-	bool Load(TCHAR *pszDef);
-	const TCHAR *Write() const;
+	bool Load(TCHAR* pszDef);
+	const TCHAR* Write() const;
 
 private:
-	CValueCurveDef(const CValueCurveDef &copy);
-	CValueCurveDef &operator=(const CValueCurveDef &other);
+	CValueCurveDef(const CValueCurveDef& copy);
+	CValueCurveDef& operator=(const CValueCurveDef& other);
 };
 
 ///////////////////////////////////////////////////////////
@@ -231,7 +231,7 @@ class CCharRefArray
 	// List of Players and NPC's involved in the quest/party/account etc..
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 
 	CCharRefArray() { };
 
@@ -239,13 +239,13 @@ private:
 	CGTypedArray< CGrayUID, CGrayUID> m_uidCharArray;
 
 public:
-	size_t FindChar(const CChar *pChar) const;
-	size_t AttachChar(const CChar *pChar);
-	size_t InsertChar(const CChar *pChar, size_t i);
+	size_t FindChar(const CChar* pChar) const;
+	size_t AttachChar(const CChar* pChar);
+	size_t InsertChar(const CChar* pChar, size_t i);
 	void DetachChar(size_t i);
-	size_t DetachChar(const CChar *pChar);
+	size_t DetachChar(const CChar* pChar);
 	void DeleteChars();
-	void WritePartyChars(CScript &s);
+	void WritePartyChars(CScript& s);
 
 	CGrayUID GetChar(size_t i) const
 	{
@@ -256,7 +256,7 @@ public:
 		return m_uidCharArray.GetCount();
 	}
 
-	bool IsCharIn(const CChar *pChar) const
+	bool IsCharIn(const CChar* pChar) const
 	{
 		return (FindChar(pChar) != m_uidCharArray.BadIndex());
 	}
@@ -271,8 +271,8 @@ public:
 	}
 
 private:
-	CCharRefArray(const CCharRefArray &copy);
-	CCharRefArray &operator=(const CCharRefArray &other);
+	CCharRefArray(const CCharRefArray& copy);
+	CCharRefArray& operator=(const CCharRefArray& other);
 };
 
 ///////////////////////////////////////////////////////////
@@ -293,7 +293,7 @@ class CRegionResourceDef : public CResourceLink
 	// When mining/lumberjacking etc. What can we get?
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 	static LPCTSTR const sm_szLoadKeys[];
 	static LPCTSTR const sm_szTrigName[RRTRIG_QTY + 1];
 
@@ -308,13 +308,13 @@ public:
 	CValueCurveDef m_iRegenerateTime;	// TICK_PER_SEC once found how long to regen this type.
 
 public:
-	TRIGRET_TYPE OnTrigger(LPCTSTR pszTrigName, CTextConsole *pSrc, CScriptTriggerArgs *pArgs);
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc = NULL);
+	TRIGRET_TYPE OnTrigger(LPCTSTR pszTrigName, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc = NULL);
 
 private:
-	CRegionResourceDef(const CRegionResourceDef &copy);
-	CRegionResourceDef &operator=(const CRegionResourceDef &other);
+	CRegionResourceDef(const CRegionResourceDef& copy);
+	CRegionResourceDef& operator=(const CRegionResourceDef& other);
 };
 
 ///////////////////////////////////////////////////////////
@@ -338,7 +338,7 @@ class CSpellDef : public CResourceLink	// 1 based spells. See SPELL_*
 	// RES_SPELL
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 	static LPCTSTR const sm_szTrigName[SPTRIG_QTY + 1];
 	static LPCTSTR const sm_szLoadKeys[];
 
@@ -346,35 +346,35 @@ public:
 	virtual ~CSpellDef() { }
 
 private:
-	#define SPELLFLAG_DIR_ANIM			0x00000001	// Evoke type cast or directed. (animation)
-	#define SPELLFLAG_TARG_ITEM			0x00000002	// Need to target an object
-	#define SPELLFLAG_TARG_CHAR			0x00000004	// Needs to target a living thing
-	#define SPELLFLAG_TARG_OBJ			(SPELLFLAG_TARG_ITEM|SPELLFLAG_TARG_CHAR)
-	#define SPELLFLAG_TARG_XYZ			0x00000008	// Can just target a location.
-	#define SPELLFLAG_HARM				0x00000010	// The spell is in some way harmfull.
-	#define SPELLFLAG_FX_BOLT			0x00000020	// Effect is a bolt to the target.
-	#define SPELLFLAG_FX_TARG			0x00000040	// Effect is at the target.
-	#define SPELLFLAG_FIELD				0x00000080	// create a field of stuff. (fire,poison,wall)
-	#define SPELLFLAG_SUMMON			0x00000100	// summon a creature.
-	#define SPELLFLAG_GOOD				0x00000200	// The spell is a good spell. u intend to help to receiver.
-	#define SPELLFLAG_RESIST			0x00000400	// Allowed to resist this.
-	#define SPELLFLAG_TARG_NOSELF		0x00000800
-	#define SPELLFLAG_DISABLED			0x00008000
-	#define SPELLFLAG_SCRIPTED			0x00010000
-	#define SPELLFLAG_PLAYERONLY		0x00020000	// casted by players only
-	#define SPELLFLAG_NOUNPARALYZE		0x00040000	// casted by players only
-	#define SPELLFLAG_NO_CASTANIM		0x00080000	// play no anim while casting (also override SPELLFLAG_DIR_ANIM)
-	#define SPELLFLAG_TARG_NO_PLAYER	0x00100000	// if a char may be targetted, it may not be a player
-	#define SPELLFLAG_TARG_NO_NPC		0x00200000	// if a char may be targetted, it may not be an NPC
-	#define SPELLFLAG_NOPRECAST			0x00400000	// disable precasting for this spell
-	#define SPELLFLAG_NOFREEZEONCAST	0x00800000	// disable freeze on cast for this spell
-	#define SPELLFLAG_AREA				0x01000000	// area effect (uses local.arearadius)
-	#define SPELLFLAG_POLY				0x02000000
-	#define SPELLFLAG_TARG_DEAD			0x04000000	// allowed to targ dead chars
-	#define SPELLFLAG_DAMAGE			0x08000000	// damage intended
-	#define SPELLFLAG_BLESS				0x10000000	// Benefitial spells like Bless, Agility, etc
-	#define SPELLFLAG_CURSE				0x20000000	// Curses just like Weaken, Purge Magic, Curse, etc
-	#define SPELLFLAG_HEAL				0x40000000	// Healing spell
+#define SPELLFLAG_DIR_ANIM			0x00000001	// Evoke type cast or directed. (animation)
+#define SPELLFLAG_TARG_ITEM			0x00000002	// Need to target an object
+#define SPELLFLAG_TARG_CHAR			0x00000004	// Needs to target a living thing
+#define SPELLFLAG_TARG_OBJ			(SPELLFLAG_TARG_ITEM|SPELLFLAG_TARG_CHAR)
+#define SPELLFLAG_TARG_XYZ			0x00000008	// Can just target a location.
+#define SPELLFLAG_HARM				0x00000010	// The spell is in some way harmfull.
+#define SPELLFLAG_FX_BOLT			0x00000020	// Effect is a bolt to the target.
+#define SPELLFLAG_FX_TARG			0x00000040	// Effect is at the target.
+#define SPELLFLAG_FIELD				0x00000080	// create a field of stuff. (fire,poison,wall)
+#define SPELLFLAG_SUMMON			0x00000100	// summon a creature.
+#define SPELLFLAG_GOOD				0x00000200	// The spell is a good spell. u intend to help to receiver.
+#define SPELLFLAG_RESIST			0x00000400	// Allowed to resist this.
+#define SPELLFLAG_TARG_NOSELF		0x00000800
+#define SPELLFLAG_DISABLED			0x00008000
+#define SPELLFLAG_SCRIPTED			0x00010000
+#define SPELLFLAG_PLAYERONLY		0x00020000	// casted by players only
+#define SPELLFLAG_NOUNPARALYZE		0x00040000	// casted by players only
+#define SPELLFLAG_NO_CASTANIM		0x00080000	// play no anim while casting (also override SPELLFLAG_DIR_ANIM)
+#define SPELLFLAG_TARG_NO_PLAYER	0x00100000	// if a char may be targetted, it may not be a player
+#define SPELLFLAG_TARG_NO_NPC		0x00200000	// if a char may be targetted, it may not be an NPC
+#define SPELLFLAG_NOPRECAST			0x00400000	// disable precasting for this spell
+#define SPELLFLAG_NOFREEZEONCAST	0x00800000	// disable freeze on cast for this spell
+#define SPELLFLAG_AREA				0x01000000	// area effect (uses local.arearadius)
+#define SPELLFLAG_POLY				0x02000000
+#define SPELLFLAG_TARG_DEAD			0x04000000	// allowed to targ dead chars
+#define SPELLFLAG_DAMAGE			0x08000000	// damage intended
+#define SPELLFLAG_BLESS				0x10000000	// Benefitial spells like Bless, Agility, etc
+#define SPELLFLAG_CURSE				0x20000000	// Curses just like Weaken, Purge Magic, Curse, etc
+#define SPELLFLAG_HEAL				0x40000000	// Healing spell
 	DWORD m_dwFlags;
 
 	DWORD m_dwGroup;
@@ -411,14 +411,14 @@ public:
 		return m_sName;
 	}
 
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 
-	bool GetPrimarySkill(int *piSkill = NULL, int *piQty = NULL) const;
+	bool GetPrimarySkill(int* piSkill = NULL, int* piQty = NULL) const;
 
 private:
-	CSpellDef(const CSpellDef &copy);
-	CSpellDef &operator=(const CSpellDef &other);
+	CSpellDef(const CSpellDef& copy);
+	CSpellDef& operator=(const CSpellDef& other);
 };
 
 ///////////////////////////////////////////////////////////
@@ -430,7 +430,7 @@ class CRandGroupDef : public CResourceLink
 	// RES_SPAWN or RES_REGIONTYPE
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 	static LPCTSTR const sm_szLoadKeys[];
 
 	explicit CRandGroupDef(RESOURCE_ID rid) : CResourceLink(rid)
@@ -452,8 +452,8 @@ private:
 	int CalcTotalWeight();
 
 public:
-	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	virtual bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
+	virtual bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 
 	CResourceQty GetMember(size_t i) const
 	{
@@ -464,15 +464,15 @@ public:
 		return m_Members[i].GetResourceID();
 	}
 
-	size_t GetRandMemberIndex(CChar *pCharSrc = NULL, bool fTrigger = true) const;
+	size_t GetRandMemberIndex(CChar* pCharSrc = NULL, bool fTrigger = true) const;
 	size_t BadMemberIndex() const
 	{
 		return m_Members.BadIndex();
 	}
 
 private:
-	CRandGroupDef(const CRandGroupDef &copy);
-	CRandGroupDef &operator=(const CRandGroupDef &other);
+	CRandGroupDef(const CRandGroupDef& copy);
+	CRandGroupDef& operator=(const CRandGroupDef& other);
 };
 
 ///////////////////////////////////////////////////////////
@@ -504,7 +504,7 @@ class CSkillClassDef : public CResourceLink // For skill def table
 	// RES_SKILLCLASS
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 	static LPCTSTR const sm_szLoadKeys[];
 
 	explicit CSkillClassDef(RESOURCE_ID rid) : CResourceLink(rid)
@@ -525,8 +525,8 @@ private:
 	void Init();
 
 public:
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
 
 	LPCTSTR GetName() const
 	{
@@ -534,8 +534,8 @@ public:
 	}
 
 private:
-	CSkillClassDef(const CSkillClassDef &copy);
-	CSkillClassDef &operator=(const CSkillClassDef &other);
+	CSkillClassDef(const CSkillClassDef& copy);
+	CSkillClassDef& operator=(const CSkillClassDef& other);
 };
 
 ///////////////////////////////////////////////////////////
@@ -561,18 +561,18 @@ enum SKTRIG_TYPE
 
 enum SKF_TYPE
 {
-	SKF_SCRIPTED	= 0x001,	// Fully scripted, no hardcoded behaviour
-	SKF_FIGHT		= 0x002,	// Considered a fight skill, maintains fight active
-	SKF_MAGIC		= 0x004,	// Considered a magic skill
-	SKF_CRAFT		= 0x008,	// Considered a crafting skill, compatible with MAKEITEM function
-	SKF_IMMOBILE	= 0x010,	// Fails skill if character moves
-	SKF_SELECTABLE	= 0x020,	// Allows skill to be selected from the skill menu
-	SKF_NOMINDIST	= 0x040,	// You can mine, fish, chop, hack on the same point you are standing on
-	SKF_NOANIM		= 0x080,	// Prevents hardcoded animation from playing
-	SKF_NOSFX		= 0x100,	// Prevents hardcoded sound from playing
-	SKF_RANGED		= 0x200,	// Considered a ranged skill (combine with SKF_FIGHT)
-	SKF_GATHER		= 0x400,	// Considered a gathering skill, using SkillStrokes as SKF_CRAFT
-	SKF_DISABLED	= 0x800		// Disabled skill, can't be used.
+	SKF_SCRIPTED = 0x001,	// Fully scripted, no hardcoded behaviour
+	SKF_FIGHT = 0x002,	// Considered a fight skill, maintains fight active
+	SKF_MAGIC = 0x004,	// Considered a magic skill
+	SKF_CRAFT = 0x008,	// Considered a crafting skill, compatible with MAKEITEM function
+	SKF_IMMOBILE = 0x010,	// Fails skill if character moves
+	SKF_SELECTABLE = 0x020,	// Allows skill to be selected from the skill menu
+	SKF_NOMINDIST = 0x040,	// You can mine, fish, chop, hack on the same point you are standing on
+	SKF_NOANIM = 0x080,	// Prevents hardcoded animation from playing
+	SKF_NOSFX = 0x100,	// Prevents hardcoded sound from playing
+	SKF_RANGED = 0x200,	// Considered a ranged skill (combine with SKF_FIGHT)
+	SKF_GATHER = 0x400,	// Considered a gathering skill, using SkillStrokes as SKF_CRAFT
+	SKF_DISABLED = 0x800		// Disabled skill, can't be used.
 };
 
 struct CSkillDef : public CResourceLink
@@ -612,8 +612,8 @@ public:
 	BYTE m_StatBonus[STAT_BASE_QTY];	// % of each stat toward success at skill, total 100
 
 public:
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScriptTriggerArgs* pArgs);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 
 	LPCTSTR GetKey() const
 	{
@@ -625,20 +625,20 @@ public:
 	}
 
 private:
-	CSkillDef(const CSkillDef &copy);
-	CSkillDef &operator=(const CSkillDef &other);
+	CSkillDef(const CSkillDef& copy);
+	CSkillDef& operator=(const CSkillDef& other);
 };
 
 ///////////////////////////////////////////////////////////
 // CSkillKeySortArray
 
-class CSkillKeySortArray : public CGObSortArray<CValStr *, LPCTSTR>
+class CSkillKeySortArray : public CGObSortArray<CValStr*, LPCTSTR>
 {
 public:
 	CSkillKeySortArray() { };
 
 public:
-	int CompareKey(LPCTSTR pszKey, CValStr *pVal, bool fNoSpaces) const
+	int CompareKey(LPCTSTR pszKey, CValStr* pVal, bool fNoSpaces) const
 	{
 		UNREFERENCED_PARAMETER(fNoSpaces);
 		ASSERT(pszKey);
@@ -647,18 +647,18 @@ public:
 	}
 
 private:
-	CSkillKeySortArray(const CSkillKeySortArray &copy);
-	CSkillKeySortArray &operator=(const CSkillKeySortArray &other);
+	CSkillKeySortArray(const CSkillKeySortArray& copy);
+	CSkillKeySortArray& operator=(const CSkillKeySortArray& other);
 };
 
 ///////////////////////////////////////////////////////////
 // CMultiDefArray
 
-struct CMultiDefArray : public CGObSortArray<CGrayMulti *, MULTI_TYPE>
+struct CMultiDefArray : public CGObSortArray<CGrayMulti*, MULTI_TYPE>
 {
 	// Store the static components of a IT_MULTI
 	// Sorted array
-	int CompareKey(MULTI_TYPE id, CGrayMulti *pBase, bool fNoSpaces) const
+	int CompareKey(MULTI_TYPE id, CGrayMulti* pBase, bool fNoSpaces) const
 	{
 		UNREFERENCED_PARAMETER(fNoSpaces);
 		ASSERT(pBase);
@@ -674,7 +674,7 @@ extern class CResource : public CResourceBase
 	// Script defined resources (not saved in world file)
 
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 	static const CAssocReg sm_szLoadKeys[];
 
 	CResource();
@@ -698,15 +698,15 @@ public:
 	int m_iFreezeRestartTime;				// # seconds before restarting.
 
 #ifdef _DEBUG
-	#define DEBUGF_NPC_EMOTE		0x0001
-	#define DEBUGF_ADVANCE_STATS	0x0002
-	#define DEBUGF_EXP				0x0200	// experience gain/loss
-	#define DEBUGF_LEVEL			0x0400	// experience level changes
-	#define DEBUGF_SCRIPTS			0x0800	// debug flags for scripts
-	#define DEBUGF_LOS				0x1000	// debug flags for AdvancedLOS
-	#define DEBUGF_WALK				0x2000	// debug flags for Walking stuff
-	#define DEBUGF_PACKETS			0x4000	// log packets to file
-	#define DEBUGF_NETWORK			0x8000	// debug flags for networking
+#define DEBUGF_NPC_EMOTE		0x0001
+#define DEBUGF_ADVANCE_STATS	0x0002
+#define DEBUGF_EXP				0x0200	// experience gain/loss
+#define DEBUGF_LEVEL			0x0400	// experience level changes
+#define DEBUGF_SCRIPTS			0x0800	// debug flags for scripts
+#define DEBUGF_LOS				0x1000	// debug flags for AdvancedLOS
+#define DEBUGF_WALK				0x2000	// debug flags for Walking stuff
+#define DEBUGF_PACKETS			0x4000	// log packets to file
+#define DEBUGF_NETWORK			0x8000	// debug flags for networking
 	WORD m_wDebugFlags;						// DEBUG In game effects to turn on and off.
 #endif
 
@@ -872,9 +872,9 @@ public:
 	int m_iOverSkillMultiply;				// Multiplier to get over skillclass
 	bool m_fSuppressCapitals;				// Enable/Disable capital letters suppression
 
-	#define ADVANCEDLOS_DISABLED	0x0
-	#define ADVANCEDLOS_PLAYER		0x1
-	#define ADVANCEDLOS_NPC			0x2
+#define ADVANCEDLOS_DISABLED	0x0
+#define ADVANCEDLOS_PLAYER		0x1
+#define ADVANCEDLOS_NPC			0x2
 	int m_iAdvancedLos;
 
 	int m_iFeatureT2A;
@@ -889,37 +889,37 @@ public:
 
 	int m_iMaxLoopTimes;
 
-	#define STAT_FLAG_NORMAL		0x0		// MAX* status allowed (default)
-	#define STAT_FLAG_DENYMAX		0x1		// MAX* denied
-	#define STAT_FLAG_DENYMAXP		0x2		//		.. for players
-	#define STAT_FLAG_DENYMAXN		0x4		//		.. for npcs
+#define STAT_FLAG_NORMAL		0x0		// MAX* status allowed (default)
+#define STAT_FLAG_DENYMAX		0x1		// MAX* denied
+#define STAT_FLAG_DENYMAXP		0x2		//		.. for players
+#define STAT_FLAG_DENYMAXN		0x4		//		.. for npcs
 	int m_iStatFlag;
 
-	#define NPC_AI_PATH				0x001	// Enable advanced NPC pathfinding engine (this can significantly increase server CPU usage)
-	#define NPC_AI_FOOD				0x002	// Enable basic NPC food search (objects + grass) when hungry
-	#define NPC_AI_EXTRA			0x004	// Make NPCs human (brain_human) equip/unequip weapons on combat or light sources at night
-	#define NPC_AI_ALWAYSINT		0x008	// Make NPC_AI_PATH consider all NPCs as smart as possible to find better paths
-	#define NPC_AI_INTFOOD			0x010	// Enable advanced NPC food search (more intelligent and trusworthy) when hungry
-	#define NPC_AI_COMBAT			0x040	// Make NPCs cast good spells in his friends while in combat
-	#define NPC_AI_LOOTING			0x100	// Make NPCs loot nearby corpses and items on ground
-	#define NPC_AI_MOVEOBSTACLES	0x200	// Make NPCs with CAN=mt_usehands able to move items blocking its way
-	#define NPC_AI_PERSISTENTPATH	0x400	// Make NPCs try to follow its target even when it is unreachable instead give up
-	#define NPC_AI_THREAT			0x800	// Make NPCs select combat target based on highest threat level (damage done) instead closest distance
+#define NPC_AI_PATH				0x001	// Enable advanced NPC pathfinding engine (this can significantly increase server CPU usage)
+#define NPC_AI_FOOD				0x002	// Enable basic NPC food search (objects + grass) when hungry
+#define NPC_AI_EXTRA			0x004	// Make NPCs human (brain_human) equip/unequip weapons on combat or light sources at night
+#define NPC_AI_ALWAYSINT		0x008	// Make NPC_AI_PATH consider all NPCs as smart as possible to find better paths
+#define NPC_AI_INTFOOD			0x010	// Enable advanced NPC food search (more intelligent and trusworthy) when hungry
+#define NPC_AI_COMBAT			0x040	// Make NPCs cast good spells in his friends while in combat
+#define NPC_AI_LOOTING			0x100	// Make NPCs loot nearby corpses and items on ground
+#define NPC_AI_MOVEOBSTACLES	0x200	// Make NPCs with CAN=mt_usehands able to move items blocking its way
+#define NPC_AI_PERSISTENTPATH	0x400	// Make NPCs try to follow its target even when it is unreachable instead give up
+#define NPC_AI_THREAT			0x800	// Make NPCs select combat target based on highest threat level (damage done) instead closest distance
 	int m_iNpcAi;
 
 	// Experience system
 	bool m_bExperienceSystem;
-	#define EXP_MODE_RAISE_COMBAT	0x01
-	#define EXP_MODE_RAISE_CRAFT	0x02
-	#define EXP_MODE_ALLOW_DOWN		0x04
-	#define EXP_MODE_DOWN_NOLEVEL	0x08
-	#define EXP_MODE_AUTOSET_EXP	0x10
+#define EXP_MODE_RAISE_COMBAT	0x01
+#define EXP_MODE_RAISE_CRAFT	0x02
+#define EXP_MODE_ALLOW_DOWN		0x04
+#define EXP_MODE_DOWN_NOLEVEL	0x08
+#define EXP_MODE_AUTOSET_EXP	0x10
 	int m_iExperienceMode;
 	int m_iExperienceKoefPVP;
 	int m_iExperienceKoefPVM;
 	bool m_bLevelSystem;
-	#define LEVEL_MODE_LINEAR		0
-	#define LEVEL_MODE_DOUBLE		1
+#define LEVEL_MODE_LINEAR		0
+#define LEVEL_MODE_DOUBLE		1
 	int m_iLevelMode;
 	unsigned int m_iLevelNextAt;
 
@@ -999,20 +999,20 @@ public:
 	CStringSortArray m_ResourceList;				// Sections lists
 
 	CStringSortArray m_Obscene;						// Bad Names/Words etc.
-	CGObArray<CGString *> m_Fame;					// fame titles (fame.famous)
-	CGObArray<CGString *> m_Karma;					// karma titles (karma.wicked)
-	CGObArray<CGString *> m_Runes;					// Words of power. (A-Z)
+	CGObArray<CGString*> m_Fame;					// fame titles (fame.famous)
+	CGObArray<CGString*> m_Karma;					// karma titles (karma.wicked)
+	CGObArray<CGString*> m_Runes;					// Words of power. (A-Z)
 
 	CGTypedArray<int, int> m_NotoKarmaLevels;		// karma levels for noto titles
 	CGTypedArray<int, int> m_NotoFameLevels;		// fame levels for noto titles
-	CGObArray<CGString *> m_NotoTitles;				// Noto titles.
+	CGObArray<CGString*> m_NotoTitles;				// Noto titles.
 
 	CMultiDefArray m_MultiDefs;						// read from the MUL files. Cached here on demand.
 
 	CObNameSortArray m_SkillNameDefs;				// const CSkillDef* Name sorted
-	CGPtrTypeArray<CSkillDef *> m_SkillIndexDefs;	// Defined Skills indexed by number
-	CGObArray<CSpellDef *> m_SpellDefs;				// Defined Spells
-	CGPtrTypeArray<CSpellDef *> m_SpellDefs_Sorted;	// Defined Spells, in skill order
+	CGPtrTypeArray<CSkillDef*> m_SkillIndexDefs;	// Defined Skills indexed by number
+	CGObArray<CSpellDef*> m_SpellDefs;				// Defined Spells
+	CGPtrTypeArray<CSpellDef*> m_SpellDefs_Sorted;	// Defined Spells, in skill order
 
 	CStringSortArray m_PrivCommands[PLEVEL_QTY];	// what command are allowed for a priv level?
 
@@ -1023,17 +1023,17 @@ public:
 	CRegionLinks m_RegionDefs;
 
 	// static definition stuff from *TABLE.SCP mostly.
-	CGObArray<const CStartLoc *> m_StartDefs;
+	CGObArray<const CStartLoc*> m_StartDefs;
 	CValueCurveDef m_StatAdv[STAT_BASE_QTY];
-	CGTypedArray<CPointBase, CPointBase &> m_MoonGates;
+	CGTypedArray<CPointBase, CPointBase&> m_MoonGates;
 
 private:
-	RESOURCE_ID ResourceGetNewID(RES_TYPE restype, LPCTSTR pszName, CVarDefContNum **ppVarNum, bool fNewStyleDef);
+	RESOURCE_ID ResourceGetNewID(RES_TYPE restype, LPCTSTR pszName, CVarDefContNum** ppVarNum, bool fNewStyleDef);
 
 public:
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
-	bool r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc);
-	bool r_GetRef(LPCTSTR &pszKey, CScriptObj *&pRef);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc);
+	bool r_GetRef(LPCTSTR& pszKey, CScriptObj*& pRef);
 	bool r_GetRef(LPCTSTR pszResType, LPCTSTR pszKey, CScriptObj*& pRef);
 	bool r_GetAnyRef(LPCTSTR pszKey, CScriptObj*& pRef);
 	bool r_GetCharDefRef(LPCTSTR pszKey, CScriptObj*& pRef);
@@ -1045,71 +1045,71 @@ public:
 	void Unload(bool fResync);
 	void OnTick(bool fNow);
 
-	bool LoadResourceSection(CScript *pScript);
+	bool LoadResourceSection(CScript* pScript);
 	void LoadSortSpells();
-	CResourceDef *ResourceGetDef(RESOURCE_ID_BASE rid) const;
+	CResourceDef* ResourceGetDef(RESOURCE_ID_BASE rid) const;
 
 	// Specialized resource accessors.
 
-	bool CanUsePrivVerb(const CScriptObj *pObjTarg, LPCTSTR pszCmd, CTextConsole *pSrc) const;
+	bool CanUsePrivVerb(const CScriptObj* pObjTarg, LPCTSTR pszCmd, CTextConsole* pSrc) const;
 	PLEVEL_TYPE GetPrivCommandLevel(LPCTSTR pszCmd) const;
 
 	static STAT_TYPE FindStatKey(LPCTSTR pszKey);
 	bool IsObscene(LPCTSTR pszText) const;
 
-	CWebPageDef *FindWebPage(LPCTSTR pszPath) const;
+	CWebPageDef* FindWebPage(LPCTSTR pszPath) const;
 
 	CServerRef Server_GetDef(size_t index);
 
-	const CSpellDef *GetSpellDef(SPELL_TYPE spell) const
+	const CSpellDef* GetSpellDef(SPELL_TYPE spell) const
 	{
-		if ( (spell == SPELL_NONE) || !m_SpellDefs.IsValidIndex(static_cast<size_t>(spell)) )
+		if ((spell == SPELL_NONE) || !m_SpellDefs.IsValidIndex(static_cast<size_t>(spell)))
 			return NULL;
 		return m_SpellDefs[static_cast<size_t>(spell)];
 	}
-	CSpellDef *GetSpellDef(SPELL_TYPE spell)
+	CSpellDef* GetSpellDef(SPELL_TYPE spell)
 	{
-		if ( (spell == SPELL_NONE) || !m_SpellDefs.IsValidIndex(static_cast<size_t>(spell)) )
+		if ((spell == SPELL_NONE) || !m_SpellDefs.IsValidIndex(static_cast<size_t>(spell)))
 			return NULL;
 		return m_SpellDefs[static_cast<size_t>(spell)];
 	}
 
 	LPCTSTR GetSkillKey(SKILL_TYPE skill) const
 	{
-		if ( (skill == SKILL_NONE) || !m_SkillIndexDefs.IsValidIndex(static_cast<size_t>(skill)) )
+		if ((skill == SKILL_NONE) || !m_SkillIndexDefs.IsValidIndex(static_cast<size_t>(skill)))
 			return NULL;
 		return m_SkillIndexDefs[static_cast<size_t>(skill)]->GetKey();
 	}
 
 	bool IsSkillFlag(SKILL_TYPE skill, SKF_TYPE flags) const
 	{
-		const CSkillDef *pSkillDef = GetSkillDef(skill);
+		const CSkillDef* pSkillDef = GetSkillDef(skill);
 		return (pSkillDef && (pSkillDef->m_dwFlags & flags));
 	}
 
-	const CSkillDef *GetSkillDef(SKILL_TYPE skill) const
+	const CSkillDef* GetSkillDef(SKILL_TYPE skill) const
 	{
-		if ( (skill == SKILL_NONE) || !m_SkillIndexDefs.IsValidIndex(static_cast<size_t>(skill)) )
+		if ((skill == SKILL_NONE) || !m_SkillIndexDefs.IsValidIndex(static_cast<size_t>(skill)))
 			return NULL;
 		return m_SkillIndexDefs[static_cast<size_t>(skill)];
 	}
 
-	CSkillDef *GetSkillDef(SKILL_TYPE skill)
+	CSkillDef* GetSkillDef(SKILL_TYPE skill)
 	{
-		if ( (skill == SKILL_NONE) || !m_SkillIndexDefs.IsValidIndex(static_cast<size_t>(skill)) )
+		if ((skill == SKILL_NONE) || !m_SkillIndexDefs.IsValidIndex(static_cast<size_t>(skill)))
 			return NULL;
 		return m_SkillIndexDefs[static_cast<size_t>(skill)];
 	}
 
-	const CSkillDef *FindSkillDef(LPCTSTR pszKey) const
+	const CSkillDef* FindSkillDef(LPCTSTR pszKey) const
 	{
 		// Find the skill name in the alpha sorted list
 		size_t i = m_SkillNameDefs.FindKey(pszKey);
-		if ( i == m_SkillNameDefs.BadIndex() )
+		if (i == m_SkillNameDefs.BadIndex())
 			return NULL;
-		return static_cast<const CSkillDef *>(m_SkillNameDefs[i]);
+		return static_cast<const CSkillDef*>(m_SkillNameDefs[i]);
 	}
-	const CSkillDef *SkillLookup(LPCTSTR pszKey);
+	const CSkillDef* SkillLookup(LPCTSTR pszKey);
 	SKILL_TYPE FindSkillKey(LPCTSTR pszKey) const;
 
 	int GetSpellEffect(SPELL_TYPE spell, int iSkillval) const;
@@ -1117,32 +1117,32 @@ public:
 	LPCTSTR GetRune(TCHAR ch) const
 	{
 		size_t index = static_cast<size_t>(toupper(ch)) - 'A';
-		if ( !m_Runes.IsValidIndex(index) )
+		if (!m_Runes.IsValidIndex(index))
 			return "?";
 		return m_Runes[index]->GetPtr();
 	}
 
 	LPCTSTR GetNotoTitle(int index, bool fFemale) const;
 
-	const CGrayMulti *GetMultiItemDefs(CItem *pItem);
-	const CGrayMulti *GetMultiItemDefs(ITEMID_TYPE itemid);
+	const CGrayMulti* GetMultiItemDefs(CItem* pItem);
+	const CGrayMulti* GetMultiItemDefs(ITEMID_TYPE itemid);
 
 	bool IsConsoleCmd(TCHAR ch) const;
 
 	CPointMap GetRegionPoint(LPCTSTR pszCmd) const;		// Decode a teleport location number into X/Y/Z
-	CRegionBase *GetRegion(LPCTSTR pszKey) const;		// Find a region with the given name/defname
+	CRegionBase* GetRegion(LPCTSTR pszKey) const;		// Find a region with the given name/defname
 
-	int Calc_MaxCarryWeight(const CChar *pChar) const;
-	int Calc_CombatAttackSpeed(CChar *pChar, CItem *pWeapon);
-	int Calc_CombatChanceToHit(CChar *pChar, CChar *pCharTarg);
-	int Calc_StealingItem(CChar *pCharThief, CItem *pItem, CChar *pCharMark);
-	bool Calc_CrimeSeen(CChar *pCharThief, CChar *pCharViewer, SKILL_TYPE SkillToSee, bool fBonus);
-	int Calc_FameKill(CChar *pKill);
-	int Calc_KarmaKill(CChar *pKill, NOTO_TYPE NotoThem);
+	int Calc_MaxCarryWeight(const CChar* pChar) const;
+	int Calc_CombatAttackSpeed(CChar* pChar, CItem* pWeapon);
+	int Calc_CombatChanceToHit(CChar* pChar, CChar* pCharTarg);
+	int Calc_StealingItem(CChar* pCharThief, CItem* pItem, CChar* pCharMark);
+	bool Calc_CrimeSeen(CChar* pCharThief, CChar* pCharViewer, SKILL_TYPE SkillToSee, bool fBonus);
+	int Calc_FameKill(CChar* pKill);
+	int Calc_KarmaKill(CChar* pKill, NOTO_TYPE NotoThem);
 	int Calc_KarmaScale(int iKarma, int iKarmaChange);
 	LPCTSTR Calc_MaptoSextant(CPointMap pt);
 
-	#define SysMessageDefault(pszKey)		SysMessage(g_Cfg.GetDefaultMsg(pszKey))
+#define SysMessageDefault(pszKey)		SysMessage(g_Cfg.GetDefaultMsg(pszKey))
 	LPCTSTR GetDefaultMsg(LPCTSTR pszKey);
 	LPCTSTR GetDefaultMsg(long lKeyNum);
 
@@ -1153,12 +1153,12 @@ public:
 	DWORD GetKRDialogMap(DWORD idKRDialog);
 	DWORD GetKRDialog(DWORD rid);
 
-	bool GenerateDefname(TCHAR *pszObjectName, size_t iInputLength, LPCTSTR pszPrefix, TCHAR *pszOutput, bool fCheckConflict = true, CVarDefMap *vDefnames = NULL);
-	bool DumpUnscriptedItems(CTextConsole *pSrc, LPCTSTR pszFilename);
+	bool GenerateDefname(TCHAR* pszObjectName, size_t iInputLength, LPCTSTR pszPrefix, TCHAR* pszOutput, bool fCheckConflict = true, CVarDefMap* vDefnames = NULL);
+	bool DumpUnscriptedItems(CTextConsole* pSrc, LPCTSTR pszFilename);
 
 private:
-	CResource(const CResource &copy);
-	CResource &operator=(const CResource &other);
+	CResource(const CResource& copy);
+	CResource& operator=(const CResource& other);
 } g_Cfg;
 
 ///////////////////////////////////////////////////////////
@@ -1169,7 +1169,7 @@ class CDialogDefSetup;
 class CDialogDef : public CResourceLink
 {
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 	static LPCTSTR const sm_szLoadKeys[];
 
 	explicit CDialogDef(RESOURCE_ID rid);
@@ -1178,8 +1178,9 @@ public:
 public:
 	// Temporary placeholders (valid only during dialog setup)
 	size_t m_iControls;
-	size_t m_iTexts;
-	CObjBase *m_pObj;
+	size_t m_iTextsIndex;
+	size_t m_iTextsCount;
+	CObjBase* m_pObj;
 	int m_x;
 	int m_y;
 	int m_iOriginX;		// Keep track of position when parsing
@@ -1191,18 +1192,18 @@ public:
 	CGString m_sText[512];
 
 public:
-	bool GumpSetup(int iPage, CClient *pClientSrc, CObjBase *pObj, LPCTSTR pszArguments = "");
+	bool GumpSetup(int iPage, CClient* pClientSrc, CObjBase* pObj, LPCTSTR pszArguments = "");
 	size_t GumpAddText(LPCTSTR pszText);		// Add text to the text section, return insertion index
 
-	virtual bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	virtual bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	virtual bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
-	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CDialogDefSetup *pDlgSetup);
+	bool r_WriteVal(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CDialogDefSetup* pDlgSetup);
 	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs);
 	bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CDialogDefSetup* pDlgSetup);
 
 private:
-	CDialogDef(const CDialogDef &copy);
-	CDialogDef &operator=(const CDialogDef &other);
+	CDialogDef(const CDialogDef& copy);
+	CDialogDef& operator=(const CDialogDef& other);
 	CTagHolder m_tagHolder;
 };
 
@@ -1231,17 +1232,17 @@ public:
 class CItemTypeDef : public CResourceLink
 {
 public:
-	static const char *m_sClassName;
+	static const char* m_sClassName;
 
 	explicit CItemTypeDef(RESOURCE_ID rid) : CResourceLink(rid) { }
 
 public:
 	int GetItemType() const;
-	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
+	bool r_LoadVal(CScript& s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 
 private:
-	CItemTypeDef(const CItemTypeDef &copy);
-	CItemTypeDef &operator=(const CItemTypeDef &other);
+	CItemTypeDef(const CItemTypeDef& copy);
+	CItemTypeDef& operator=(const CItemTypeDef& other);
 };
 
 #endif	// _INC_CRESOURCE_H
