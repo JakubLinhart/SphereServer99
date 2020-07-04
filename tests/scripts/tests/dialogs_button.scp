@@ -25,12 +25,27 @@ ShouldBeSameString("selected checkbox without parentheses",1,<argChk 1>)
 arg(argChkIndex,10)
 ShouldBeSameString("not selected checkbox - variable index","",<argChk(arg(argChkIndex))>)
 
-ShouldBeSameString("textentry","this is from client",<argtxt(10)>)
+ShouldBeSameString("textentry","this comes from client",<argtxt(10)>)
 arg(argtxtIndex,10)
-ShouldBeSameString("textentry - variable index","this is from client",<argtxt(arg(argtxtIndex))>)
+ShouldBeSameString("textentry - variable index","this comes from client",<argtxt(arg(argtxtIndex))>)
 
 serv.smsg "\n"
 
+[function test_dialogs_specific_single_textentry_client]
+dialog(d_test_dialogs_specific_single_textentry_client)
+src.sysmessage "test_dialogs_specific_single_textentry_client done"
+
+[dialog d_test_dialogs_specific_single_textentry_client]
+argo.textentry(151,121,340,347,2116,1,0)
+argo.button(70,260,2445,2445,1,0,1)
+
+[dialog d_test_dialogs_specific_single_textentry_client button]
+on=1
+serv.smsg("test_dialogs_specific_single_textentry_client\n")
+
+ShouldBeSameString("single textentry","this comes from client - single textentry",<argtxt(0)>)
+
+serv.smsg("\n")
 
 [function test_dialogs_any_button_client]
 dialog(d_test_dialogs_any_button_client)

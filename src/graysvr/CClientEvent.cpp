@@ -1794,7 +1794,7 @@ bool CDialogResponseArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsol
 	{
 		pszKey += 6;
 
-		size_t iQty = m_CheckArray.GetCount();
+		size_t iQty = m_TextArray.GetCount();
 
 		GETNONWHITESPACE(pszKey);
 		Str_ParseExpressionArgument(const_cast<TCHAR*>(pszKey), NULL, NULL);

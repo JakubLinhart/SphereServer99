@@ -36,6 +36,7 @@ public void ShouldBeTrue(string comment, bool result)
 
 public void LastGumpInfo()
 {
+    UO.WaitForGump();
     UO.LastGumpInfo();
 
     UO.Log("Texts:");
