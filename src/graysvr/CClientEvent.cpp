@@ -1774,10 +1774,7 @@ bool CDialogResponseArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsol
 		size_t iQty = m_CheckArray.GetCount();
 
 		GETNONWHITESPACE(pszKey);
-		if (!Str_ParseArgumentStart(pszKey, false))
-			return false;
-		if (!Str_ParseExpressionArgument(const_cast<TCHAR*>(pszKey), NULL, NULL))
-			return false;
+		Str_ParseExpressionArgument(const_cast<TCHAR*>(pszKey), NULL, NULL);
 
 		CExpression expr(this, pSrc, this);
 		DWORD dwNum = static_cast<DWORD>(expr.GetVal(pszKey));
