@@ -765,10 +765,8 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 					{
 						TCHAR *ppArgs[2];
 						iCount = Str_ParseCmds(const_cast<TCHAR *>(pszArgs), ppArgs, COUNTOF(ppArgs), ",");
-						if ( iCount < 2 )
-							iResult = 0;
-						else
-							iResult = (Str_Match(ppArgs[0], ppArgs[1]) == MATCH_VALID) ? 1 : 0;
+						if (iCount == 2)
+							iResult = (Str_Match(Str_TrimDoublequotes(ppArgs[1]), Str_TrimDoublequotes(ppArgs[0])) == MATCH_VALID) ? 1 : 0;
 						break;
 					}
 					case INTRINSIC_STRREGEX:
