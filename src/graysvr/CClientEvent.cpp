@@ -1779,8 +1779,6 @@ bool CDialogResponseArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsol
 		CExpression expr(this, pSrc, this);
 		DWORD dwNum = static_cast<DWORD>(expr.GetVal(pszKey));
 
-		Str_ParseArgumentEnd(pszKey, false);
-
 		for ( size_t i = 0; i < iQty; ++i )
 		{
 			if ( dwNum == m_CheckArray[i] )
@@ -1795,16 +1793,15 @@ bool CDialogResponseArgs::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsol
 	if ( !strnicmp(pszKey, "ARGTXT", 6) )
 	{
 		pszKey += 6;
-		SKIP_SEPARATORS(pszKey);
 
-		size_t iQty = m_TextArray.GetCount();
-		if ( pszKey[0] == '\0' )
-		{
-			sVal.FormatVal(iQty);
-			return true;
-		}
+		size_t iQty = m_CheckArray.GetCount();
 
-		WORD wNum = static_cast<WORD>(Exp_GetSingle(pszKey));
+		GETNONWHITESPACE(pszKey);
+		Str_ParseExpressionArgument(const_cast<TCHAR*>(pszKey), NULL, NULL);
+
+		CExpression expr(this, pSrc, this);
+		WORD wNum = static_cast<WORD>(expr.GetVal(pszKey));
+
 		SKIP_SEPARATORS(pszKey);
 		for ( size_t i = 0; i < iQty; ++i )
 		{

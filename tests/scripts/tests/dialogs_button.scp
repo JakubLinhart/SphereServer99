@@ -6,6 +6,7 @@ src.sysmessage "test_dialogs_specific_button_client done"
 argo.button(70,260,2445,2445,1,0,1)
 argo.checkbox(0,0,210,211,0,1)
 argo.checkbox(0,0,210,211,0,2)
+argo.textentry(151,121,340,347,2116,1,10)
 argo.tag(d_test_dialogs_specific_button_client_argo_tag,123)
 tag(d_test_dialogs_specific_button_client_tag,321)
 src.tag(d_test_dialogs_specific_button_client_src_tag,111)
@@ -21,7 +22,12 @@ ShouldBeSameString("src tag",111,<src.tag(d_test_dialogs_specific_button_client_
 ShouldBeSameString("src and current object are same",<src.uid>,<uid>)
 ShouldBeSameString("selected checkbox",1,<argChk(1)>)
 ShouldBeSameString("selected checkbox without parentheses",1,<argChk 1>)
-ShouldBeSameString("not selected checkbox","",<argChk(2)>)
+arg(argChkIndex,10)
+ShouldBeSameString("not selected checkbox - variable index","",<argChk(arg(argChkIndex))>)
+
+ShouldBeSameString("textentry","this is from client",<argtxt(10)>)
+arg(argtxtIndex,10)
+ShouldBeSameString("textentry - variable index","this is from client",<argtxt(arg(argtxtIndex))>)
 
 serv.smsg "\n"
 

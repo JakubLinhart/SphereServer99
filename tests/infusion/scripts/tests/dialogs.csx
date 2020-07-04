@@ -15,6 +15,7 @@ Test("Dialogs - trigger specific button", () =>
 {
     ExecuteCommand("test_dialogs_specific_button_client");
     UO.GumpResponse()
+        .SetTextEntry((GumpControlId)10,"this is from client")
         .SelectCheckBox((GumpControlId)1)
         .Trigger((GumpControlId)1);
 });
