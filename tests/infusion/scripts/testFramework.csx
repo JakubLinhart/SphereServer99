@@ -34,9 +34,16 @@ public void ShouldBeTrue(string comment, bool result)
         Fail(comment);
 }
 
+public void ShouldBeEqual(string comment, object expected, object actual)
+{
+    if (expected.Equals(actual))
+        Success(comment);
+    else
+        Fail($"{comment}: {actual} is expected to be {expected}");
+}
+
 public void LastGumpInfo()
 {
-    UO.WaitForGump();
     UO.LastGumpInfo();
 
     UO.Log("Texts:");

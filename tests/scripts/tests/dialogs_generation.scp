@@ -41,12 +41,14 @@ checkertrans(10,10,600+20,430)
 argo.checkertrans 20 20 630 440
 
 arg(d_test_dialogs_variable,"this comes from setup variable")
+arg(d_test_dialogs_variable2,<hval d_test_dialogs_client_gump_generation>)
 
 src.sysmessage("test_dialog done")
 
 [DIALOG d_test_dialogs_client_gump_generation text]
 this is static text
 Variable value: <?arg(d_test_dialogs_variable)?>
+<?hval arg(d_test_dialogs_variable2)?>
 
 [function test_dialogs_client_gump_settexts]
 serv.smsg "test_dialogs_client_gump_settexts\n"
