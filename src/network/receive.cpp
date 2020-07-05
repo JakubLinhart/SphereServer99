@@ -2444,7 +2444,8 @@ bool PacketGumpDialogRet::onReceive(NetState* net)
 	if (net->isClientKR())
 		context = g_Cfg.GetKRDialogMap(context);
 
-	RESOURCE_ID_BASE	rid	= RESOURCE_ID(RES_DIALOG, context);
+	RESOURCE_ID_BASE rid;
+	rid.SetPrivateUID(context);
 	//
 	// Call the scripted response. Lose all the checks and text.
 	//

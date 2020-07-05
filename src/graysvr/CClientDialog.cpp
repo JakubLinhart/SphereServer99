@@ -928,7 +928,7 @@ bool CClient::Dialog_Setup(CLIMODE_TYPE mode, RESOURCE_ID_BASE rid, int iPage, C
 
 	// Now pack it up to send,
 	// m_tmGumpDialog.m_ResourceID = rid;
-	DWORD context = static_cast<DWORD>(rid);
+	DWORD context = rid.GetPrivateUID();
 	if (m_NetState->isClientKR())
 	{
 		// KR enhanced clients can use only client internal dialogs, so check if the dialog can be translated into KR equivalent DialogID.
@@ -977,7 +977,7 @@ void CClient::addGumpDialog(CLIMODE_TYPE mode, const CGString* psControls, size_
 
 	DWORD context = mode;
 	if ((mode == CLIMODE_DIALOG) && (rid != 0))
-		context = (rid & 0xFFFFFF);
+		context = rid;
 
 	PacketGumpDialog* cmd = new PacketGumpDialog(x, y, pObj, context);
 	cmd->writeControls(this, psControls, iControls, psText, iTexts);
