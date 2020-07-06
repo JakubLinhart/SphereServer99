@@ -1959,9 +1959,9 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			if ( !IsDigit(pszKey[0]) )
 				return false;
 
-			INT64 iVal = Exp_GetLLVal(pszKey);
+			UINT32 iVal = Exp_GetLLVal(pszKey);
 			SKIP_ARGSEP(pszKey);
-			INT64 iBit = Exp_GetLLVal(pszKey);
+			UINT32 iBit = Exp_GetLLVal(pszKey);
 			if ( iBit < 0 )
 			{
 				g_Log.EventWarn("%s(%lld,%lld): Can't shift bit by negative position\n", sm_szLoadKeys[index], iVal, iBit);
@@ -1969,11 +1969,11 @@ bool CScriptObj::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, 
 			}
 
 			if ( index == SSC_ISBIT )
-				sVal.FormatLLVal((iVal & (static_cast<INT64>(1) << iBit)) != 0);
+				sVal.FormatLLVal((iVal & (static_cast<UINT32>(1) << iBit)) != 0);
 			else if ( index == SSC_SETBIT )
-				sVal.FormatLLVal(iVal | (static_cast<INT64>(1) << iBit));
+				sVal.FormatLLVal(iVal | (static_cast<UINT32>(1) << iBit));
 			else
-				sVal.FormatLLVal(iVal & ~(static_cast<INT64>(1) << iBit));
+				sVal.FormatLLVal(iVal & ~(static_cast<UINT32>(1) << iBit));
 			break;
 		}
 		case SSC_ISEMPTY:

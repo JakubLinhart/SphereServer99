@@ -93,29 +93,13 @@ ShouldBeSameString("strlen outside eval - unquoted argument",4,<strlen(qwer)>)
 [function test_intrinsics_isbit]
 ShouldBeSameString("isbit - const arguments, result 1",1,<isbit(4,2)>)
 ShouldBeSameString("isbit - const arguments, result 0",0,<isbit(4,1)>)
-
-[function xxx]
-serv.smsg(<fixnumber(1)>)
-
-[function fixNumber]
-serv.smsg "'<args>'\n"
-
-arg(len,<strlen(<args>)>)
-if (len<=0)
-  return 0
-endif
-
-arg(pattern,[-0123456789])
-while (arg(len)>1)
-  arg(pattern,"<arg(pattern)>[-0123456789]")
-  arg(len,<eval arg(len)-1>)
-endwhile
-
-serv.smsg("pattern: '<arg(pattern)>'\n")
-serv.smsg("args: '<args>'\n")
-if (STRMATCH(<args>,<arg(pattern)>))
- return <eval args>
-else
- serv.smsg("Mozny pokus o podvod s chybnym prikazem '<args>'\n")
- return 0
-endif
+ShouldBeSameString("isbit - bit 31, result 1",1,<isbit(0ffffffff,31)>)
+ShouldBeSameString("isbit - bit 32, result 1",1,<isbit(0ffffffff,32)>)
+ShouldBeSameString("isbit - bit 51, result 1",1,<isbit(0ffffffff,51)>)
+ShouldBeSameString("isbit - bit 63, result 1",1,<isbit(0ffffffff,63)>)
+ShouldBeSameString("isbit - bit 64, result 1",1,<isbit(0ffffffff,64)>)
+ShouldBeSameString("isbit - bit 128, result 1",1,<isbit(0ffffffff,128)>)
+ShouldBeSameString("isbit - bit 1024, result 1",1,<isbit(0ffffffff,1024)>)
+ShouldBeSameString("isbit - bit 31, result 0",0,<isbit(00fffffff,31)>)
+ShouldBeSameString("isbit - bit 32 overflows, result 1",1,<isbit(00fffffff,32)>)
+ShouldBeSameString("isbit - bit 32 overflows, result 0",0,<isbit(00ffffff0,32)>)
