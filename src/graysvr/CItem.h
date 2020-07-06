@@ -66,6 +66,8 @@ enum STONEALIGN_TYPE	// align of guild/town stones
 	STONEALIGN_CHAOS
 };
 
+#define CItemPtr CItem*
+
 class CItem : public CObjBase
 {
 	// RES_WORLDITEM
@@ -1111,6 +1113,8 @@ public:
 	virtual void OnWeightChange(int iChange);
 	virtual void ContentAdd(CItem *pItem) = 0;
 };
+
+#define CItemContainerPtr CItemContainer*
 
 class CItemContainer : public CItemVendable, public CContainer
 {

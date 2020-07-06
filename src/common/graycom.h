@@ -42,6 +42,10 @@
 	#endif
 #endif
 
+#ifndef PTR_CAST
+#define PTR_CAST(T, P) dynamic_cast<T*>(P)
+#endif
+
 #ifdef _WIN32
 	#define ATOI atoi
 	#define ITOA _itoa
@@ -208,8 +212,6 @@ public:
 		return GetObjUID();
 	}
 };
-
-#define CSphereUID CGrayUID
 
 struct CGrayUID : public CGrayUIDBase
 {

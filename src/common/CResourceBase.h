@@ -3,6 +3,7 @@
 #pragma once
 
 #define RES_SkillMenu RES_SKILLMENU
+#define RES_TypeDef RES_TYPEDEF
 
 enum RES_TYPE	// all the script resource blocks we know how to deal with
 {
@@ -123,6 +124,8 @@ public:
 		return (rid.m_dwInternalVal == m_dwInternalVal);
 	}
 };
+
+#define CSphereUID RESOURCE_ID
 
 struct RESOURCE_ID : public RESOURCE_ID_BASE
 {
@@ -424,6 +427,8 @@ private:
 	CResourceLock(const CResourceLock &copy);
 	CResourceLock &operator=(const CResourceLock &other);
 };
+
+#define CResourceDefPtr CResourceDef*
 
 class CResourceDef : public CScriptObj
 {

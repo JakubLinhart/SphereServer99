@@ -9,6 +9,7 @@
 #define m_StatDex Stat_GetVal(STAT_DEX)
 #define m_StatInt Stat_GetVal(STAT_INT)
 #define m_StatStr Stat_GetVal(STAT_STR)
+#define m_StatMana Stat_GetVal(STAT_INT)
 #define m_ArmorDisplay m_defense
 
 enum NPCBRAIN_TYPE
@@ -603,6 +604,10 @@ public:
 			return m_pPlayer->m_pAccount->IsPriv(wPrivFlags);
 		return false;
 	}
+	bool IsGM()
+	{
+		return IsStatFlag(PRIV_GM);
+	}
 	PLEVEL_TYPE GetPrivLevel() const
 	{
 		if ( m_pPlayer )
@@ -904,6 +909,20 @@ public:
 		if ( m_pClient )
 			m_pClient->SysMessage(pszMsg);
 	}
+	void Printf(LPCTSTR pszMsg, ...)
+	{
+		ADDTOCALLSTACK("CChar::Printf");
+		TemporaryString sTemp;
+		va_list vargs;
+		va_start(vargs, pszMsg);
+		_vsnprintf(sTemp, sTemp.realLength(), pszMsg, vargs);
+		va_end(vargs);
+		WriteString(sTemp);
+	}
+	void Stat_Change(STAT_TYPE stat, int iChange)
+	{
+		UpdateStatVal(stat, iChange);
+	}
 
 	void UpdateStatsFlag() const;
 	void UpdateStatVal(STAT_TYPE stat, int iChange = 0, int iLimit = 0);
@@ -994,6 +1013,12 @@ public:
 		return CContainer::GetTotalWeight();
 	}
 	int GetWeightLoadPercent(int iWeight) const;
+
+	CItemContainer* GetPack(void) const
+	{
+		CItemContainer* pPack = GetContainer(LAYER_PACK);
+		return pPack;
+	}
 
 	CItem *GetSpellbook(SPELL_TYPE spell) const;
 	CItemContainer *GetContainer(LAYER_TYPE layer) const

@@ -496,6 +496,7 @@ enum STAT_TYPE
 
 #define STAT_Str STAT_STR
 #define STAT_Int STAT_INT
+#define STAT_Mana STAT_INT
 #define STAT_Dex STAT_DEX
 
 class CSkillClassDef : public CResourceLink // For skill def table

@@ -320,7 +320,8 @@ class CGTypedArray
 		* @param nIndex position of the element.
 		* @return Element in nIndex position.
 		*/
-		const TYPE& ElementAt( size_t nIndex ) const;
+		const TYPE& ElementAt(size_t nIndex) const;
+		const TYPE& ConstElementAt(size_t nIndex) const;
 		/**
 		* @brief TODOC
 		* @param pElements TODOC
@@ -655,6 +656,12 @@ const TYPE& CGTypedArray<TYPE,ARG_TYPE>::ElementAt( size_t nIndex ) const
 		return *reinterpret_cast<const TYPE *>(BadIndex());
 
 	return m_pData[nIndex];
+}
+
+template<class TYPE, class ARG_TYPE>
+const TYPE& CGTypedArray<TYPE, ARG_TYPE>::ConstElementAt(size_t nIndex) const
+{
+	return ElementAt(nIndex);
 }
 
 template<class TYPE, class ARG_TYPE>

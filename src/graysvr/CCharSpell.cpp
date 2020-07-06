@@ -1512,212 +1512,144 @@ bool CChar::Spell_CanCast(SPELL_TYPE &spell, bool fTest, CObjBase *pSrc, bool fF
 	ADDTOCALLSTACK("CChar::Spell_CanCast");
 	// ARGS:
 	//  pSrc = possible scroll or wand source.
-	if ( !pSrc || (spell <= SPELL_NONE) || (m_pPlayer && (spell > SPELL_SKILLMASTERIES_QTY)) )
-		return false;
+	// Do we have enough mana to start ?
+	if (spell <= SPELL_NONE || pSrc == NULL)
+		return(false);
 
-	CSpellDef *pSpellDef = g_Cfg.GetSpellDef(spell);
-	if ( !pSpellDef )
-		return false;
-	if ( pSpellDef->IsSpellType(SPELLFLAG_DISABLED) )
-		return false;
+	CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef(spell);
+	if (pSpellDef == NULL)
+		return(false);
+	if (pSpellDef->IsSpellType(SPELLFLAG_DISABLED))
+		return(false);
 
-	int iSkill = SKILL_NONE;
-	if ( !pSpellDef->GetPrimarySkill(&iSkill, NULL) )
-		iSkill = SKILL_MAGERY;
-	if ( !Skill_CanUse(static_cast<SKILL_TYPE>(iSkill)) )
-		return false;
-
-	int iManaUse = pSpellDef->m_wManaUse * (100 - minimum(m_LowerManaCost, 40)) / 100;
-	int iTithingUse = 0;
-	if ( m_LowerReagentCost <= Calc_GetRandVal(100) )
-		iTithingUse = pSpellDef->m_wTithingUse;
-
-	if ( pSrc != this )
+	if (!IsGM() &&
+		m_pArea->IsValid() &&
+		m_pArea->CheckAntiMagic(spell))
 	{
-		CItem *pItem = dynamic_cast<CItem *>(pSrc);
-		if ( pItem )
+		if (fFailMsg)
+			WriteString("An anti-magic field disturbs the spells.");
+		m_Act_Difficulty = -1;	// Give very little credit for failure !
+		return(false);
+	}
+
+	int wManaUse = pSpellDef->m_wManaUse;
+
+	// The magic item must be on your person to use.
+	if (pSrc != this)
+	{
+		CItemPtr pItem = PTR_CAST(CItem, pSrc);
+		if (pItem == NULL)
 		{
-			if ( pItem->IsType(IT_WAND) )
-			{
-				iManaUse = 0;
-				iTithingUse = 0;
-			}
-			else if ( pItem->IsType(IT_SCROLL) )
-			{
-				iManaUse /= 2;
-				iTithingUse /= 2;
-			}
+			DEBUG_CHECK(0);
+			return(false);	// where did it go ?
 		}
-	}
-
-	CScriptTriggerArgs Args(spell, iManaUse, pSrc);
-	if ( fTest )
-		Args.m_iN3 |= 0x1;
-	if ( fFailMsg )
-		Args.m_iN3 |= 0x2;
-	Args.m_VarsLocal.SetNum("TithingUse", iTithingUse);
-
-	if ( IsTrigUsed(TRIGGER_SELECT) )
-	{
-		TRIGRET_TYPE iRet = Spell_OnTrigger(spell, SPTRIG_SELECT, this, &Args);
-		if ( iRet == TRIGRET_RET_TRUE )
-			return false;
-		if ( iRet == TRIGRET_RET_FALSE )
-			return true;
-		if ( iRet == TRIGRET_RET_HALFBAKED )		// just for compatibility with @SpellSelect
-			return true;
-	}
-
-	if ( IsTrigUsed(TRIGGER_SPELLSELECT) )
-	{
-		TRIGRET_TYPE iRet = OnTrigger(CTRIG_SpellSelect, this, &Args);
-		if ( iRet == TRIGRET_RET_TRUE )
-			return false;
-		if ( iRet == TRIGRET_RET_HALFBAKED )
-			return true;
-	}
-
-	if ( spell != Args.m_iN1 )
-	{
-		pSpellDef = g_Cfg.GetSpellDef(spell);
-		if ( !pSpellDef )
-			return false;
-		spell = static_cast<SPELL_TYPE>(Args.m_iN1);
-	}
-
-	if ( pSrc != this )
-	{
-		// Cast spell using magic items (wand/scroll)
-		CItem *pItem = dynamic_cast<CItem *>(pSrc);
-		if ( !pItem )
-			return false;
-		if ( !pItem->IsAttr(ATTR_MAGIC) )
+		if (!pItem->IsAttr(ATTR_MAGIC))
 		{
-			if ( fFailMsg )
-				SysMessageDefault(DEFMSG_SPELL_ENCHANT_LACK);
-			return false;
+			if (fFailMsg)
+				WriteString("This item lacks any enchantment.");
+			return(false);
 		}
-		CObjBaseTemplate *pObjTop = pSrc->GetTopLevelObj();
-		if ( pObjTop != this )		// magic items must be on your person to use.
+		CObjBasePtr pObjTop = static_cast<CObjBasePtr>(pSrc->GetTopLevelObj());
+		if (pObjTop != this)
 		{
-			if ( fFailMsg )
-				SysMessageDefault(DEFMSG_SPELL_ENCHANT_ACTIVATE);
-			return false;
+			if (fFailMsg)
+				WriteString("Magic items must be on your person to activate.");
+			return(false);
 		}
-		if ( pItem->IsType(IT_WAND) )
+		if (pItem->IsType(IT_WAND))
 		{
 			// Must have charges.
-			if ( pItem->m_itWeapon.m_spellcharges <= 0 )
+			if (pItem->m_itWeapon.m_spellcharges <= 0)
 			{
-				if ( fFailMsg )
-					SysMessageDefault(DEFMSG_SPELL_WAND_NOCHARGE);
+				// ??? May explode !!
+				if (fFailMsg)
+					WriteString("It seems to be out of charges");
 				return false;
 			}
-			if ( !fTest && (pItem->m_itWeapon.m_spellcharges != 255) )
+			wManaUse = 0;	// magic items need no mana.
+			if (!fTest && pItem->m_itWeapon.m_spellcharges != 255)
 			{
-				--pItem->m_itWeapon.m_spellcharges;
-				pItem->UpdatePropertyFlag();
+				pItem->m_itWeapon.m_spellcharges--;
 			}
 		}
-		else if ( pItem->IsType(IT_SCROLL) )
+		else	// Scroll
 		{
-			if ( !fTest )
+			wManaUse /= 2;
+			if (!fTest)
+			{
 				pItem->ConsumeAmount();
+			}
 		}
 	}
 	else
 	{
-		// Raw cast from spellbook
-		if ( IsPriv(PRIV_GM) )
-			return true;
+		// Raw cast from spellbook.
 
-		if ( m_pPlayer )
+		if (IsGM())
+			return(true);
+
+		if (IsStatFlag(STATF_DEAD | STATF_Sleeping) ||
+			!pSpellDef->m_SkillReq.IsResourceMatchAll(this))
 		{
-			if ( IsStatFlag(STATF_DEAD) || !pSpellDef->m_SkillReq.IsResourceMatchAll(this) )
-			{
-				if ( fFailMsg )
-					SysMessageDefault(DEFMSG_SPELL_TRY_DEAD);
-				return false;
-			}
+			if (fFailMsg)
+				WriteString("This is beyond your ability.");
+			return(false);
+		}
 
+		if (m_pPlayer)
+		{
 			// check the spellbook for it.
-			CItem *pBook = GetSpellbook(spell);
-			if ( !pBook )
+			CItemPtr pBook = ContentFind(CSphereUID(RES_TypeDef, IT_SPELLBOOK), spell, 20);
+			if (pBook == NULL)
 			{
-				if ( fFailMsg )
-					SysMessageDefault(DEFMSG_SPELL_TRY_NOBOOK);
-				return false;
-			}
-			if ( !pBook->IsSpellInBook(spell) )
-			{
-				if ( fFailMsg )
-					SysMessageDefault(DEFMSG_SPELL_TRY_NOTYOURBOOK);
-				return false;
-			}
-
-			// check for reagents
-			if ( g_Cfg.m_fReagentsRequired && !m_pNPC && (pSrc == this) )
-			{
-				if ( m_LowerReagentCost <= Calc_GetRandVal(100) )
-				{
-					const CResourceQtyArray *pRegs = &pSpellDef->m_Reags;
-					CItemContainer *pPack = GetContainerCreate(LAYER_PACK);
-					size_t iMissing = pPack->ResourceConsumePart(pRegs, 1, 100, fTest);
-					if ( iMissing != pRegs->BadIndex() )
-					{
-						if ( fFailMsg )
-						{
-							CResourceDef *pReagDef = g_Cfg.ResourceGetDef(pRegs->GetAt(iMissing).GetResourceID());
-							SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_SPELL_TRY_NOREGS), pReagDef ? pReagDef->GetName() : g_Cfg.GetDefaultMsg(DEFMSG_SPELL_TRY_THEREG));
-						}
-						return false;
-					}
-				}
+				if (fFailMsg)
+					WriteString("You don't know that spell.");
+				return(false);
 			}
 		}
 	}
 
-	if ( fCheckAntiMagic )
+	if (m_StatMana < wManaUse)
 	{
-		if ( !IsPriv(PRIV_GM) && m_pArea && m_pArea->CheckAntiMagic(spell) )
+		if (fFailMsg)
+			WriteString("You lack sufficient mana for this spell");
+		return(false);
+	}
+
+	if (!fTest && wManaUse)
+	{
+		// Consume mana.
+		if (m_Act_Difficulty < 0)	// use diff amount of mana if we fail.
 		{
-			if ( fFailMsg )
-				SysMessageDefault(DEFMSG_MAGERY_6);
-			m_Act_Difficulty = -1;	// give very little credit for failure
-			return false;
+			wManaUse = wManaUse / 2 + Calc_GetRandVal(wManaUse / 2 + wManaUse / 4);
+		}
+		Stat_Change(STAT_Mana, -wManaUse);
+	}
+
+	if (m_pNPC ||	// NPC's don't need regs.
+		pSrc != this)	// wands and scrolls have there own reags source.
+		return(true);
+
+	// Check for regs ?
+	if (g_Cfg.m_fReagentsRequired)
+	{
+		CItemContainerPtr pPack = GetPack();
+		if (pPack)
+		{
+			const CResourceQtyArray* pRegs = &(pSpellDef->m_Reags);
+			int iMissing = pPack->ResourceConsumePart(pRegs, 1, 100, fTest);
+			if (iMissing >= 0)
+			{
+				if (fFailMsg)
+				{
+					CResourceDefPtr pReagDef = g_Cfg.ResourceGetDef(pRegs->ElementAt(iMissing).GetResourceID());
+					Printf("You lack %s for this spell", pReagDef ? (LPCTSTR)pReagDef->GetName() : "reagents");
+				}
+				return(false);
+			}
 		}
 	}
-
-	// Check required mana
-	iManaUse = static_cast<int>(Args.m_iN2);
-	if ( Stat_GetVal(STAT_INT) < iManaUse )
-	{
-		if ( fFailMsg )
-			SysMessageDefault(DEFMSG_SPELL_TRY_NOMANA);
-		return false;
-	}
-	if ( iManaUse && !fTest )
-	{
-		if ( m_Act_Difficulty < 0 )	// use diff amount of mana if we fail.
-			iManaUse = iManaUse / 2 + Calc_GetRandVal(iManaUse / 2 + iManaUse / 4);
-		UpdateStatVal(STAT_INT, -iManaUse);
-	}
-
-	// Check required tithing points
-	iTithingUse = static_cast<int>(Args.m_VarsLocal.GetKeyNum("TithingUse"));
-	if ( m_Tithing < iTithingUse )
-	{
-		if ( fFailMsg )
-			SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_SPELL_TRY_NOTITHING), iTithingUse);
-		return false;
-	}
-	if ( iTithingUse && !fTest )
-	{
-		if ( m_Act_Difficulty < 0 )	// use diff amount of points if we fail.
-			iTithingUse = iTithingUse / 2 + Calc_GetRandVal(iTithingUse / 2 + iTithingUse / 4);
-		m_Tithing -= iTithingUse;
-	}
-	return true;
+	return(true);
 }
 
 bool CChar::Spell_TargCheck_Face()

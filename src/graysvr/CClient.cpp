@@ -1180,31 +1180,10 @@ bool CClient::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs) 
 			if ( !pSpellDef )
 				return true;
 
-			CObjBase *pObjSrc = dynamic_cast<CObjBase *>(pSrc);
-			if ( IsSetMagicFlags(MAGICF_PRECAST) && !pSpellDef->IsSpellType(SPELLFLAG_NOPRECAST) )
-			{
-				int iSkill;
-				if ( !pSpellDef->GetPrimarySkill(&iSkill, NULL) )
-					return true;
-
-				m_tmSkillMagery.m_Spell = spell;	// m_atMagery.m_Spell
-				m_pChar->m_atMagery.m_Spell = spell;
-				if ( pObjSrc )
-				{
-					m_Targ_UID = pObjSrc->GetUID();	// default target.
-					m_Targ_PrvUID = pObjSrc->GetUID();
-				}
-				else
-				{
-					m_Targ_UID.ClearUID();
-					m_Targ_PrvUID.ClearUID();
-				}
-				m_pChar->Skill_Start(static_cast<SKILL_TYPE>(iSkill));
-				break;
-			}
-			else
-				Cmd_Skill_Magery(spell, pObjSrc);
-			break;
+			if (!pSrc)
+				return true;
+			CObjBase *pObjSrc = dynamic_cast<CObjBase *>(pSrc->GetChar());
+			return Cmd_Skill_Magery(spell, pObjSrc);
 		}
 		case CV_CHANGEFACE:		// open 'face selection' dialog (enhanced clients only)
 		{

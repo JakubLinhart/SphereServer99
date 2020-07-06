@@ -432,6 +432,7 @@ public:
 	CGString m_Targ_Text;		// text transfered up from client
 	CPointMap m_Targ_p;			// for script targeting
 	CServTime m_Targ_Timeout;	// target timeout
+	int m_Act_Difficulty;
 
 	// Context of the targetting setup (depends on m_Targ_Mode)
 	union

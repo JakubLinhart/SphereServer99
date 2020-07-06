@@ -8,6 +8,8 @@
 
 class PacketPropertyList;
 
+#define CObjBasePtr CObjBase*
+
 class CObjBase : public CObjBaseTemplate, public CScriptObj
 {
 	// All instances of CItem or CChar have these base attributes
