@@ -818,7 +818,7 @@ INT64 CExpression::GetSingle(LPCTSTR &pszArgs)
 			TemporaryString tmpArgs;
 			sprintf(tmpArgs, "%s", pszArgs);
 
-			Str_ParseExpressionArgument(tmpArgs, ppArgs, "<>+-*/^!%=|");
+			Str_ParseExpressionArgument(tmpArgs, ppArgs, "<>+-*/^!%=|&");
 			int argsLen = strlen(tmpArgs);
 			CGString sVal;
 

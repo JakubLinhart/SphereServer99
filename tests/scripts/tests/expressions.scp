@@ -20,6 +20,21 @@ ShouldBeSameString("hval variable expression",0a,<hval 6+arg(localvar1)>)
 ShouldBeSameString("hex/dec numbers equal",1,<eval 10==00a>)
 ShouldBeSameString("hex/dec numbers not equal",0,<eval 10==00b>)
 
+ShouldBeSameString("0 and 0",0,<eval 0&&0>)
+ShouldBeSameString("0 and 1",0,<eval 0&&1>)
+ShouldBeSameString("1 and 0",0,<eval 1&&0>)
+ShouldBeSameString("1 and 1",1,<eval 1&&1>)
+
+ShouldBeSameString("0 and 0 (calls)",0,<eval f_identity_args(0)&&f_identity_args(0)>)
+ShouldBeSameString("0 and 1 (calls)",0,<eval f_identity_args(0)&&f_identity_args(1)>)
+ShouldBeSameString("1 and 0 (calls)",0,<eval f_identity_args(1)&&f_identity_args(0)>)
+ShouldBeSameString("1 and 1 (calls)",1,<eval f_identity_args(1)&&f_identity_args(1)>)
+
+ShouldBeSameString("0 or 0",0,<eval 0||0>)
+ShouldBeSameString("0 or 1",1,<eval 0||1>)
+ShouldBeSameString("1 or 0",1,<eval 1||0>)
+ShouldBeSameString("1 or 1",1,<eval 1||1>)
+
 arg(arg1,00a)
 ShouldBeSameString("hex variable value/dec number equal",1,<eval arg(arg1)==10>)
 ShouldBeSameString("hex variable value/dec number not equal",0,<eval arg(arg1)==11>)
