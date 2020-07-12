@@ -338,7 +338,15 @@ private:
 	bool GetNextSector();
 
 public:
+	CChar * GetNextChar()
+	{
+		return GetChar();
+	}
 	CChar * GetChar();
+	CItem* GetNextItem()
+	{
+		return GetItem();
+	}
 	CItem *GetItem();
 
 	void SetAllShow(bool fAllShow)

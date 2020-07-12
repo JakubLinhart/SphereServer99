@@ -1347,162 +1347,82 @@ void CChar::Spell_Area(CPointMap ptTarg, int iDist, int iSkillLevel)
 	}
 }
 
-void CChar::Spell_Field(CPointMap ptTarg, ITEMID_TYPE idEW, ITEMID_TYPE idNS, BYTE bFieldWidth, BYTE bFieldGauge, int iSkillLevel, CChar *pCharSrc, int iDuration, HUE_TYPE wColor)
+void CChar::Spell_Field(CPointMap pntTarg, ITEMID_TYPE idEW, ITEMID_TYPE idNS, BYTE bFieldWidth, BYTE bFieldGauge, int iSkillLevel, CChar *pCharSrc, int iDuration, HUE_TYPE wColor)
 {
 	ADDTOCALLSTACK("CChar::Spell_Field");
 	// Cast the field spell to here.
 	// ARGS:
-	// ptTarg = target
-	// idEW = ID of EW aligned spell object
-	// idNS = ID of NS aligned spell object
-	// bFieldWidth = width of the field (looking from char's point of view)
-	// bFieldGauge = thickness of the field
+	// m_atMagery.m_Spell = the spell
 	// iSkillLevel = 0-1000
-	// idnewEW and idnewNS are the overriders created in @Success trigger, passed as another arguments because checks are made using default items
+	//
 
-	const CSpellDef *pSpellDef = g_Cfg.GetSpellDef(m_atMagery.m_Spell);
-	if ( !pSpellDef )
-		return;
-
-	if ( m_pArea && m_pArea->IsGuarded() && pSpellDef->IsSpellType(SPELLFLAG_HARM) )
-		Noto_Criminal();
-
-	// get the dir of the field.
-	int dx = abs(ptTarg.m_x - GetTopPoint().m_x);
-	int dy = abs(ptTarg.m_y - GetTopPoint().m_y);
-	ITEMID_TYPE id = (dx > dy) ? idNS : idEW;
-
-	int minX = static_cast<int>((bFieldWidth - 1) / 2) - (bFieldWidth - 1);
-	int maxX = minX + (bFieldWidth - 1);
-
-	int minY = static_cast<int>((bFieldGauge - 1) / 2) - (bFieldGauge - 1);
-	int maxY = minY + (bFieldGauge - 1);
-
-	if ( iDuration <= 0 )
-		iDuration = GetSpellDuration(m_atMagery.m_Spell, iSkillLevel, pCharSrc);
-
-	if ( IsSetMagicFlags(MAGICF_NOFIELDSOVERWALLS) )
+	if (m_pArea &&
+		m_pArea->IsFlagGuarded())
 	{
-		// check if anything is blocking the field from fully extending to its desired width
-
-		// first checks center piece, then left direction (minX), and finally right direction (maxX)
-		// (structure of the loop looks a little odd but it should be more effective for wide fields (we don't really
-		// want to be testing the far left or right of the field when it has been blocked towards the center))
-		for ( int ix = 0; ; (ix <= 0) ? --ix : ++ix )
-		{
-			if ( ix < minX )
-				ix = 1;	// start checking right extension
-			if ( ix > maxX )
-				break;	// all done
-
-			// check the whole width of the field for anything that would block this placement
-			for ( int iy = minY; iy <= maxY; ++iy )
-			{
-				CPointMap pt = ptTarg;
-				if ( dx > dy )
-				{
-					pt.m_x += static_cast<signed short>(iy);
-					pt.m_y += static_cast<signed short>(ix);
-				}
-				else
-				{
-					pt.m_x += static_cast<signed short>(ix);
-					pt.m_y += static_cast<signed short>(iy);
-				}
-
-				DWORD dwBlockFlags = 0;
-				g_World.GetHeightPoint2(pt, dwBlockFlags, true);
-				if ( dwBlockFlags & (CAN_I_BLOCK|CAN_I_DOOR) )
-				{
-					if ( ix < 0 )	// field cannot extend fully to the left
-						minX = ix + 1;
-					else if ( ix > 0 )	// field cannot extend fully to the right
-						maxX = ix - 1;
-					else	// center piece is blocked, field cannot be created at all
-						return;
-					break;
-				}
-			}
-		}
+		Noto_Criminal();
 	}
 
-	for ( int ix = minX; ix <= maxX; ++ix )
+	CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef(m_atMagery.m_Spell);
+	ASSERT(pSpellDef);
+
+	// get the dir of the field.
+	int dx = abs(pntTarg.m_x - GetTopPoint().m_x);
+	int dy = abs(pntTarg.m_y - GetTopPoint().m_y);
+	ITEMID_TYPE id = (dx > dy) ? idNS : idEW;
+
+	for (int i = -3; i <= 3; i++)
 	{
-		for ( int iy = minY; iy <= maxY; ++iy )
+		bool fGoodLoc = true;
+
+		// Where is this ?
+		CPointMap ptg = pntTarg;
+		if (dx > dy)
+			ptg.m_y += i;
+		else
+			ptg.m_x += i;
+
+		// Check for direct cast on a creature.
+		CWorldSearch AreaChar(ptg);
+		for (;;)
 		{
-			bool fGoodLoc = true;
-
-			// Where is this ?
-			CPointMap pt = ptTarg;
-			if ( dx > dy )
+			CCharPtr pChar = AreaChar.GetNextChar();
+			if (pChar == NULL)
+				break;
+			if (!pChar->OnAttackedBy(this, 1, false))	// they should know they where attacked.
+				return;
+			if (idEW == ITEMID_STONE_WALL)
 			{
-				pt.m_y += static_cast<signed short>(ix);
-				pt.m_x += static_cast<signed short>(iy);
+				// pChar->OnSpellEffect( m_atMagery.m_Spell, iSkillLevel, NULL );
+				fGoodLoc = false;
+				break;
 			}
-			else
-			{
-				pt.m_x += static_cast<signed short>(ix);
-				pt.m_y += static_cast<signed short>(iy);
-			}
+		}
 
-			// Check for direct cast on a creature.
-			CWorldSearch AreaChar(pt);
-			for (;;)
-			{
-				CChar *pChar = AreaChar.GetChar();
-				if ( !pChar )
-					break;
-				if ( pChar->GetPrivLevel() > GetPrivLevel() )	// skip higher priv characters
-					continue;
-				if ( pSpellDef->IsSpellType(SPELLFLAG_HARM) && !pChar->OnAttackedBy(this, false) )	// they should know they where attacked
-					continue;
+		// Check for direct cast on an item.
+		CWorldSearch AreaItem(ptg);
+		for (;;)
+		{
+			CItemPtr pItem = AreaItem.GetNextItem();
+			if (pItem == NULL)
+				break;
+			pItem->OnSpellEffect(m_atMagery.m_Spell, this, iSkillLevel, NULL);
+		}
 
-				if ( !pSpellDef->IsSpellType(SPELLFLAG_NOUNPARALYZE) )
-				{
-					CItem *pParalyze = pChar->LayerFind(LAYER_SPELL_Paralyze);
-					if ( pParalyze )
-						pParalyze->Delete();
-
-					CItem *pStuck = pChar->LayerFind(LAYER_FLAG_Stuck);
-					if ( pStuck )
-						pStuck->Delete();
-				}
-
-				if ( (idEW == ITEMID_STONE_WALL) || (idEW == ITEMID_FX_ENERGY_F_EW) || (idEW == ITEMID_FX_ENERGY_F_NS) )	// don't place stone wall over characters
-				{
-					fGoodLoc = false;
-					break;
-				}
-			}
-
-			if ( !fGoodLoc )
-				continue;
-
-			// Check for direct cast on an item.
-			CWorldSearch AreaItem(pt);
-			for (;;)
-			{
-				CItem *pItem = AreaItem.GetItem();
-				if ( !pItem )
-					break;
-				if ( pItem->IsType(IT_SPELL) && IsSetMagicFlags(MAGICF_OVERRIDEFIELDS) )
-				{
-					pItem->Delete();
-					continue;
-				}
-				pItem->OnSpellEffect(m_atMagery.m_Spell, this, iSkillLevel, NULL);
-			}
-
-			CItem *pSpell = CItem::CreateScript(id);
+		if (fGoodLoc)
+		{
+			CItemPtr pSpell = CItem::CreateScript(id, this);
 			ASSERT(pSpell);
-			pSpell->m_itSpell.m_spell = static_cast<WORD>(m_atMagery.m_Spell);
-			pSpell->m_itSpell.m_spelllevel = static_cast<WORD>(iSkillLevel);
-			pSpell->m_itSpell.m_spellcharges = 1;
-			pSpell->m_uidLink = GetUID();	// link it back to you
 			pSpell->SetType(IT_SPELL);
 			pSpell->SetAttr(ATTR_MAGIC);
-			pSpell->SetHue(wColor);
-			pSpell->MoveToDecay(pt, iDuration, true);
+			pSpell->m_itSpell.m_spell = m_atMagery.m_Spell;
+			pSpell->m_itSpell.m_spelllevel = iSkillLevel;
+			pSpell->m_itSpell.m_spellcharges = 1;
+			pSpell->m_uidLink = GetUID();	// Link it back to you
+
+			// Add some random element.
+			int iDuration = pSpellDef->m_Duration.GetLinear(iSkillLevel);
+
+			pSpell->MoveToDecay(ptg, iDuration + Calc_GetRandVal(iDuration / 2));
 		}
 	}
 }

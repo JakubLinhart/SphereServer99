@@ -607,6 +607,10 @@ public:
 	{	// REGION_FLAG_GUARDED
 		return(( m_dwFlags & dwFlags ) ? true : false );
 	}
+	bool IsFlagGuarded() const
+	{
+		return IsGuarded();
+	}
 	bool IsGuarded() const;
 	void SetRegionFlags( DWORD dwFlags )
 	{
