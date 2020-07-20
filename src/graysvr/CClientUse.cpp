@@ -825,7 +825,7 @@ size_t CClient::Cmd_Skill_Menu_Build(RESOURCE_ID_BASE rid, int iSelect, CMenuIte
 		if ( s.IsKey("TESTIF") )
 		{
 			m_pChar->ParseText(s.GetArgRaw(), m_pChar);
-			if ( !s.GetArgVal() )
+			if ( !s.GetArgVal(&Args, this, m_pChar) )
 			{
 				--iShowCount;
 				fSkip = true;

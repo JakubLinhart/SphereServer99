@@ -626,9 +626,14 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 	// Script execution is always not threaded action
 	EXC_TRY("TriggerRun");
 
+	LPCTSTR pszKey;
+
 	bool fSectionFalse = ((trigger == TRIGRUN_SECTION_FALSE) || (trigger == TRIGRUN_SINGLE_FALSE));
 	if ((trigger == TRIGRUN_SECTION_EXEC) || (trigger == TRIGRUN_SINGLE_EXEC))	// header was already read in
+	{
+		pszKey = s.GetKey();
 		goto jump_in;
+	}
 
 	EXC_SET("parsing");
 	while (s.ReadKey())
@@ -651,7 +656,7 @@ TRIGRET_TYPE CScriptObj::OnTriggerRun(CScript &s, TRIGRUN_TYPE trigger, CTextCon
 
 		SK_TYPE index;
 
-		LPCTSTR pszKey = s.GetKey();
+		pszKey = s.GetKey();
 		GETNONWHITESPACE(pszKey);
 		index = static_cast<SK_TYPE>(FindTableHeadSorted(pszKey, sm_szScriptKeys, COUNTOF(sm_szScriptKeys) - 1));
 		if (index == SK_RETURN)
