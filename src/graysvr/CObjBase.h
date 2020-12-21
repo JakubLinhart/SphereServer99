@@ -36,6 +36,8 @@ protected:
 	CResourceRef m_BaseRef;
 
 public:
+	static bool sm_fDeleteReal;	// Delete for real. not just place in "to be deleted" list
+
 	CVarDefMap m_TagDefs;		// attach extra tags here
 	CVarDefMap m_BaseDefs;		// new variable storage system
 
@@ -220,6 +222,7 @@ protected:
 public:
 	virtual void DeletePrepare();
 	virtual void Delete(bool fForce = false);
+	virtual void DeleteThis();
 
 	bool IsTriggerActive(LPCTSTR pszTrig);
 	LPCTSTR GetTriggerActive();

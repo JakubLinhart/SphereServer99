@@ -64,6 +64,12 @@ public:
 		return m_Env.m_Light & ~LIGHT_OVERRIDE;
 	}
 	void SetLight(int iLight);
+	void SetLightNow(bool fFlash = false);
+
+	void LightFlash()
+	{
+		SetLightNow(true);
+	}
 
 	bool IsLightOverriden() const
 	{

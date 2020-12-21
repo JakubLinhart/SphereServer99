@@ -22,6 +22,11 @@
 #define UO_MAP_VIEW_SIZE		18	// Visibility distance for items (on old clients it's always 18, and since client 7.0.55.27 it's now dynamic 18~24 based on client screen resolution)
 #define UO_MAP_VIEW_RADAR		36	// Visibility distance for multis (houses/boats)
 
+#define SPHEREMAP_VIEW_SIGHT	12	// True max sight distance of creatures is 12
+#define SPHEREMAP_VIEW_SIZE		18 // Visibility for normal items
+#define SPHEREMAP_VIEW_RADAR	31 // Visibility for castles, keeps and boats
+
+
 ////////////////////////////////////////////////////////////////////////
 // Shared enum types.
 
@@ -127,8 +132,15 @@ enum ITEMID_TYPE	// InsideUO is great for this stuff.
 	ITEMID_GATE_IRON_2			= 0x84C,
 	ITEMID_GATE_WOODEN_2		= 0x866,
 
+	ITEMID_FOOD_BACON			= 0x0976,
 	ITEMID_FOOD_FISH_RAW		= 0x97A,
 	ITEMID_BANK_BOX				= 0x9B2,	// another pack really but used as bank box
+	ITEMID_FOOD_SAUSAGE			= 0x09c0,
+
+	ITEMID_FOOD_HAM				= 0x09C9,
+
+	ITEMID_FOOD_CAKE			= 0x09e9,
+
 	ITEMID_JAR_HONEY			= 0x9EC,
 
 	ITEMID_BEDROLL_O_EW			= 0xA55,
@@ -177,6 +189,9 @@ enum ITEMID_TYPE	// InsideUO is great for this stuff.
 	ITEMID_KEY_COPPER			= 0x100E,
 	ITEMID_KEY_RING0			= 0x1011,
 	ITEMID_KEY_MAGIC			= 0x1012,
+
+	ITEMID_FOOD_BREAD			= 0x103b,
+
 	ITEMID_LEATHER_1			= 0x1067,
 	ITEMID_LEATHER_2			= 0x1068,
 	ITEMID_HIDES				= 0x1078,
@@ -290,18 +305,26 @@ enum ITEMID_TYPE	// InsideUO is great for this stuff.
 	ITEMID_GAME2_KING			= 0x3591,
 	ITEMID_GAME_HI				= 0x35A1,	// ?
 
+	ITEMID_FX_EXPLODE_3			= 0x36b0,
+	ITEMID_FX_EXPLODE_2			= 0x36bd,
+	ITEMID_FX_EXPLODE_1			= 0x36ca,
 	ITEMID_FX_EXPLODE			= 0x36B0,
 	ITEMID_FX_FIRE_BALL			= 0x36D4,
+	ITEMID_FX_MAGIC_ARROW		= 0x36e4,
+	ITEMID_FX_FIRE_BOLT			= 0x36f4, // fire snake
 
 	ITEMID_FX_FLAMESTRIKE		= 0x3709,
 	ITEMID_FX_TELE_VANISH		= 0x3728,
 	ITEMID_FX_SPELL_FAIL		= 0x3735,
+	ITEMID_FX_BLESS_EFFECT		= 0x373A,
 	ITEMID_FX_CURSE_EFFECT		= 0x374A,
 	ITEMID_FX_HEAL_EFFECT		= 0x376A,
 	ITEMID_FX_SPARKLE_2			= 0x3779,
 	ITEMID_FX_VORTEX			= 0x3789,
+	ITEMID_FX_ENERGY_BOLT		= 0x379f,
 	ITEMID_FX_GLOW				= 0x37B9,
 
+	ITEMID_FX_POISON_F_1		= 0x3915,
 	ITEMID_FX_POISON_F_EW		= 0x3915,
 	ITEMID_FX_POISON_F_NS		= 0x3920,
 	ITEMID_FX_ENERGY_F_EW		= 0x3947,
@@ -885,7 +908,8 @@ enum LAYER_TYPE		// defined by UO. Only one item can be in a slot.
 	LAYER_HELM,		// 6
 	LAYER_GLOVES,	// 7
 	LAYER_RING,
-	LAYER_TALISMAN,	// 9 = talisman item
+	LAYER_LIGHT = 9,	// 9 = a ITEMID_LIGHT_SRC equip item can be put here.
+	LAYER_TALISMAN = 9,	// 9 = talisman item
 	LAYER_COLLAR,	// 10 = gorget or necklace.
 	LAYER_HAIR,		// 11 = 0x0b =
 	LAYER_HALF_APRON,// 12 = 0x0c =

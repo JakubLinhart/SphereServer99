@@ -129,6 +129,7 @@ enum TOOLTIPMODE_TYPE
 #define DAMAGE_POISON		0x00008	// Or biological of some sort ? (HARM spell)
 #define DAMAGE_FIRE			0x00010	// Fire damage of course (some creatures are immune to fire)
 #define DAMAGE_ENERGY		0x00020	// lightning.
+#define DAMAGE_ELECTRIC		0x00020	// lightning.
 #define DAMAGE_GENERAL		0x00080	// All over damage. As apposed to hitting just one point.
 #define DAMAGE_ACIDIC		0x00100	// damages armor
 #define DAMAGE_COLD			0x00200	// cold or water based damage
@@ -498,6 +499,10 @@ enum STAT_TYPE
 #define STAT_Int STAT_INT
 #define STAT_Mana STAT_INT
 #define STAT_Dex STAT_DEX
+#define STAT_Health STAT_STR
+#define STAT_Stam STAT_DEX
+#define STAT_Food STAT_FOOD
+
 
 class CSkillClassDef : public CResourceLink // For skill def table
 {

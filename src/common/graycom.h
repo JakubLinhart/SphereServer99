@@ -43,7 +43,11 @@
 #endif
 
 #ifndef PTR_CAST
-#define PTR_CAST(T, P) dynamic_cast<T*>(P)
+#define PTR_CAST(t,o) dynamic_cast<t*>(o)
+#endif
+
+#ifndef REF_CAST
+#define REF_CAST(a,b) static_cast<a*>(b)
 #endif
 
 #ifdef _WIN32
@@ -122,6 +126,15 @@ struct CGrayUIDBase		// A unique system serial id (4 bytes long)
 	#define UID_O_INDEX_FREE	0x01000000	// Spellbook needs unused UID's?
 	#define UID_O_INDEX_MASK	0x0FFFFFFF	// lose the upper bits
 
+	#define UID_INDEX_MASK	0x3FFFFFFF	// lose the upper 2 bits.
+
+	#define RID_TYPE_SHIFT	25	// 6 bits = 64 for RES_TYPE
+	#define RID_TYPE_MASK	63
+	#define RID_PAGE_SHIFT	18	// 7 bits = 128 pages of space. (if needed by the type)
+	#define RID_PAGE_MASK	127
+	#define RID_INDEX_SHIFT	0	// 18 bits = 262144 entries.
+	#define RID_INDEX_MASK	0x3FFFF		// max number of any given type. (not valid value)
+
 protected:
 	DWORD m_dwInternalVal;
 
@@ -156,6 +169,11 @@ public:
 	{
 		// Can be set to -1 by client
 		m_dwInternalVal = (dwVal & (UID_O_INDEX_MASK|UID_F_ITEM))|UID_O_DISCONNECT;
+	}
+
+	bool IsValidObjUID() const
+	{
+		return IsValidUID();
 	}
 
 	bool IsValidUID() const

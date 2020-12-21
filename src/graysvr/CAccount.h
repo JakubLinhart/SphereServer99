@@ -9,6 +9,7 @@
 #define PRIV_DETAIL			0x0040	// Show combat detail messages
 #define PRIV_DEBUG			0x0080	// Show all objects as boxes and chars as humans
 #define PRIV_PRIV_NOSHOW	0x0200	// Show the GM title and Invul flags
+#define PRIV_PRIV_HIDE		0x0200	// Show the GM title and Invul flags.
 #define PRIV_TELNET_SHORT	0x0400	// Disable broadcasts to be accepted by client
 #define PRIV_JAILED			0x0800	// Must be /PARDONed from jail
 #define PRIV_BLOCKED		0x2000	// The account is blocked

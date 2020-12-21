@@ -27,7 +27,10 @@
 #define IsAlpha(c)		isalpha((unsigned char)(c))
 #define IsNegative(c)	(((c) < 0) ? 1 : 0)
 
+#define ABS(a)			abs(a)
+#define MIN(a, b)				(((a) < (b)) ? (a) : (b))
 #define minimum(a, b)			(((a) < (b)) ? (a) : (b))
+#define MAX(a, b)				(((a) > (b)) ? (a) : (b))
 #define maximum(a, b)			(((a) > (b)) ? (a) : (b))
 
 #define IMULDIV(a, b, c)		(((((LONGLONG)(a) * (LONGLONG)(b)) + ((c) / 2)) / (c)) - IsNegative((LONGLONG)(a) * (LONGLONG)(b)) )

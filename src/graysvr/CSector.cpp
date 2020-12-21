@@ -537,6 +537,40 @@ BYTE CSector::GetLightCalc(bool fQuickSet) const
 		return m_Env.m_Light + 1;
 }
 
+void CSector::SetLightNow(bool fFlash)
+{
+	// Set the light level for all the CClients here.
+	//CCharPtr pChar = static_cast<CChar*>(m_Chars_Active.GetHead());
+	//for (; pChar != NULL; pChar = pChar->GetNext())
+	//{
+	//	if (pChar->IsStatFlag(STATF_DEAD | STATF_NightSight))
+	//		continue;
+
+	//	if (pChar->IsClient())
+	//	{
+	//		CClientPtr pClient = pChar->GetClient();
+	//		ASSERT(pClient);
+
+	//		if (fFlash)	// This does not seem to work predicably !?
+	//		{
+	//			BYTE bPrvLight = m_Env.m_Light;
+	//			m_Env.m_Light = LIGHT_BRIGHT;	// full bright.
+	//			pClient->addLight();
+	//			pClient->xFlush();
+	//			pClient->addPause(false);	// show the new light level.
+	//			m_Env.m_Light = bPrvLight;	// back to previous.
+	//		}
+	//		pClient->addLight();
+	//	}
+
+	//	if (!g_Serv.IsLoading())
+	//	{
+	//		CSphereExpContext se(pChar, pChar);
+	//		pChar->OnTrigger(CCharDef::T_EnvironChange, se);
+	//	}
+	//}
+}
+
 void CSector::SetLight(int iLight)
 {
 	ADDTOCALLSTACK("CSector::SetLight");
@@ -761,10 +795,14 @@ void CSector::Close()
 {
 	ADDTOCALLSTACK("CSector::Close");
 	// Clear up all dynamic data for this sector
+	CObjBase::sm_fDeleteReal = true;
+
 	m_Items_Timer.DeleteAll();
 	m_Items_Inert.DeleteAll();
 	m_Chars_Active.DeleteAll();
 	m_Chars_Disconnect.DeleteAll();
+
+	CObjBase::sm_fDeleteReal = false;
 }
 
 void CSector::RespawnDeadNPCs()

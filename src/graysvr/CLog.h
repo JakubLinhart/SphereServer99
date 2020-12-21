@@ -13,6 +13,7 @@ enum LOGL_TYPE
 	LOGL_ERROR,						// Non-critical error (can continue)
 	LOGL_WARN,						// Warning message
 	LOGL_EVENT,						// Misc message
+	LOGL_TRACE = 6,	// low level debug trace.
 	LOGL_QTY	= 0xF,
 
 	// Message type

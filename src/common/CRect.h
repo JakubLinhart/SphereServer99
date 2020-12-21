@@ -13,6 +13,8 @@ class CRegionBase;
 class CRegionLinks;
 class CSector;
 
+#define CPointMapBase CPointBase
+
 struct CPointBase	// Non initialized 3d point.
 {
 public:
@@ -63,6 +65,8 @@ public:
 	bool IsValidXY() const;
 	bool IsValidZ() const;
 	bool IsValidPoint() const;
+	
+	bool IsCharValid() const;
 
 	void ValidatePoint();
 

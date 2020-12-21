@@ -45,7 +45,7 @@ enum PLEVEL_TYPE
 };
 
 class CChar;
-
+#define CScriptConsole CTextConsole
 class CTextConsole
 {
 	// A base class for any class that can act like a console and issue commands

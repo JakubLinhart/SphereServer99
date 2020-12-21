@@ -125,7 +125,7 @@ public:
 	}
 };
 
-#define CSphereUID RESOURCE_ID
+#define CSphereUID CGrayUID
 
 struct RESOURCE_ID : public RESOURCE_ID_BASE
 {

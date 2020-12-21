@@ -2124,12 +2124,6 @@ void CClient::Event_AOSPopupMenuRequest(CGrayUID uid) //construct packet after a
 
 					m_pPopupPacket->addOption(POPUP_SPK_TRAIN_SKILL + i, 6000 + i, wFlagDist|wFlagSkill);
 				}
-
-				if ( pChar->m_pNPC->m_Brain == NPCBRAIN_ANIMAL_TRAINER )
-				{
-					m_pPopupPacket->addOption(POPUP_SPK_STABLE_PET, 6126, wFlagDist);
-					m_pPopupPacket->addOption(POPUP_SPK_CLAIM_PETS, 6127, wFlagDist);
-				}
 			}
 			else
 			{

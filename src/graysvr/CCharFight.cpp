@@ -1363,6 +1363,24 @@ void CChar::CallGuards(CChar *pCriminal)
 	pGuard->NPC_LookAtCharGuard(pCriminal);
 }
 
+void CChar::OnHelpedBy(CChar* pCharSrc)
+{
+	// Helping evil is alway criminal!
+	if (Noto_IsEvil())
+	{
+		pCharSrc->Noto_Criminal();
+		return;
+	}
+	if (g_Cfg.m_fHelpingCriminalsIsACrime)
+	{
+		if (Noto_GetFlag(pCharSrc, false) > NOTO_NEUTRAL)
+		{
+			pCharSrc->Noto_Criminal();
+			return;
+		}
+	}
+}
+
 void CChar::OnHarmedBy(CChar *pCharSrc)
 {
 	ADDTOCALLSTACK("CChar::OnHarmedBy");

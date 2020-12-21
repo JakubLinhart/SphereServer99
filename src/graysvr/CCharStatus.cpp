@@ -446,7 +446,6 @@ NPCBRAIN_TYPE CChar::GetNPCBrain(bool fGroupTypes) const
 			case NPCBRAIN_GUARD:
 			case NPCBRAIN_BANKER:
 			case NPCBRAIN_VENDOR:
-			case NPCBRAIN_ANIMAL_TRAINER:
 				return NPCBRAIN_HUMAN;
 			case NPCBRAIN_BERSERK:
 			case NPCBRAIN_DRAGON:

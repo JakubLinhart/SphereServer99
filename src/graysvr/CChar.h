@@ -14,18 +14,25 @@
 
 enum NPCBRAIN_TYPE
 {
-	NPCBRAIN_NONE,				// 0 = This should never really happen
-	NPCBRAIN_ANIMAL,			// 1 = Can be tamed
-	NPCBRAIN_HUMAN,				// 2 = Generic human
-	NPCBRAIN_HEALER,			// 3 = Can resurrect
-	NPCBRAIN_GUARD,				// 4 = Will attack criminal/murderers
-	NPCBRAIN_BANKER,			// 5 = Can open bank box for you
-	NPCBRAIN_VENDOR,			// 6 = Can buy/sell items
-	NPCBRAIN_ANIMAL_TRAINER,	// 7 = Can stable pets
-	NPCBRAIN_MONSTER,			// 8 = Usually evil
-	NPCBRAIN_BERSERK,			// 9 = Attack every nearby creature (blade spirit, energy vortex)
-	NPCBRAIN_DRAGON,			// 10 = Can breath fire attacks
-	NPCBRAIN_QTY
+	NPCBRAIN_NONE = 0,	// 0 = This should never really happen.
+	NPCBRAIN_ANIMAL,	// 1 = can be tamed.
+	NPCBRAIN_HUMAN,		// 2 = generic human.
+	NPCBRAIN_HEALER,	// 3 = can res.
+	NPCBRAIN_GUARD,		// 4 = inside cities
+	NPCBRAIN_BANKER,	// 5 = can open your bank box for you
+	NPCBRAIN_VENDOR,	// 6 = will sell from vendor boxes.
+	NPCBRAIN_BEGGAR,	// 7 = begs.
+	NPCBRAIN_STABLE,	// 8 = will store your animals for you.
+	NPCBRAIN_THIEF,		// 9 = should try to steal ?
+	NPCBRAIN_MONSTER,	// 10 = not tamable. normally evil.
+	NPCBRAIN_BERSERK,	// 11 = attack closest (blades, vortex)
+	NPCBRAIN_UNDEAD,	// 12 = disapears in the light.
+	NPCBRAIN_DRAGON,	// 13 = we can breath fire. may be tamable ? hirable ?
+	NPCBRAIN_VENDOR_OFFDUTY,	// 14 = "Sorry i'm not working right now. come back when my shop is open.
+	NPCBRAIN_CRIER,		// 15 = will speak periodically.
+	NPCBRAIN_CONJURED,	// 16 = elemental or other conjured creature.
+	NPCBRAIN_WEATHERMAN,	// 17 = spreads rain were they go. (invis and can walk thru walls)
+	NPCBRAIN_QTY,
 };
 
 // Number of steps to remember for pathfinding (default to 28 steps, will have 28*4 extra bytes per char)
@@ -470,6 +477,11 @@ public:
 		WORD m_regen;		// Tick time since last regen
 	} m_Stat[STAT_QTY];
 
+	int m_StatMaxHealth()
+	{
+		return m_Stat[STAT_STR].m_max;
+	}
+
 	CServTime m_timeCreate;		// When was i created ?
 	CServTime m_timeLastRegen;	// When did i get my last regen tick ?
 	CServTime m_timeLastHitsUpdate;
@@ -504,6 +516,7 @@ public:
 		{
 			SPELL_TYPE m_Spell;			// ACTARG1 = Currently casting spell
 			CREID_TYPE m_SummonID;		// ACTARG2 = A sub arg of the skill (summoned type ?)
+			bool m_fSummonPet;			// ACTARG3=
 		} m_atMagery;
 
 		// SKILL_ALCHEMY
@@ -600,6 +613,7 @@ public:
 		else
 			m_StatFlag &= ~uiStatFlag;
 	}
+	bool IsPrivFlag(WORD wPrivFlags) const { return IsPriv(wPrivFlags); }
 	bool IsPriv(WORD wPrivFlags) const
 	{
 		if ( m_pPlayer )
@@ -921,9 +935,9 @@ public:
 		va_end(vargs);
 		WriteString(sTemp);
 	}
-	void Stat_Change(STAT_TYPE stat, int iChange)
+	void Stat_Change(STAT_TYPE stat, int iChange, int iLimit = 0)
 	{
-		UpdateStatVal(stat, iChange);
+		UpdateStatVal(stat, iChange, iLimit);
 	}
 
 	void UpdateStatsFlag() const;
@@ -1200,9 +1214,11 @@ private:
 	int Skill_Act_Training(SKTRIG_TYPE stage);
 
 	void Spell_Dispel(int iLevel);
-	CChar *Spell_Summon(CREID_TYPE id, CPointMap ptTarg);
+	CChar *Spell_Summon(CREID_TYPE id, CPointMap ptTarg, bool fSpellSummon);
 	bool Spell_Recall(CItem *pTarg, bool fGate);
 	CItem *Spell_Effect_Create(SPELL_TYPE spell, LAYER_TYPE layer, int iSkillLevel, int iDuration, CObjBase *pSrc = NULL, bool fEquip = true);
+	void Spell_Equip_Add(CItem* pSpell);
+	CItemPtr Spell_Equip_Create(SPELL_TYPE spell, LAYER_TYPE layer, int iSkillLevel, int iDuration, CObjBase* pSrc, bool fDispellable);
 	bool Spell_Equip_OnTick(CItem *pItem);
 
 	void Spell_Field(CPointMap pntTarg, ITEMID_TYPE idEW, ITEMID_TYPE idNS, BYTE bFieldWidth, BYTE bFieldGauge, int iSkillLevel, CChar *pCharSrc = NULL, int iDuration = 0, HUE_TYPE wColor = HUE_DEFAULT);
@@ -1217,9 +1233,17 @@ private:
 public:
 	bool Spell_CastDone();
 	bool OnSpellEffect(SPELL_TYPE spell, CChar *pCharSrc, int iSkillLevel, CItem *pSourceItem, bool fReflecting = false);
+	bool Spell_Effect_AnimateDead(CItemCorpse* pCorpse);
+	bool Spell_Effect_BoneArmor(CItemCorpse* pCorpse);
 	bool Spell_Resurrection(CItemCorpse *pCorpse = NULL, CChar *pCharSrc = NULL, bool fNoFail = false);
+	bool Spell_Effect_Teleport(CPointMapBase pt, bool fTakePets = false, bool fCheckAntiMagic = true, ITEMID_TYPE iEffect = ITEMID_FX_TELE_VANISH, SOUND_TYPE iSound = 0x01fe);
+	void Spell_Effect_Bolt(CObjBase* pObjTarg, ITEMID_TYPE idBolt, int iSkillLevel);
+	void Spell_Effect_Field(CPointMap pt, ITEMID_TYPE idEW, ITEMID_TYPE idNS, int iSkill);
+	void Spell_Effect_Area(CPointMap pt, int iDist, int iSkill);
 	bool Spell_Teleport(CPointMap ptDest, bool fTakePets = false, bool fCheckAntiMagic = true, bool fDisplayEffect = true, ITEMID_TYPE iEffect = ITEMID_NOTHING, SOUND_TYPE iSound = SOUND_NONE);
 	bool Spell_CreateGate(CPointMap ptDest, bool fCheckAntiMagic = true);
+	bool Spell_Effect_Recall(CItem* pRune, bool fGate, int iSkillLevel);
+	CCharPtr Spell_Effect_Summon(CREID_TYPE id, CPointMap pt, bool fPet);
 	bool Spell_CanCast(SPELL_TYPE &spell, bool fTest, CObjBase *pSrc, bool fFailMsg, bool fCheckAntiMagic = true);
 	int	GetSpellDuration(SPELL_TYPE spell, int iSkillLevel, CChar *pCharSrc = NULL);
 
@@ -1485,7 +1509,7 @@ public:
 	}
 	bool NPC_IsVendor() const
 	{
-		return (m_pNPC && ((m_pNPC->m_Brain == NPCBRAIN_HEALER) || (m_pNPC->m_Brain == NPCBRAIN_BANKER) || (m_pNPC->m_Brain == NPCBRAIN_VENDOR) || (m_pNPC->m_Brain == NPCBRAIN_ANIMAL_TRAINER)));
+		return (m_pNPC && ((m_pNPC->m_Brain == NPCBRAIN_HEALER) || (m_pNPC->m_Brain == NPCBRAIN_BANKER) || (m_pNPC->m_Brain == NPCBRAIN_VENDOR)));
 	}
 
 	int NPC_GetAiFlags()
@@ -1508,6 +1532,7 @@ public:
 	// Outside events that occur to us
 	int OnTakeDamage(int iDmg, CChar *pSrc, DAMAGE_TYPE uType, int iDmgPhysical = 0, int iDmgFire = 0, int iDmgCold = 0, int iDmgPoison = 0, int iDmgEnergy = 0);
 	void OnTakeDamageArea(int iDmg, CChar *pSrc, DAMAGE_TYPE uType, int iDmgPhysical = 0, int iDmgFire = 0, int iDmgCold = 0, int iDmgPoison = 0, int iDmgEnergy = 0, HUE_TYPE effectHue = HUE_DEFAULT, SOUND_TYPE effectSound = SOUND_NONE);
+	void OnHelpedBy(CChar* pCharSrc);
 	void OnHarmedBy(CChar *pCharSrc);
 	bool OnAttackedBy(CChar *pCharSrc, bool fPetsCommand = false, bool fShouldReveal = true);
 

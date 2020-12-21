@@ -347,6 +347,7 @@ class PacketSend;
 class PacketServerRelay;
 struct VendorItem;
 
+#define CClientPtr CClient*
 class CClient : public CGObListRec, public CScriptObj, public CChatMember, public CGlobalChat, public CTextConsole
 {
 	// TCP/IP connection to the player or console
@@ -484,6 +485,7 @@ public:
 		{
 			SPELL_TYPE m_Spell;		// targetting what spell?
 			CREID_TYPE m_SummonID;
+			bool m_fSummonPet;			// ACTARG3=
 		} m_tmSkillMagery;
 
 		// CLIMODE_TARG_USE_ITEM

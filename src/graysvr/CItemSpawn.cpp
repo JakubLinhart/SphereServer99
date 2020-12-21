@@ -2,6 +2,25 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
+bool CItemCorpse::IsPlayerDecayed() const
+{
+	// anyone can loot now?
+	ASSERT(IsType(IT_CORPSE));
+	return !IsPlayerCorpse();
+}
+
+bool CItemCorpse::IsPlayerCorpse() const
+{
+	// Is this a players corpse?
+	ASSERT(IsType(IT_CORPSE));
+	CCharPtr pCharCorpse = g_World.CharFind(m_uidLink);
+	if (pCharCorpse == NULL)
+		return false;
+	if (pCharCorpse->m_pPlayer)
+		return true;
+	return false;
+}
+
 BYTE CItemSpawn::GetAmount()
 {
 	ADDTOCALLSTACK("CItemSpawn::GetAmount");

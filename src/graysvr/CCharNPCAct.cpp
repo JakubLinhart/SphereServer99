@@ -208,7 +208,7 @@ bool CChar::NPC_StablePetSelect(CChar *pCharPlayer)
 {
 	ADDTOCALLSTACK("CChar::NPC_StablePetSelect");
 	// Player is trying to stable an pet on stable master NPC
-	if ( !m_pNPC || (m_pNPC->m_Brain != NPCBRAIN_ANIMAL_TRAINER) || !pCharPlayer || !pCharPlayer->m_pClient )
+	if ( !m_pNPC || !pCharPlayer || !pCharPlayer->m_pClient )
 		return false;
 
 	CItemContainer *pBank = GetContainerCreate(LAYER_BANKBOX);
@@ -267,7 +267,7 @@ bool CChar::NPC_StablePetRetrieve(CChar *pCharPlayer)
 {
 	ADDTOCALLSTACK("CChar::NPC_StablePetRetrieve");
 	// Player is trying to retrieve an stabled pet on stable master NPC
-	if ( !m_pNPC || (m_pNPC->m_Brain != NPCBRAIN_ANIMAL_TRAINER) || !pCharPlayer || !pCharPlayer->m_pClient )
+	if ( !m_pNPC || !pCharPlayer || !pCharPlayer->m_pClient )
 		return false;
 
 	int iPetCount = 0;
@@ -523,7 +523,7 @@ bool CChar::NPC_OnTrainHear(CChar *pCharSrc, LPCTSTR pszCmd)
 {
 	ADDTOCALLSTACK("CChar::NPC_OnTrainHear");
 	// Check the NPC is capable of teaching
-	if ( !m_pNPC || !pCharSrc || (m_pNPC->m_Brain < NPCBRAIN_HUMAN) || (m_pNPC->m_Brain > NPCBRAIN_ANIMAL_TRAINER) || (m_pNPC->m_Brain == NPCBRAIN_GUARD) )
+	if ( !m_pNPC || !pCharSrc || (m_pNPC->m_Brain < NPCBRAIN_HUMAN) || (m_pNPC->m_Brain == NPCBRAIN_GUARD) )
 		return false;
 
 	if ( Memory_FindObjTypes(pCharSrc, MEMORY_FIGHT|MEMORY_HARMEDBY|MEMORY_IRRITATEDBY|MEMORY_AGGREIVED) )
@@ -1144,7 +1144,6 @@ bool CChar::NPC_LookAtChar(CChar *pChar)
 			// fall through
 		case NPCBRAIN_BANKER:
 		case NPCBRAIN_VENDOR:
-		case NPCBRAIN_ANIMAL_TRAINER:
 		case NPCBRAIN_ANIMAL:
 		case NPCBRAIN_HUMAN:
 			return NPC_LookAtCharHuman(pChar);

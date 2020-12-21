@@ -42,8 +42,13 @@ public:
 
 	// UID managenent
 	#define UID_PLACE_HOLDER	reinterpret_cast<CObjBase *>(DWORD_PTR_MAX)
-	CObjBase *FindUID(DWORD dwIndex) const;
+	CObjBase* FindUIDObj(DWORD dwIndex) const;
+	CObjBase* FindUID(DWORD dwIndex) const;
 	DWORD GetUIDCount() const;
+	void FreeUID(CObjBasePtr pObj)
+	{
+		FreeUID(pObj->GetUID());
+	}
 	void FreeUID(DWORD dwIndex);
 	DWORD AllocUID(DWORD dwIndex, CObjBase *pObj);
 
@@ -266,6 +271,21 @@ public:
 		if ( !pMapBlock )
 			return NULL;
 		return pMapBlock->GetTerrain(UO_BLOCK_OFFSET(pt.m_x), UO_BLOCK_OFFSET(pt.m_y));
+	}
+
+	CObjBasePtr ObjFind(CGrayUID uid) const
+	{
+		if (!uid.IsValidObjUID())
+			return(NULL);
+		return(PTR_CAST(CObjBase, FindUIDObj(uid & UID_INDEX_MASK)));
+	}
+
+	CCharPtr CharFind(CSphereUID uid) const
+	{
+		// Does character still exist
+		if (!uid.IsChar())
+			return(NULL);
+		return(PTR_CAST(CChar, FindUIDObj(uid & UID_INDEX_MASK)));
 	}
 
 	CPointMap FindItemTypeNearby(const CPointMap &pt, IT_TYPE type, int iDist = 0, bool fCheckMulti = false, bool fLimitZ = false);

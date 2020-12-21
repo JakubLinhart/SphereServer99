@@ -1246,6 +1246,9 @@ private:
 	CItemCorpse &operator=(const CItemCorpse &other);
 
 public:
+	bool	 IsPlayerDecayed() const;	// anyone can loot.
+	bool	 IsPlayerCorpse() const;
+
 	int GetWeight(WORD wAmount = 0) const
 	{
 		UNREFERENCED_PARAMETER(wAmount);

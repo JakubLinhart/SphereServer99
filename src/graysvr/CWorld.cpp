@@ -569,6 +569,11 @@ DWORD CWorldThread::GetUIDCount() const
 	return m_UIDs.GetCount();
 }
 
+CObjBase* CWorldThread::FindUIDObj(DWORD dwIndex) const
+{
+	return FindUID(dwIndex);
+}
+
 CObjBase *CWorldThread::FindUID(DWORD dwIndex) const
 {
 	if ( (dwIndex <= 0) || (dwIndex >= GetUIDCount()) )
@@ -1865,6 +1870,7 @@ void CWorld::Close()
 
 void CWorld::GarbageCollection()
 {
+	CObjBase::sm_fDeleteReal = true;
 	ADDTOCALLSTACK("CWorld::GarbageCollection");
 	g_Log.Flush();
 	SERVMODE_TYPE smPrevServMode = g_Serv.m_iModeCode;
@@ -1872,6 +1878,7 @@ void CWorld::GarbageCollection()
 	GarbageCollection_UIDs();
 	g_Serv.SetServerMode(smPrevServMode);
 	g_Log.Flush();
+	CObjBase::sm_fDeleteReal = false;
 }
 
 void CWorld::Speak(const CObjBaseTemplate *pSrc, LPCTSTR pszText, HUE_TYPE wHue, TALKMODE_TYPE mode, FONT_TYPE font)

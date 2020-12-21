@@ -148,6 +148,20 @@ bool CPointBase::IsValidPoint() const
 	return (IsValidXY() && IsValidZ());
 }
 
+bool CPointBase::IsCharValid() const
+{
+	// Can a char stand here ?
+	//CMulMap* pMulMap = GetMulMap();
+	//ASSERT(pMulMap);
+	//if (!IsValidZ())
+	//	return(false);
+	//if (m_x <= 0 || m_x >= pMulMap->m_iSizeX)
+	//	return(false);
+	//if (m_y <= 0 || m_y >= pMulMap->m_iSizeY)
+	//	return(false);
+	return(true);
+}
+
 void CPointBase::ValidatePoint()
 {
 	if ( m_x < 0 )
