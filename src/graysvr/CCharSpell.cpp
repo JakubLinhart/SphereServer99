@@ -227,78 +227,47 @@ bool CChar::Spell_CreateGate(CPointMap ptDest, bool fCheckAntiMagic)
 	return true;
 }
 
-CChar *CChar::Spell_Summon(CREID_TYPE id, CPointMap ptTarg)
+CChar *CChar::Spell_Summon(CREID_TYPE id, CPointMap ptTarg, bool fSpellSummon)
 {
 	ADDTOCALLSTACK("CChar::Spell_Summon");
 	// Summon an NPC using summon spells.
 
-	int iSkill;
-	const CSpellDef *pSpellDef = g_Cfg.GetSpellDef(m_atMagery.m_Spell);
-	if ( !pSpellDef || !pSpellDef->GetPrimarySkill(&iSkill, NULL) )
-		return NULL;
+	if (id == CREID_INVALID)
+		return(NULL);
 
-	if ( !pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ|SPELLFLAG_TARG_XYZ) )
-		ptTarg = GetTopPoint();
-
-	CChar *pChar = CChar::CreateBasic(id);
-	if ( !pChar )
-		return NULL;
-
-	if ( !IsPriv(PRIV_GM) )
+	DEBUG_CHECK(pntTarg.IsValidPoint());
+	CCharPtr pChar;
+	if (!fSpellSummon)	// IsGM()
 	{
-		if ( IsSetMagicFlags(MAGICF_SUMMONWALKCHECK) )	// check if the target location is valid
-		{
-			CCharBase *pSummonDef = CCharBase::FindCharBase(id);
-			DWORD dwCan = DWORD_MAX;
-			if ( pSummonDef )
-				dwCan = pSummonDef->m_Can & CAN_C_MOVEMASK;
+		// GM creates a char this way. "ADDNPC"
+		// More specific npc type from script ?
+		pChar = CreateNPC(id);
+		ASSERT(pChar);
+		m_Act_Targ = pChar->GetUID();	// for last target stuff.
+	}
+	else
+	{
+		// These type summons make me it's master. (for a limited time)
+		pChar = CChar::CreateBasic(id);
+		ASSERT(pChar);
+		// Time based on magery. Add the flag first so it does not get loot.
+		// conjured creates have no loot. (Mark this early)
+		CItemPtr pSpell = pChar->Spell_Equip_Create(SPELL_Summon,
+			LAYER_SPELL_Summon, Skill_GetAdjusted(SKILL_MAGERY),
+			0, this, fSpellSummon);
+		ASSERT(pSpell);
+		pChar->NPC_LoadScript(false);
 
-			if ( dwCan != DWORD_MAX )
-			{
-				DWORD dwBlockFlags = 0;
-				g_World.GetHeightPoint2(ptTarg, dwBlockFlags, true);
-
-				if ( dwBlockFlags & ~dwCan )
-				{
-					SysMessageDefault(DEFMSG_MSG_SUMMON_INVALIDTARG);
-					pChar->Delete();
-					return NULL;
-				}
-			}
-		}
-
-		if ( IsSetOF(OF_PetSlots) )
-		{
-			if ( !FollowersUpdate(pChar, pChar->m_FollowerSlots, true) )
-			{
-				SysMessageDefault(DEFMSG_PETSLOTS_TRY_SUMMON);
-				pChar->Delete();
-				return NULL;
-			}
-		}
-
-		if ( g_Cfg.m_iMountHeight && !pChar->IsVerticalSpace(GetTopPoint(), false) )
-		{
-			SysMessageDefault(DEFMSG_MSG_SUMMON_CEILING);
-			pChar->Delete();
-			return NULL;
-		}
+		// Can't own a beserk type creature.
+		ASSERT(pChar->m_pNPC.IsValidNewObj());
+		pChar->NPC_PetSetOwner(this);
 	}
 
-	pChar->StatFlag_Set(STATF_Conjured);	// conjured creates have no loot
-	pChar->NPC_LoadScript(false);
 	pChar->MoveToChar(ptTarg);
-	pChar->m_ptHome = ptTarg;
-	pChar->m_pNPC->m_Home_Dist_Wander = 10;
-	pChar->NPC_CreateTrigger();		// removed from NPC_LoadScript() and triggered after char placement
-	pChar->NPC_PetSetOwner(this, false);
-	pChar->OnSpellEffect(SPELL_Summon, this, Skill_GetAdjusted(static_cast<SKILL_TYPE>(iSkill)), NULL);
-
 	pChar->Update();
 	pChar->UpdateAnimate(ANIM_CAST_DIR);
 	pChar->SoundChar(CRESND_GETHIT);
-	m_Act_Targ = pChar->GetUID();	// for last target stuff
-	return pChar;
+	return(pChar);
 }
 
 bool CChar::Spell_Recall(CItem *pTarg, bool fGate)
@@ -1679,423 +1648,416 @@ bool CChar::Spell_CastDone()
 	ADDTOCALLSTACK("CChar::Spell_CastDone");
 	// Spell_CastDone
 	// Ready for the spell effect.
-	// m_Act_TargPrv = spell was magic item or scroll ?
+	// m_Act.m_TargPrv = spell was magic item or scroll ?
 	// RETURN:
 	//  false = fail.
 	// ex. magery skill goes up FAR less if we use a scroll or magic device !
+	//
 
-	if ( !Spell_TargCheck() )
-		return false;
+	if (!Spell_TargCheck())	// check targ one last time.
+		return(false);
 
-	SPELL_TYPE spell = m_atMagery.m_Spell;
-	const CSpellDef *pSpellDef = g_Cfg.GetSpellDef(spell);
-	if ( !pSpellDef )
-		return false;
+	CObjBasePtr pObj = g_World.ObjFind(m_Act.m_Targ);	// dont always need a target.
+	CObjBasePtr pObjSrc = g_World.ObjFind(m_Act.m_TargPrv);
 
-	int iSkill, iDifficulty;
-	if ( !pSpellDef->GetPrimarySkill(&iSkill, &iDifficulty) )
-		return false;
-
-	CObjBase *pObjSrc = m_Act_TargPrv.ObjFind();
+	SPELL_TYPE spell = m_Act.m_atMagery.m_Spell;
+	CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef(spell);
+	if (pSpellDef == NULL)
+		return(false);
 
 	int iSkillLevel;
-	if ( pObjSrc == this )
+	if (pObjSrc != this)
 	{
-		iSkillLevel = Skill_GetAdjusted(static_cast<SKILL_TYPE>(iSkill));
-
-		if ( (iSkill == SKILL_MYSTICISM) && (iSkillLevel < 300) && (g_Cfg.m_iRacialFlags & RACIALF_GARG_MYSTICINSIGHT) && IsGargoyle() )
-			iSkillLevel = 300;	// gargoyles always have a minimum of 30.0 Mysticism (Mystic Insight racial trait)
+		// Get the strength of the item. IT_SCROLL or IT_WAND
+		CItemPtr pItem = REF_CAST(CItem, pObjSrc);
+		if (pItem == NULL)
+			return(false);
+		if (!pItem->m_itWeapon.m_spelllevel)
+			iSkillLevel = Calc_GetRandVal(500);
+		else
+			iSkillLevel = pItem->m_itWeapon.m_spelllevel;
+		if (pItem->IsAttr(ATTR_CURSED | ATTR_CURSED2))
+		{
+			// do something bad.
+			spell = SPELL_Curse;
+			pSpellDef = g_Cfg.GetSpellDef(SPELL_Curse);
+			pItem->SetAttr(ATTR_IDENTIFIED);
+			pObj = this;
+			WriteString("Cursed Magic!");
+		}
 	}
 	else
 	{
-		// Get the strength of the item (IT_SCROLL or IT_WAND)
-		CItem *pItem = dynamic_cast<CItem *>(pObjSrc);
-		if ( !pItem )
-			return false;
-
-		iSkillLevel = pItem->m_itWeapon.m_spelllevel ? pItem->m_itWeapon.m_spelllevel : Calc_GetRandVal(500);
-	}
-
-	CScriptTriggerArgs Args(spell, iSkillLevel, pObjSrc);
-	Args.m_VarsLocal.SetNum("Duration", GetSpellDuration(spell, iSkillLevel, this) / TICK_PER_SEC, true);
-
-	bool fFieldSpell = pSpellDef->IsSpellType(SPELLFLAG_FIELD);
-	ITEMID_TYPE iT1 = ITEMID_NOTHING;
-	ITEMID_TYPE iT2 = ITEMID_NOTHING;
-
-	if ( fFieldSpell )
-	{
-		switch ( spell )	// Only setting ids and locals for field spells
-		{
-			case SPELL_Wall_of_Stone: 	iT1 = ITEMID_STONE_WALL;		iT2 = ITEMID_STONE_WALL;		break;
-			case SPELL_Fire_Field: 		iT1 = ITEMID_FX_FIRE_F_EW; 		iT2 = ITEMID_FX_FIRE_F_NS;		break;
-			case SPELL_Poison_Field:	iT1 = ITEMID_FX_POISON_F_EW;	iT2 = ITEMID_FX_POISON_F_NS;	break;
-			case SPELL_Paralyze_Field:	iT1 = ITEMID_FX_PARA_F_EW;		iT2 = ITEMID_FX_PARA_F_NS;		break;
-			case SPELL_Energy_Field:	iT1 = ITEMID_FX_ENERGY_F_EW;	iT2 = ITEMID_FX_ENERGY_F_NS;	break;
-			default: break;
-		}
-
-		Args.m_VarsLocal.SetNum("CreateObject1", iT1, false);
-		Args.m_VarsLocal.SetNum("CreateObject2", iT2, false);
-	}
-
-	if ( IsTrigUsed(TRIGGER_SPELLSUCCESS) )
-	{
-		if ( OnTrigger(CTRIG_SpellSuccess, this, &Args) == TRIGRET_RET_TRUE )
-			return false;
-	}
-
-	if ( IsTrigUsed(TRIGGER_SUCCESS) )
-	{
-		if ( Spell_OnTrigger(spell, SPTRIG_SUCCESS, this, &Args) == TRIGRET_RET_TRUE )
-			return false;
+		iSkillLevel = Skill_GetAdjusted(SKILL_MAGERY);
 	}
 
 	// Consume the reagents/mana/scroll/charge
-	if ( !Spell_CanCast(spell, false, pObjSrc, true) )
-		return false;
+	if (!Spell_CanCast(spell, false, pObjSrc, true))
+		return(false);
 
-	CObjBase *pObj = m_Act_Targ.ObjFind();	// dont always need a target
-	CREID_TYPE iC1 = static_cast<CREID_TYPE>(Args.m_VarsLocal.GetKeyNum("CreateObject1") & 0xFFFF);
-	BYTE bAreaRadius = static_cast<BYTE>(maximum(0, Args.m_VarsLocal.GetKeyNum("AreaRadius")));
-	int iDuration = maximum(0, static_cast<int>(Args.m_VarsLocal.GetKeyNum("Duration") * TICK_PER_SEC));
-	HUE_TYPE wColor = static_cast<HUE_TYPE>(maximum(0, Args.m_VarsLocal.GetKeyNum("EffectColor")));
-	iSkillLevel = static_cast<int>(Args.m_iN2);
-
-	BYTE bFieldWidth = 0;
-	BYTE bFieldGauge = 0;
-
-	if ( fFieldSpell )
+	switch (spell)
 	{
-		// Setting new IDs as another variables to pass as different arguments to the field function
-		iT1 = static_cast<ITEMID_TYPE>(RES_GET_INDEX(Args.m_VarsLocal.GetKeyNum("CreateObject1")));
-		iT2 = static_cast<ITEMID_TYPE>(RES_GET_INDEX(Args.m_VarsLocal.GetKeyNum("CreateObject2")));
+		// 1st
+	case SPELL_Create_Food:
+		// Create object. Normally food.
+		if (pObj == NULL)
+		{
+			static const ITEMID_TYPE sm_Item_Foods[] =	// possible foods.
+			{
+				ITEMID_FOOD_BACON,
+				ITEMID_FOOD_SAUSAGE,
+				ITEMID_FOOD_HAM,
+				ITEMID_FOOD_CAKE,
+				ITEMID_FOOD_BREAD,
+			};
 
-		bFieldWidth = static_cast<BYTE>(maximum(0, Args.m_VarsLocal.GetKeyNum("FieldWidth")));
-		bFieldGauge = static_cast<BYTE>(maximum(0, Args.m_VarsLocal.GetKeyNum("FieldGauge")));
+			CItemPtr pItem = CItem::CreateScript(sm_Item_Foods[Calc_GetRandVal(COUNTOF(sm_Item_Foods))], this);
+			pItem->SetType(IT_FOOD);	// should already be set .
+			pItem->MoveToCheck(m_Act.m_pt, this);
+		}
+		break;
+
+	case SPELL_Magic_Arrow:
+		Spell_Effect_Bolt(pObj, ITEMID_FX_MAGIC_ARROW, iSkillLevel);
+		break;
+
+	case SPELL_Heal:
+	case SPELL_Night_Sight:
+	case SPELL_Reactive_Armor:
+
+	case SPELL_Clumsy:
+	case SPELL_Feeblemind:
+	case SPELL_Weaken:
+	simple_effect:
+		if (pObj == NULL)
+			return(false);
+		pObj->OnSpellEffect(spell, this, iSkillLevel, REF_CAST(CItem, pObjSrc));
+		break;
+
+		// 2nd
+	case SPELL_Agility:
+	case SPELL_Cunning:
+	case SPELL_Cure:
+	case SPELL_Protection:
+	case SPELL_Strength:
+
+	case SPELL_Harm:
+		goto simple_effect;
+
+	case SPELL_Magic_Trap:
+	case SPELL_Magic_Untrap:
+		// Create the trap object and link it to the target. ???
+		// A container is diff from door or stationary object
+		break;
+
+		// 3rd
+	case SPELL_Bless:
+
+	case SPELL_Poison:
+		goto simple_effect;
+	case SPELL_Fireball:
+		Spell_Effect_Bolt(pObj, ITEMID_FX_FIRE_BALL, iSkillLevel);
+		break;
+
+	case SPELL_Magic_Lock:
+	case SPELL_Unlock:
+		goto simple_effect;
+
+	case SPELL_Telekin:
+		// Act as dclick on the object.
+		Use_Obj(pObj, false);
+		break;
+	case SPELL_Teleport:
+		Spell_Effect_Teleport(m_Act.m_pt);
+		break;
+	case SPELL_Wall_of_Stone:
+		Spell_Effect_Field(m_Act.m_pt, ITEMID_STONE_WALL, ITEMID_STONE_WALL, iSkillLevel);
+		break;
+
+		// 4th
+	case SPELL_Arch_Cure:
+	case SPELL_Arch_Prot:
+	{
+		Spell_Effect_Area(m_Act.m_pt, 5, iSkillLevel);
+		break;
 	}
+	case SPELL_Great_Heal:
+	case SPELL_Curse:
+	case SPELL_Lightning:
+		goto simple_effect;
+	case SPELL_Fire_Field:
+		Spell_Effect_Field(m_Act.m_pt, ITEMID_FX_FIRE_F_EW, ITEMID_FX_FIRE_F_NS, iSkillLevel);
+		break;
 
-	if ( pSpellDef->IsSpellType(SPELLFLAG_SCRIPTED) )
+	case SPELL_Recall:
+		if (!Spell_Effect_Recall(REF_CAST(CItem, pObj), false, iSkillLevel))
+			return(false);
+		break;
+
+		// 5th
+
+	case SPELL_Blade_Spirit:
+		m_Act.m_atMagery.m_SummonID = CREID_BLADES;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+
+	case SPELL_Dispel_Field:
 	{
-		if ( pSpellDef->IsSpellType(SPELLFLAG_SUMMON) )
+		CItemPtr pItem = REF_CAST(CItem, pObj);
+		if (pItem == NULL)
 		{
-			if ( iC1 )
+			WriteString("That is not a field!");
+			return(false);
+		}
+		pItem->OnSpellEffect(SPELL_Dispel_Field, this, iSkillLevel, NULL);
+	}
+	break;
+
+	case SPELL_Mind_Blast:
+		if (pObj->IsChar())
+		{
+			CCharPtr pChar = REF_CAST(CChar, pObj);
+			ASSERT(pChar);
+			int iDiff = (m_StatInt - pChar->m_StatInt) / 2;
+			if (iDiff < 0)
 			{
-				m_atMagery.m_SummonID = iC1;
-				Spell_Summon(m_atMagery.m_SummonID, m_Act_p);
+				pChar = this;	// spell revereses !
+				iDiff = -iDiff;
+			}
+			int iMax = pChar->m_StatMaxHealth / 4;
+			pChar->OnSpellEffect(spell, this, MIN(iDiff, iMax), NULL);
+		}
+		break;
+
+	case SPELL_Magic_Reflect:
+	case SPELL_Paralyze:
+	case SPELL_Incognito:
+		goto simple_effect;
+
+	case SPELL_Poison_Field:
+		Spell_Effect_Field(m_Act.m_pt, ITEMID_FX_POISON_F_1, ITEMID_FX_POISON_F_NS, iSkillLevel);
+		break;
+
+	case SPELL_Summon:
+	summon_effect:
+		Spell_Effect_Summon(m_Act.m_atMagery.m_SummonID, m_Act.m_pt, m_Act.m_atMagery.m_fSummonPet);
+		break;
+
+		// 6th
+
+	case SPELL_Invis:
+	case SPELL_Dispel:
+		goto simple_effect;
+
+	case SPELL_Energy_Bolt:
+		Spell_Effect_Bolt(pObj, ITEMID_FX_ENERGY_BOLT, iSkillLevel);
+		break;
+
+	case SPELL_Explosion:
+		Spell_Effect_Area(m_Act.m_pt, 2, iSkillLevel);
+		break;
+
+	case SPELL_Mark:
+		goto simple_effect;
+
+	case SPELL_Mass_Curse:
+		Spell_Effect_Area(m_Act.m_pt, 5, iSkillLevel);
+		break;
+	case SPELL_Paralyze_Field:
+		Spell_Effect_Field(m_Act.m_pt, ITEMID_FX_PARA_F_EW, ITEMID_FX_PARA_F_NS, iSkillLevel);
+		break;
+	case SPELL_Reveal:
+		Spell_Effect_Area(m_Act.m_pt, SPHEREMAP_VIEW_SIGHT, iSkillLevel);
+		break;
+
+		// 7th
+
+	case SPELL_Chain_Lightning:
+		Spell_Effect_Area(m_Act.m_pt, 5, iSkillLevel);
+		break;
+	case SPELL_Energy_Field:
+		Spell_Effect_Field(m_Act.m_pt, ITEMID_FX_ENERGY_F_EW, ITEMID_FX_ENERGY_F_NS, iSkillLevel);
+		break;
+
+	case SPELL_Flame_Strike:
+		// Display spell.
+		if (pObj == NULL)
+		{
+			CItemPtr pItem = CItem::CreateBase(ITEMID_FX_FLAMESTRIKE);
+			ASSERT(pItem);
+			pItem->SetType(IT_SPELL);
+			pItem->m_itSpell.m_spell = SPELL_Flame_Strike;
+			pItem->MoveToDecay(m_Act.m_pt, 2 * TICKS_PER_SEC);
+		}
+		else
+		{
+			pObj->Effect(EFFECT_OBJ, ITEMID_FX_FLAMESTRIKE, pObj, 6, 15);
+			// Burn person at location.
+			goto simple_effect;
+		}
+		break;
+
+	case SPELL_Gate_Travel:
+		if (!Spell_Effect_Recall(REF_CAST(CItem, pObj), true, iSkillLevel))
+			return(false);
+		break;
+
+	case SPELL_Mana_Drain:
+	case SPELL_Mana_Vamp:
+		// Take the mana from the target.
+		if (pObj->IsChar() && this != pObj)
+		{
+			CCharPtr pChar = REF_CAST(CChar, pObj);
+			ASSERT(pChar);
+			if (!pChar->IsStatFlag(STATF_Reflection))
+			{
+				int iMax = pChar->m_StatInt;
+				int iDiff = m_StatInt - iMax;
+				if (iDiff < 0)
+					iDiff = 0;
+				else
+					iDiff = Calc_GetRandVal(iDiff);
+				iDiff += Calc_GetRandVal(25);
+				pChar->OnSpellEffect(spell, this, iDiff, NULL);
+				if (spell == SPELL_Mana_Vamp)
+				{
+					// Give some back to me.
+					Stat_Change(STAT_Mana, MIN(iDiff, m_StatInt));
+				}
+				break;
 			}
 		}
-		else if ( fFieldSpell )
-		{
-			if ( iT1 && iT2 )
-			{
-				if ( !bFieldWidth )
-					bFieldWidth = 3;
-				if ( !bFieldGauge )
-					bFieldGauge = 1;
+		goto simple_effect;
 
-				Spell_Field(m_Act_p, iT1, iT2, bFieldWidth, bFieldGauge, iSkillLevel, this, iDuration, wColor);
-			}
-		}
-		else if ( pSpellDef->IsSpellType(SPELLFLAG_AREA) )
-		{
-			if ( !bAreaRadius )
-				bAreaRadius = 4;
+	case SPELL_Mass_Dispel:
+		Spell_Effect_Area(m_Act.m_pt, 15, iSkillLevel);
+		break;
 
-			if ( !pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ|SPELLFLAG_TARG_XYZ) )
-				Spell_Area(GetTopPoint(), bAreaRadius, iSkillLevel);
-			else
-				Spell_Area(m_Act_p, bAreaRadius, iSkillLevel);
+	case SPELL_Meteor_Swarm:
+		// Multi explosion ??? 0x36b0
+		Spell_Effect_Area(m_Act.m_pt, 4, iSkillLevel);
+		break;
+
+	case SPELL_Polymorph:
+		// This has a menu select for client.
+		if (GetPrivLevel() < PLEVEL_Seer)
+		{
+			if (pObj != this)
+				return(false);
 		}
-		else if ( pSpellDef->IsSpellType(SPELLFLAG_POLY) )
+		goto simple_effect;
+
+		// 8th
+
+	case SPELL_Earthquake:
+		Spell_Effect_Area(GetTopPoint(), SPHEREMAP_VIEW_SIGHT, iSkillLevel);
+		break;
+
+	case SPELL_Vortex:
+		m_Act.m_atMagery.m_SummonID = CREID_VORTEX;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+
+	case SPELL_Resurrection:
+	case SPELL_Light:
+		goto simple_effect;
+
+	case SPELL_Air_Elem:
+		m_Act.m_atMagery.m_SummonID = CREID_AIR_ELEM;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+	case SPELL_Daemon:
+		m_Act.m_atMagery.m_SummonID = (Calc_GetRandVal(2)) ? CREID_DAEMON_SWORD : CREID_DAEMON;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+	case SPELL_Earth_Elem:
+		m_Act.m_atMagery.m_SummonID = CREID_EARTH_ELEM;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+	case SPELL_Fire_Elem:
+		m_Act.m_atMagery.m_SummonID = CREID_FIRE_ELEM;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+	case SPELL_Water_Elem:
+		m_Act.m_atMagery.m_SummonID = CREID_WATER_ELEM;
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+
+		// Necro
+	case SPELL_Summon_Undead:
+		switch (Calc_GetRandVal(15))
+		{
+		case 1:
+			m_Act.m_atMagery.m_SummonID = CREID_LICH;
+			break;
+		case 3:
+		case 5:
+		case 7:
+		case 9:
+			m_Act.m_atMagery.m_SummonID = CREID_SKELETON;
+			break;
+		default:
+			m_Act.m_atMagery.m_SummonID = CREID_ZOMBIE;
+			break;
+		}
+		m_Act.m_atMagery.m_fSummonPet = true;
+		goto summon_effect;
+
+	case SPELL_Animate_Dead:
+		if (!Spell_Effect_AnimateDead(REF_CAST(CItemCorpse, pObj)))
 			return false;
-		else if ( pObj )
-			pObj->OnSpellEffect(spell, this, iSkillLevel, dynamic_cast<CItem *>(pObjSrc));
-	}
-	else if ( fFieldSpell )
-	{
-		if ( !bFieldWidth )
-			bFieldWidth = 3;
-		if ( !bFieldGauge )
-			bFieldGauge = 1;
+		break;
+	case SPELL_Bone_Armor:
+		if (!Spell_Effect_BoneArmor(REF_CAST(CItemCorpse, pObj)))
+			return false;
+		break;
+	case SPELL_Fire_Bolt:
+		Spell_Effect_Bolt(pObj, ITEMID_FX_FIRE_BOLT, iSkillLevel);
+		break;
 
-		Spell_Field(m_Act_p, iT1, iT2, bFieldWidth, bFieldGauge, iSkillLevel, this, iDuration, wColor);
-	}
-	else if ( pSpellDef->IsSpellType(SPELLFLAG_AREA) )
-	{
-		if ( !bAreaRadius )
-		{
-			switch ( spell )
-			{
-				case SPELL_Arch_Cure:		bAreaRadius = 2;						break;
-				case SPELL_Arch_Prot:		bAreaRadius = 3;						break;
-				case SPELL_Mass_Curse:		bAreaRadius = 2;						break;
-				case SPELL_Reveal:			bAreaRadius = 1 + (iSkillLevel / 200);	break;
-				case SPELL_Chain_Lightning: bAreaRadius = 2;						break;
-				case SPELL_Mass_Dispel:		bAreaRadius = 8;						break;
-				case SPELL_Meteor_Swarm:	bAreaRadius = 2;						break;
-				case SPELL_Earthquake:		bAreaRadius = 1 + (iSkillLevel / 150);	break;
-				case SPELL_Poison_Strike:	bAreaRadius = 2;						break;
-				case SPELL_Wither:			bAreaRadius = 4;						break;
-				default:					bAreaRadius = 4;						break;
-			}
-		}
+	case SPELL_Ale:		// 90 = drunkeness ?
+	case SPELL_Wine:	// 91 = mild drunkeness ?
+	case SPELL_Liquor:	// 92 = extreme drunkeness ?
+	case SPELL_Hallucination:
+	case SPELL_Stone:
+	case SPELL_Shrink:
+	case SPELL_Mana:
+	case SPELL_Refresh:
+	case SPELL_Restore:		// increases both your hit points and your stamina.
+	case SPELL_Sustenance:		//  // serves to fill you up. (Remember, healing rate depends on how well fed you are!)
+	case SPELL_Forget:			//  // permanently lowers one skill.
+	case SPELL_Gender_Swap:		//  // permanently changes your gender.
+	case SPELL_Chameleon:		//  // makes your skin match the colors of whatever is behind you.
+	case SPELL_BeastForm:		//  // polymorphs you into an animal for a while.
+	case SPELL_Monster_Form:	//  // polymorphs you into a monster for a while.
+	case SPELL_Trance:			//  // temporarily increases your meditation skill.
+	case SPELL_Particle_Form:	//  // turns you into an immobile, but untargetable particle system for a while.
+	case SPELL_Shield:			//  // erects a temporary force field around you. Nobody approaching will be able to get within 1 tile of you, though you can move close to them if you wish.
+	case SPELL_Steelskin:		//  // turns your skin into steel, giving a boost to your AR.
+	case SPELL_Stoneskin:		//  // turns your skin into stone, giving a boost to your AR.
+		goto simple_effect;
 
-		if ( !pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ|SPELLFLAG_TARG_XYZ) )
-			Spell_Area(GetTopPoint(), bAreaRadius, iSkillLevel);
-		else
-			Spell_Area(m_Act_p, bAreaRadius, iSkillLevel);
-	}
-	else if ( pSpellDef->IsSpellType(SPELLFLAG_SUMMON) )
-	{
-		if ( iC1 )
-			m_atMagery.m_SummonID = iC1;
-		else
-		{
-			switch ( spell )
-			{
-				case SPELL_Blade_Spirit:	m_atMagery.m_SummonID = CREID_BLADES;		break;
-				case SPELL_Vortex:			m_atMagery.m_SummonID = CREID_VORTEX;		break;
-				case SPELL_Air_Elem:		m_atMagery.m_SummonID = CREID_AIR_ELEM;		break;
-				case SPELL_Daemon:			m_atMagery.m_SummonID = CREID_DAEMON;		break;
-				case SPELL_Earth_Elem:		m_atMagery.m_SummonID = CREID_EARTH_ELEM;	break;
-				case SPELL_Fire_Elem:		m_atMagery.m_SummonID = CREID_FIRE_ELEM;	break;
-				case SPELL_Water_Elem:		m_atMagery.m_SummonID = CREID_WATER_ELEM;	break;
-				case SPELL_Vengeful_Spirit:	m_atMagery.m_SummonID = CREID_REVENANT;		break;
-				case SPELL_Summon_Undead:
-				{
-					switch ( Calc_GetRandVal(15) )
-					{
-						case 1:				m_atMagery.m_SummonID = CREID_LICH;			break;
-						case 3:
-						case 5:
-						case 7:
-						case 9:				m_atMagery.m_SummonID = CREID_SKELETON;		break;
-						default:			m_atMagery.m_SummonID = CREID_ZOMBIE;		break;
-					}
-				}
-				default: break;
-			}
-		}
-		Spell_Summon(m_atMagery.m_SummonID, m_Act_p);
-	}
-	else
-	{
-		switch ( spell )
-		{
-			case SPELL_Create_Food:
-			{
-				RESOURCE_ID rid = g_Cfg.ResourceGetIDType(RES_ITEMDEF, "DEFFOOD");
-				CItem *pItem = CItem::CreateScript(static_cast<ITEMID_TYPE>(rid.GetResIndex()), this);
-				ASSERT(pItem);
-				if ( pSpellDef->IsSpellType(SPELLFLAG_TARG_OBJ|SPELLFLAG_TARG_XYZ) )
-					pItem->MoveToCheck(m_Act_p, this, true);
-				else
-				{
-					ItemBounce(pItem, false);
-					SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_SPELL_CREATE_FOOD), pItem->GetName());
-				}
-				break;
-			}
-			case SPELL_Magic_Trap:
-			case SPELL_Magic_Untrap:
-			{
-				// Create the trap object and link it to the target.
-				// A container is diff from door or stationary object
-				break;
-			}
-			case SPELL_Telekin:	// Act as DClick on the object.
-			{
-				CItemCorpse *pCorpse = dynamic_cast<CItemCorpse *>(pObj->GetTopLevelObj());
-				if ( pCorpse && pCorpse->m_uidLink != GetUID() )
-				{
-					CheckCorpseCrime(pCorpse, true, false);
-					Reveal();
-				}
-				Use_Obj(pObj, false);
-				break;
-			}
-			case SPELL_Teleport:
-			{
-				Spell_Teleport(m_Act_p);
-				break;
-			}
-			case SPELL_Recall:
-			{
-				if ( !Spell_Recall(dynamic_cast<CItem *>(pObj), false) )
-					return false;
-				break;
-			}
-			case SPELL_Dispel_Field:
-			{
-				CItem *pItem = dynamic_cast<CItem *>(pObj);
-				if ( !pItem || pItem->IsAttr(ATTR_MOVE_NEVER) || !pItem->IsType(IT_SPELL) )
-				{
-					SysMessageDefault(DEFMSG_SPELL_DISPELLF_WT);
-					return false;
-				}
-				pItem->OnSpellEffect(SPELL_Dispel_Field, this, iSkillLevel, NULL);
-				break;
-			}
-			case SPELL_Mind_Blast:
-			{
-				if ( pObj->IsChar() )
-				{
-					CChar *pChar = dynamic_cast<CChar *>(pObj);
-					if ( !pChar )
-						return false;
-					int iDiff = (Stat_GetAdjusted(STAT_INT) - pChar->Stat_GetAdjusted(STAT_INT)) / 2;
-					if ( iDiff < 0 )
-					{
-						pChar = this;	// spell revereses !
-						iDiff = -iDiff;
-					}
-					int iMax = pChar->Stat_GetMax(STAT_STR) / 2;
-					pChar->OnSpellEffect(spell, this, minimum(iDiff, iMax), NULL);
-				}
-				break;
-			}
-			case SPELL_Flame_Strike:
-			{
-				// Display spell.
-				if ( pObj )
-					pObj->OnSpellEffect(spell, this, iSkillLevel, dynamic_cast<CItem *>(pObjSrc));
-				else
-				{
-					CItem *pItem = CItem::CreateBase(ITEMID_FX_FLAMESTRIKE);
-					ASSERT(pItem);
-					pItem->SetType(IT_SPELL);
-					pItem->m_itSpell.m_spell = SPELL_Flame_Strike;
-					pItem->MoveToDecay(m_Act_p, 2 * TICK_PER_SEC);
-				}
-				break;
-			}
-			case SPELL_Gate_Travel:
-			{
-				if ( !Spell_Recall(dynamic_cast<CItem *>(pObj), true) )
-					return false;
-				break;
-			}
-			case SPELL_Polymorph:
-			case SPELL_Wraith_Form:
-			case SPELL_Horrific_Beast:
-			case SPELL_Lich_Form:
-			case SPELL_Vampiric_Embrace:
-			case SPELL_Stone_Form:
-			case SPELL_Reaper_Form:
-			{
-				// This has a menu select for client.
-				if ( !pObj || ((pObj != this) && !IsPriv(PRIV_GM)) )
-					return false;
-				pObj->OnSpellEffect(spell, this, iSkillLevel, dynamic_cast<CItem *>(pObjSrc));
-				break;
-			}
-			case SPELL_Animate_Dead:
-			{
-				CItemCorpse *pCorpse = dynamic_cast<CItemCorpse *>(pObj);
-				if ( !pCorpse )
-				{
-					SysMessageDefault(DEFMSG_SPELL_ANIMDEAD_NC);
-					return false;
-				}
-				if ( !pCorpse->IsTopLevel() )
-					return false;
-
-				if ( IsPriv(PRIV_GM) )
-					m_atMagery.m_SummonID = pCorpse->m_itCorpse.m_BaseID;
-				else if ( CCharBase::IsPlayableID(pCorpse->GetCorpseType()) ) 	// must be a human corpse?
-					m_atMagery.m_SummonID = CREID_ZOMBIE;
-				else
-					m_atMagery.m_SummonID = pCorpse->GetCorpseType();
-
-				CChar *pChar = Spell_Summon(m_atMagery.m_SummonID, pCorpse->GetTopPoint());
-				ASSERT(pChar);
-				if ( !pChar->RaiseCorpse(pCorpse) )
-				{
-					SysMessageDefault(DEFMSG_SPELL_ANIMDEAD_FAIL);
-					pChar->Delete();
-				}
-				break;
-			}
-			case SPELL_Bone_Armor:
-			{
-				CItemCorpse *pCorpse = dynamic_cast<CItemCorpse *>(pObj);
-				if ( !pCorpse )
-				{
-					SysMessage("That is not a corpse!");
-					return false;
-				}
-				if ( !pCorpse->IsTopLevel() || (pCorpse->GetCorpseType() != CREID_SKELETON) ) 	// Must be a skeleton corpse
-				{
-					SysMessage("The body stirs for a moment");
-					return false;
-				}
-				// Dump any stuff on corpse
-				pCorpse->ContentsDump(pCorpse->GetTopPoint());
-				pCorpse->Delete();
-
-				static const ITEMID_TYPE sm_Item_Bone[] =
-				{
-					ITEMID_BONE_ARMS,
-					ITEMID_BONE_ARMOR,
-					ITEMID_BONE_GLOVES,
-					ITEMID_BONE_HELM,
-					ITEMID_BONE_LEGS
-				};
-
-				int iGet = 0;
-				for ( size_t i = 0; i < COUNTOF(sm_Item_Bone); ++i )
-				{
-					if ( !Calc_GetRandVal(2 + iGet) )
-						break;
-					CItem *pItem = CItem::CreateScript(sm_Item_Bone[i], this);
-					pItem->MoveToCheck(m_Act_p, this, true);
-					++iGet;
-				}
-				if ( !iGet )
-				{
-					SysMessage("The bones shatter into dust!");
-					break;
-				}
-				break;
-			}
-			default:
-			{
-				if ( !pObj )
-					return false;
-				pObj->OnSpellEffect(spell, this, iSkillLevel, dynamic_cast<CItem *>(pObjSrc));
-				break;
-			}
-		}
+	default:
+		// No effect on creatures it seems.
+		break;
 	}
 
-	if ( g_Cfg.m_fHelpingCriminalsIsACrime && pSpellDef->IsSpellType(SPELLFLAG_GOOD) && pObj && pObj->IsChar() && (pObj != this) )
+	if (pObj != NULL &&
+		pObj->IsChar() &&
+		pObj != this &&
+		pSpellDef->IsSpellType(SPELLFLAG_GOOD))
 	{
-		CChar *pChar = static_cast<CChar *>(pObj);
+		CCharPtr pChar = REF_CAST(CChar, pObj);
 		ASSERT(pChar);
-		switch ( pChar->Noto_GetFlag(this) )
-		{
-			case NOTO_CRIMINAL:
-			case NOTO_GUILD_WAR:
-			case NOTO_EVIL:
-				Noto_Criminal();
-				break;
-			default:
-				break;
-		}
+		pChar->OnHelpedBy(this);
 	}
 
-	// If we are visible, play sound.
-	if ( !IsStatFlag(STATF_Insubstantial) )
-		Sound(pSpellDef->m_sound);
-
-	// At this point we should gain skill if precasting is enabled
-	if ( m_pClient && IsSetMagicFlags(MAGICF_PRECAST) && !pSpellDef->IsSpellType(SPELLFLAG_NOPRECAST) )
+	// Make noise.
+	if (!IsStatFlag(STATF_Insubstantial))
 	{
-		iDifficulty /= 10;
-		Skill_Experience(static_cast<SKILL_TYPE>(iSkill), iDifficulty);
+		Sound(pSpellDef->m_sound);
 	}
-	return true;
+	return(true);
 }
 
 void CChar::Spell_CastFail()
