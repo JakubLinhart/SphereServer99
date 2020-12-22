@@ -4,6 +4,7 @@
 
 #define RES_SkillMenu RES_SKILLMENU
 #define RES_TypeDef RES_TYPEDEF
+#define RES_ItemDef RES_ITEMDEF
 
 enum RES_TYPE	// all the script resource blocks we know how to deal with
 {
@@ -125,7 +126,7 @@ public:
 	}
 };
 
-#define CSphereUID CGrayUID
+#define CSphereUID RESOURCE_ID
 
 struct RESOURCE_ID : public RESOURCE_ID_BASE
 {

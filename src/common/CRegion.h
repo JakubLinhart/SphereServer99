@@ -607,6 +607,11 @@ public:
 	{	// REGION_FLAG_GUARDED
 		return(( m_dwFlags & dwFlags ) ? true : false );
 	}
+	bool IsMultiRegion() const
+	{
+		//return((GetUIDIndex() & (RID_F_RESOURCE | UID_F_ITEM)) == UID_F_ITEM);
+		return false;
+	}
 	bool IsFlagGuarded() const
 	{
 		return IsGuarded();

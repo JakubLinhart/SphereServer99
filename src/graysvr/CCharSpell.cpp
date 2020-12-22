@@ -23,6 +23,94 @@ void CChar::Spell_Dispel(int iLevel)
 	}
 }
 
+void CChar::Spell_Effect_Dispel(int iLevel)
+{
+	// ARGS: iLevel = 0-100 level of dispel caster.
+	// remove all the spells. NOT if caused by objects worn !!!
+	// ATTR_MAGIC && ! ATTR_MOVE_NEVER
+
+	CItemPtr pItemNext;
+	CItemPtr pItem = static_cast<CItemPtr>(GetHead());
+	for (; pItem; pItem = pItemNext)
+	{
+		pItemNext = pItem->GetNext();
+		if (iLevel <= 100 && pItem->IsAttr(ATTR_MOVE_NEVER))	// we can't lose this.
+			continue;
+		if (pItem->IsType(IT_SPELL) && pItem->IsAttr(ATTR_MAGIC))
+		{
+			pItem->DeleteThis();
+		}
+	}
+	Update();
+}
+
+bool CChar::Spell_Effect_Cure(int iSkill, bool fExtra)
+{
+	// Leave the anitdote in your body for a while.
+	// iSkill = 0-1000
+
+	CItemPtr pPoison = LayerFind(LAYER_FLAG_Poison);
+	if (pPoison != NULL)
+	{
+		// Is it successful ???
+		pPoison->DeleteThis();
+	}
+	if (fExtra)
+	{
+		pPoison = LayerFind(LAYER_FLAG_Hallucination);
+		if (pPoison != NULL)
+		{
+			// Is it successful ???
+			pPoison->DeleteThis();
+		}
+	}
+	Update();
+	return(true);
+}
+
+bool CChar::Spell_Effect_Poison(int iSkill, int iTicks, CChar* pCharSrc, bool fMagic)
+{
+	// SPELL_Poison
+	// iSkill = 0-1000 = how bad the poison is
+	// iTicks = how long to last.
+	// Physical attack of poisoning.
+
+	if (IsStatFlag(STATF_Conjured))
+	{
+		// conjured creatures cannot be poisoned.
+		return false;
+	}
+
+	CItemPtr pPoison;
+	if (IsStatFlag(STATF_Poisoned))
+	{
+		// strengthen the poison ?
+		pPoison = LayerFind(LAYER_FLAG_Poison);
+		if (pPoison)
+		{
+			pPoison->m_itSpell.m_spellcharges += iTicks;
+		}
+		return false;
+	}
+
+	WriteString("You have been poisoned!");
+
+	// Release if paralyzed ?
+	StatFlag_Clear(STATF_Freeze);	// remove paralyze.
+
+	// Single tick duration ?
+	int iDuration = (1 + Calc_GetRandVal(2)) * TICKS_PER_SEC;
+
+	// Might be a physical vs. Magical attack.
+	pPoison = Spell_Equip_Create(SPELL_Poison, LAYER_FLAG_Poison, iSkill,
+		iDuration, pCharSrc, fMagic);
+	ASSERT(pPoison);
+
+	pPoison->m_itSpell.m_spellcharges = iTicks;	// how long to last.
+	UpdateStatsFlag();
+	return(true);
+}
+
 bool CChar::Spell_Teleport(CPointMap ptDest, bool fTakePets, bool fCheckAntiMagic, bool fDisplayEffect, ITEMID_TYPE iEffect, SOUND_TYPE iSound)
 {
 	ADDTOCALLSTACK("CChar::Spell_Teleport");
@@ -762,6 +850,85 @@ bool CChar::Spell_Resurrection(CItemCorpse *pCorpse, CChar *pCharSrc, bool fNoFa
 		Effect(EFFECT_OBJ, pSpellDef->m_idEffect, this, 10, 16);
 	Sound(pSpellDef->m_sound);
 	return true;
+}
+
+bool CChar::Spell_Effect_Resurrection(int iSkillLossPercent, CItemCorpse* pCorpse)
+{
+	// SPELL_Resurrection
+	// ARGS: iSkillLossPercent < 0 for a shrine or GM.
+
+	if (!IsStatFlag(STATF_DEAD))
+		return false;
+
+	if (iSkillLossPercent >= 0 &&
+		!IsGM() &&
+		m_pArea &&
+		m_pArea->IsMultiRegion() &&
+		m_pArea->IsFlag(REGION_ANTIMAGIC_ALL | REGION_ANTIMAGIC_RECALL_IN | REGION_ANTIMAGIC_TELEPORT))
+	{
+		// Could be a house break in.
+		// Check to see if it is.
+		WriteString("Anti-Magic blocks the Resurrection!");
+		return false;
+	}
+
+	SetID(m_prev_id);
+	StatFlag_Clear(STATF_DEAD | STATF_Insubstantial);
+	SetHue(m_prev_Hue);
+	Stat_Set(STAT_Health, IMULDIV(m_StatMaxHealth(), g_Cfg.m_iHitpointPercentOnRez, 100));
+
+	if (m_pPlayer->IsValidNewObj())
+	{
+		CItemPtr pRobe = ContentFind(CSphereUID(RES_ItemDef, ITEMID_DEATHSHROUD));
+		if (pRobe != NULL)
+		{
+			pRobe->RemoveFromView();	// For some reason this does not update without remove first.
+			pRobe->SetID(ITEMID_ROBE);
+			pRobe->SetName("Resurrection Robe");
+			pRobe->Update();
+		}
+
+		if (pCorpse == NULL)
+		{
+			pCorpse = FindMyCorpse();
+		}
+		if (pCorpse != NULL)
+		{
+			if (RaiseCorpse(pCorpse))
+			{
+				WriteString("You spirit rejoins your body");
+				if (pRobe != NULL)
+				{
+					pRobe->DeleteThis();
+					pRobe = NULL;
+				}
+			}
+		}
+	}
+
+	if (iSkillLossPercent > 0)
+	{
+		// Remove some skills / stats as a percent.
+		int i = SKILL_First;
+		for (; i < SKILL_QTY; i++)
+		{
+			int iVal = Skill_GetBase((SKILL_TYPE)i);
+			if (iVal <= 250)
+				continue;
+			Skill_SetBase((SKILL_TYPE)i, iVal - IMULDIV(iVal, Calc_GetRandVal(iSkillLossPercent), 100));
+		}
+		for (i = STAT_Str; i < STAT_BASE_QTY; i++)
+		{
+			int iVal = Stat_Get((STAT_TYPE)i);
+			if (iVal <= 25)
+				continue;
+			Stat_Set((STAT_TYPE)i, iVal - IMULDIV(iVal, Calc_GetRandVal(iSkillLossPercent), 100));
+		}
+	}
+
+	Effect(EFFECT_OBJ, ITEMID_FX_HEAL_EFFECT, this, 9, 14);
+	Update();
+	return(true);
 }
 
 void CChar::Spell_Effect_Bolt(CObjBase* pObjTarg, ITEMID_TYPE idBolt, int iSkillLevel)
@@ -2936,10 +3103,8 @@ bool CChar::OnSpellEffect(SPELL_TYPE spell, CChar *pCharSrc, int iSkillLevel, CI
 	if (iSkillLevel <= 0)	// spell died (fizzled?).
 		return(false);
 
-	CSphereExpArgs Args(this,
-		(pCharSrc != NULL) ? ((CScriptConsole*)pCharSrc) : ((CScriptConsole*)&g_Serv),
-		(int)spell, iSkillLevel, pSourceItem);
-	if (OnTrigger(CCharDef::T_SpellEffect, Args) == TRIGRET_RET_VAL)
+	CSphereExpArgs Args((int)spell, iSkillLevel, pSourceItem);
+	if (OnTrigger(CCharDef::T_SpellEffect, (pCharSrc != NULL) ? ((CScriptConsole*)pCharSrc) : ((CScriptConsole*)&g_Serv), &Args) == TRIGRET_RET_VAL)
 		return(false);
 
 	CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef(spell);
@@ -3234,7 +3399,7 @@ bool CChar::OnSpellEffect(SPELL_TYPE spell, CChar *pCharSrc, int iSkillLevel, CI
 
 	case SPELL_Shrink:
 		// Getting a pet to drink this is funny.
-		if (m_pPlayer.IsValidNewObj())
+		if (m_pPlayer->IsValidNewObj())
 			break;
 		if (fPotion && pSourceItem)
 		{

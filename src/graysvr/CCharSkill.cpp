@@ -625,6 +625,57 @@ void CChar::Skill_Decay()
 	}
 }
 
+bool CChar::Skill_Degrade(SKILL_TYPE skillused)
+{
+	// Degrade skills that are over the cap !
+	// RETURN:
+	//  false = give no credit for ne skil use.
+	//  true = give credit. ok
+
+	if (!m_pPlayer)
+		return(true);
+
+	int iSkillSum = 0;
+	int iSkillSumMax = Skill_GetMax(SKILL_QTY);
+
+	int i;
+	for (i = SKILL_First; i < SKILL_QTY; i++)
+	{
+		iSkillSum += Skill_GetBase((SKILL_TYPE)i);
+	}
+
+	// Check for stats degrade first !
+
+	if (iSkillSum < iSkillSumMax)
+		return(true);
+
+	// degrade a random skill
+	// NOTE: Take skills over the class cap first ???
+
+	int skillrand = Calc_GetRandVal(SKILL_QTY);
+	for (i = SKILL_First; true; i++)
+	{
+		if (i >= SKILL_QTY)
+		{
+			// If we cannot decrease a skill then give no more credit !
+			return(false);
+		}
+		if (skillrand >= SKILL_QTY)
+			skillrand = 0;
+		if (skillrand == skillused)	// never degrade the skill i just used !
+			continue;
+		if (m_pPlayer->Skill_GetLock((SKILL_TYPE)skillrand) != SKILLLOCK_DOWN)
+			continue;
+		int iSkillLevel = Skill_GetBase((SKILL_TYPE)skillrand);
+		if (!iSkillLevel)
+			continue;
+
+		// reduce the skill.
+		Skill_SetBase((SKILL_TYPE)skillrand, iSkillLevel - 1);
+		return(true);
+	}
+}
+
 void CChar::Skill_Experience(SKILL_TYPE skill, int iDifficulty)
 {
 	ADDTOCALLSTACK("CChar::Skill_Experience");

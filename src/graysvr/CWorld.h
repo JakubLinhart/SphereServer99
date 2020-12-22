@@ -280,7 +280,7 @@ public:
 		return(PTR_CAST(CObjBase, FindUIDObj(uid & UID_INDEX_MASK)));
 	}
 
-	CCharPtr CharFind(CSphereUID uid) const
+	CCharPtr CharFind(CGrayUID uid) const
 	{
 		// Does character still exist
 		if (!uid.IsChar())

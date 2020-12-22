@@ -2970,23 +2970,7 @@ void CObjBase::Delete(bool fForce)
 
 void CObjBase::DeleteThis()
 {
-	// Do this before the actual destructor.
-	// Because in the destruct the virtuals will most likely not work anyhow.
-
-	if (sm_fDeleteReal)
-	{
-		RemoveSelf();	// Must remove early or else virtuals will fail.
-	}
-	else
-	{
-		if (GetParent() == &(g_World.m_ObjDelete))	// already been deleted
-			return;
-		CObjBasePtr temp(this);	// make sure we do not destruct yet
-		RemoveFromView();
-		// free up the UID slot.
-		g_World.FreeUID(this);
-		g_World.m_ObjDelete.InsertHead(this); // just get added to the list of stuff to delete later.
-	}
+	Delete();
 }
 
 bool CObjBase::IsTriggerActive(LPCTSTR pszTrig)

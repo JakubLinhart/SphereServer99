@@ -808,8 +808,9 @@ enum DIR_TYPE	// Walking directions. m_dir
 enum SKILL_TYPE	// List of skill numbers (things that can be done at a given time)
 {
 	SKILL_NONE = -1,
+	SKILL_First = 0,
 
-	SKILL_ALCHEMY,
+	SKILL_ALCHEMY = SKILL_First,
 	SKILL_ANATOMY,
 	SKILL_ANIMALLORE,
 	SKILL_ITEMID,

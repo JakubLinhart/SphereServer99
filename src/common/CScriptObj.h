@@ -18,6 +18,8 @@ enum TRIGRUN_TYPE
 	TRIGRUN_SINGLE_FALSE	// Ignore just this line or blocked segment
 };
 
+#define TRIGRET_RET_VAL TRIGRET_RET_TRUE
+
 enum TRIGRET_TYPE
 {
 	TRIGRET_RET_FALSE,		// Default return (script might not have been handled)
@@ -154,6 +156,8 @@ public:
 	virtual bool r_WriteValChained(LPCTSTR pszKey, CGString& sVal, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CScriptObj* pObj);
 	virtual bool r_Verb(CScript& s, CTextConsole* pSrc, CScriptTriggerArgs* pArgs, CScriptObj *pObj);	// execute command from script
 };
+
+#define CSphereExpArgs CScriptTriggerArgs
 
 class CScriptTriggerArgs : public CScriptObj
 {
