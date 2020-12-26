@@ -879,11 +879,11 @@ size_t CClient::Cmd_Skill_Menu_Build(RESOURCE_ID_BASE rid, int iSelect, CMenuIte
 			{
 				// test if i can make this item using m_Targ_UID.
 				// There should ALWAYS be a valid id here.
-				if ( !m_pChar->Skill_MakeItem(static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, s.GetArgStr())), m_Targ_UID, SKTRIG_SELECT) )
-				{
-					--iShowCount;
-					fSkip = true;
-				}
+				//if ( !m_pChar->Skill_MakeItem(CSkillDef::T_Select) )
+				//{
+				//	--iShowCount;
+				//	fSkip = true;
+				//}
 				continue;
 			}
 		}
