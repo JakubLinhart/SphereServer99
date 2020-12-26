@@ -100,6 +100,8 @@ private:
 	CEventLog &operator=(const CEventLog &other);
 } *g_pLog;
 
+#define LOG_CR	"\n"	//	CRLF for Debug files.
+#define DEBUG_CR	"\n"	//	CRLF for Debug files.
 #define DEBUG_ERR(_x_)			g_pLog->EventError _x_
 #ifdef _DEBUG
 	#define DEBUG_WARN(_x_)		g_pLog->EventWarn _x_

@@ -174,6 +174,7 @@ class CGObList
 		* @return true if CGObList is empty, false otherwise.
 		*/
 		bool IsEmpty() const;
+		bool IsMyChild(CGObListRec* pObRec);
 };
 
 ///////////////////////////////////////////////////////////

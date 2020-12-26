@@ -1107,7 +1107,7 @@ int CClient::OnSkill_TasteID(CGrayUID uid, bool fTest)
 	return m_pChar->Skill_GetBase(SKILL_TASTEID);
 }
 
-int CClient::OnSkill_Info(SKILL_TYPE skill, CGrayUID uid, bool fTest)
+int CClient::OnSkill_Info(SKILL_TYPE skill, CGrayUID uid, int iTestLevel, bool fTest)
 {
 	ADDTOCALLSTACK("CClient::OnSkill_Info");
 	// Skill timer has expired

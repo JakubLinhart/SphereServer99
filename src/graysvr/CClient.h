@@ -902,7 +902,7 @@ public:
 	bool Dialog_Close(CObjBase *pObj, DWORD rid, DWORD dwButtonID);
 	void Menu_Setup(RESOURCE_ID_BASE rid, CObjBase *pObj = NULL);
 
-	int OnSkill_Info(SKILL_TYPE skill, CGrayUID uid, bool fTest);
+	int OnSkill_Info(SKILL_TYPE skill, CGrayUID uid, int iTestLevel, bool fTest);
 
 	bool Cmd_Use_Item(CItem *pItem, bool fTestTouch, bool fScript = false);
 	void Cmd_EditItem(CObjBase *pObj, int iSelect);

@@ -1043,66 +1043,67 @@ bool CRandGroupDef::r_WriteVal( LPCTSTR pszKey, CGString &sVal, CTextConsole * p
 
 size_t CRandGroupDef::GetRandMemberIndex( CChar * pCharSrc, bool bTrigger ) const
 {
-	ADDTOCALLSTACK("CRandGroupDef::GetRandMemberIndex");
-	size_t iCount = m_Members.GetCount();
-	if ( iCount <= 0 )
-		return m_Members.BadIndex();
+	//ADDTOCALLSTACK("CRandGroupDef::GetRandMemberIndex");
+	//size_t iCount = m_Members.GetCount();
+	//if ( iCount <= 0 )
+	//	return m_Members.BadIndex();
 
-	int iWeight = 0;
-	size_t i;
-	if ( pCharSrc == NULL )
-	{
-		iWeight	= Calc_GetRandVal( m_iTotalWeight ) + 1;
+	//int iWeight = 0;
+	//size_t i;
+	//if ( pCharSrc == NULL )
+	//{
+	//	iWeight	= Calc_GetRandVal( m_iTotalWeight ) + 1;
 
-		for ( i = 0; iWeight > 0 && i < iCount; i++ )
-		{
-			iWeight -= static_cast<int>(m_Members[i].GetResQty());
-		}
-		if ( i >= iCount && iWeight > 0 )
-			return m_Members.BadIndex();
+	//	for ( i = 0; iWeight > 0 && i < iCount; i++ )
+	//	{
+	//		iWeight -= static_cast<int>(m_Members[i].GetResQty());
+	//	}
+	//	if ( i >= iCount && iWeight > 0 )
+	//		return m_Members.BadIndex();
 
-		ASSERT(i > 0);
-		return( i - 1 );
-	}
+	//	ASSERT(i > 0);
+	//	return( i - 1 );
+	//}
 
-	CGPtrTypeArray<size_t> members;
-	CRegionResourceDef *pOreDef = NULL;
-	ITEMID_TYPE rid;
+	//CGPtrTypeArray<size_t> members;
+	//CRegionResourceDef *pOreDef = NULL;
+	//ITEMID_TYPE rid;
 
-	// calculate weight only of items pCharSrc can get
-	int iTotalWeight = 0;
-	for ( i = 0; i < iCount; i++ )
-	{
-		// If no regionresource, return just some random entry!
-		pOreDef = static_cast<CRegionResourceDef *>(g_Cfg.ResourceGetDef(m_Members[i].GetResourceID()));
-		if (pOreDef)
-		{
-			rid = pOreDef->m_ReapItem;
-			if (rid)
-			{
-				if (!pCharSrc->Skill_MakeItem(rid, UID_CLEAR, SKTRIG_SELECT))
-					continue;
-				if (IsTrigUsed(TRIGGER_RESOURCETEST))
-				{
-					if (bTrigger && pOreDef->OnTrigger("@ResourceTest", pCharSrc, NULL) == TRIGRET_RET_TRUE)
-						continue;
-				}
-			}
-		}
-		members.Add(i);
-		iTotalWeight += static_cast<int>(m_Members[i].GetResQty());
-	}
-	iWeight = Calc_GetRandVal( iTotalWeight ) + 1;
-	iCount = members.GetCount();
+	//// calculate weight only of items pCharSrc can get
+	//int iTotalWeight = 0;
+	//for ( i = 0; i < iCount; i++ )
+	//{
+	//	// If no regionresource, return just some random entry!
+	//	pOreDef = static_cast<CRegionResourceDef *>(g_Cfg.ResourceGetDef(m_Members[i].GetResourceID()));
+	//	if (pOreDef)
+	//	{
+	//		rid = pOreDef->m_ReapItem;
+	//		if (rid)
+	//		{
+	//			if (!pCharSrc->Skill_MakeItem(rid, UID_CLEAR, SKTRIG_SELECT))
+	//				continue;
+	//			if (IsTrigUsed(TRIGGER_RESOURCETEST))
+	//			{
+	//				if (bTrigger && pOreDef->OnTrigger("@ResourceTest", pCharSrc, NULL) == TRIGRET_RET_TRUE)
+	//					continue;
+	//			}
+	//		}
+	//	}
+	//	members.Add(i);
+	//	iTotalWeight += static_cast<int>(m_Members[i].GetResQty());
+	//}
+	//iWeight = Calc_GetRandVal( iTotalWeight ) + 1;
+	//iCount = members.GetCount();
 
-	for ( i = 0; iWeight > 0 && i < iCount; i++ )
-	{
-		iWeight -= static_cast<int>(m_Members[members[i]].GetResQty());
-	}
-	if ( i >= iCount && iWeight > 0 )
-		return m_Members.BadIndex();
-	ASSERT(i > 0);
-	return members[i - 1];
+	//for ( i = 0; iWeight > 0 && i < iCount; i++ )
+	//{
+	//	iWeight -= static_cast<int>(m_Members[members[i]].GetResQty());
+	//}
+	//if ( i >= iCount && iWeight > 0 )
+	//	return m_Members.BadIndex();
+	//ASSERT(i > 0);
+	//return members[i - 1];
+	return 0;
 }
 
 //*******************************************

@@ -522,6 +522,14 @@ void CChar::Noto_Karma(int iKarmaChange, int iBottom, bool fMessage)
 
 extern unsigned int Calc_ExpGet_Exp(unsigned int);
 
+void CChar::Noto_KarmaChangeMessage(int iKarmaChange, int iLimit)
+{
+	// Change your title ?
+	int iPrvLevel = Noto_GetLevel();
+	Noto_Karma(iKarmaChange, iLimit);
+	Noto_ChangeNewMsg(iPrvLevel);
+}
+
 void CChar::Noto_Kill(CChar *pKill, bool fPetKill, int iTotalKillers)
 {
 	ADDTOCALLSTACK("CChar::Noto_Kill");
@@ -1065,209 +1073,222 @@ bool CChar::Skill_Snoop_Check(const CItemContainer *pItem)
 	return true;
 }
 
-int CChar::Skill_Snooping(SKTRIG_TYPE stage)
+int CChar::Skill_Snooping(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Snooping");
-	// SKILL_SNOOPING
-	// m_Act_Targ = object to snoop into.
-	// RETURN:
-	//  -SKTRIG_QTY = no chance. and not a crime
-	//  -SKTRIG_FAIL = no chance and caught
-	//  0-100 = difficulty = percent chance of failure
+	//ADDTOCALLSTACK("CChar::Skill_Snooping");
+	//// SKILL_SNOOPING
+	//// m_Act.m_Targ = object to snoop into.
+	//// RETURN:
+	//// -CSkillDef::T_QTY = no chance. and not a crime
+	//// -CSkillDef::T_Fail = no chance and caught.
+	//// 0-100 = difficulty = percent chance of failure.
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
 
-	// Assume the container is not locked
-	CItemContainer *pCont = dynamic_cast<CItemContainer *>(m_Act_Targ.ItemFind());
-	if ( !pCont )
-		return -SKTRIG_QTY;
+	//// Assume the container is not locked.
+	//CItemPtr pCont2 = g_World.ItemFind(m_Act.m_Targ);
+	//CItemContainerPtr pCont = REF_CAST(CItemContainer, pCont2);
+	//if (pCont == NULL)
+	//{
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	CChar *pCharMark;
-	if ( !IsTakeCrime(pCont, &pCharMark) || !pCharMark )
-		return 0;	// not really a crime
+	//CCharPtr pCharMark;
+	//if (!IsTakeCrime(pCont, &pCharMark) || pCharMark == NULL)
+	//{
+	//	// Not a crime really.
+	//	return(0);
+	//}
 
-	if ( GetTopDist3D(pCharMark) > 1 )
-	{
-		SysMessageDefault(DEFMSG_SNOOPING_REACH);
-		return -SKTRIG_QTY;
-	}
+	//DEBUG_CHECK(!IsGM());
+	//if (!CanTouch(pCont))
+	//{
+	//	WriteString("You can't reach it.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	if ( !CanTouch(pCont) )
-	{
-		SysMessageDefault(DEFMSG_SNOOPING_CANT);
-		return -SKTRIG_QTY;
-	}
+	//if (GetTopDist3D(pCharMark) > 2)
+	//{
+	//	WriteString("Your mark is too far away.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	if ( stage == SKTRIG_START )
-	{
-		if ( GetPrivLevel() < pCharMark->GetPrivLevel() )
-		{
-			SysMessageDefault(DEFMSG_SNOOPING_CANT);
-			return -SKTRIG_QTY;
-		}
+	//PLEVEL_TYPE plevel = (PLEVEL_TYPE)GetPrivLevel();
+	//bool fForceFail = (plevel < pCharMark->GetPrivLevel());
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	if (fForceFail)
+	//		return(-CSkillDef::T_Fail);
 
-		// Return the difficulty
-		return (Skill_GetAdjusted(SKILL_SNOOPING) < Calc_GetRandVal(1000)) ? 100 : 0;
-	}
+	//	if (plevel >= PLEVEL_Counsel && plevel > pCharMark->GetPrivLevel())	// i'm higher priv.
+	//		return(0);
 
-	// Did someone see this?
-	CheckCrimeSeen(SKILL_SNOOPING, pCharMark, pCont, g_Cfg.GetDefaultMsg(DEFMSG_SNOOPING_ATTEMPTING));
-	Noto_Karma(-4, INT_MIN, true);
+	//	// return the difficulty.
 
-	if ( stage == SKTRIG_SUCCESS )
-	{
-		// Open the container
-		if ( m_pClient )
-			m_pClient->addContainerSetup(pCont);
-	}
-	else if ( stage == SKTRIG_FAIL )
-	{
-		SysMessageDefault(DEFMSG_SNOOPING_FAILED);
-		if ( Skill_GetAdjusted(SKILL_HIDING) / 2 < Calc_GetRandVal(1000) )
-			Reveal();
-	}
-	return 0;
+	//	return(pCharMark->m_StatDex);
+	//}
+
+	//if (fForceFail)
+	//{
+	//	stage = CSkillDef::T_Fail;
+	//}
+
+	//// did anyone see this ?
+
+	//if (CheckCrimeSeen(SKILL_SNOOPING, pCharMark, pCont, (stage == CSkillDef::T_Fail) ? "attempting to peek into" : "peeking into"))
+	//{
+	//	Noto_KarmaChangeMessage(-10, -500);
+	//}
+
+	////
+	//// View the container.
+	////
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	if (IsClient())
+	//	{
+	//		m_pClient->addContainerSetup(pCont);
+	//	}
+	//}
+	return(0);
 }
 
-int CChar::Skill_Stealing(SKTRIG_TYPE stage)
+int CChar::Skill_Stealing(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Stealing");
-	// SKILL_STEALING
-	// m_Act_Targ = object to steal
+	// m_Act.m_Targ = object to steal.
 	// RETURN:
-	//  -SKTRIG_QTY = no chance. and not a crime
-	//  -SKTRIG_FAIL = no chance and caught
-	//  0-100 = difficulty = percent chance of failure
+	// -CSkillDef::T_QTY = no chance. and not a crime
+	// -CSkillDef::T_Fail = no chance and caught.
+	// 0-100 = difficulty = percent chance of failure.
+	//
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
-
-	CChar *pCharMark = NULL;
-	CItem *pItem = m_Act_Targ.ItemFind();
-	if ( !pItem )
+	if (stage == CSkillDef::T_Stroke)
 	{
-		// If targ is an char, steal a random item from its backpack
-		pCharMark = m_Act_Targ.CharFind();
-		if ( !pCharMark )
+		return 0;
+	}
+
+	CCharPtr pCharMark;
+	CItemPtr pItem = g_World.ItemFind(m_Act_Targ);
+	if (pItem == NULL)	// on a chars head ? = random steal.
+	{
+		pCharMark = g_World.CharFind(m_Act_Targ);
+		if (pCharMark == NULL)
 		{
-			SysMessageDefault(DEFMSG_STEALING_NOTHING);
-			return -SKTRIG_QTY;
+			WriteString("Nothing to steal here.");
+			return(-CSkillDef::T_QTY);
 		}
-		CItemContainer *pPack = pCharMark->GetContainer(LAYER_PACK);
-		if ( !pPack )
+		CItemContainerPtr pPack = pCharMark->GetPack();
+		if (pPack == NULL)
 		{
 		cantsteal:
-			SysMessageDefault(DEFMSG_STEALING_EMPTY);
-			return -SKTRIG_QTY;
+			WriteString("They have nothing to steal");
+			return(-CSkillDef::T_QTY);
 		}
-
-		pItem = pPack->GetAt(Calc_GetRandVal(pPack->GetCount()));		// random item on backpack
-		if ( !pItem )
+		pItem = pPack->ContentFindRandom();
+		if (pItem == NULL)
+		{
 			goto cantsteal;
-
+		}
 		m_Act_Targ = pItem->GetUID();
 	}
 
-	// Special cases
-	CItem *pItemTop = dynamic_cast<CItem *>(pItem->GetTopLevelObj());
-	if ( pItemTop )
+	if (pItem->IsType(IT_TRAIN_PICKPOCKET))
 	{
-		if ( pItemTop->IsType(IT_CORPSE) )
-		{
-			SysMessageDefault(DEFMSG_STEALING_CORPSE);
-			return -SKTRIG_ABORT;
-		}
-		if ( pItemTop->IsType(IT_EQ_TRADE_WINDOW) )
-		{
-			SysMessageDefault(DEFMSG_STEALING_TRADE);
-			return -SKTRIG_ABORT;
-		}
-		if ( pItemTop->IsType(IT_GAME_BOARD) )
-		{
-			SysMessageDefault(DEFMSG_STEALING_GAMEBOARD);
-			return -SKTRIG_ABORT;
-		}
+		WriteString("Just dclick this to practice stealing");
+		return -CSkillDef::T_QTY;
 	}
-	if ( pItem->IsType(IT_TRAIN_PICKPOCKET) )
+	if (pItem->IsType(IT_GAME_PIECE))
 	{
-		SysMessageDefault(DEFMSG_STEALING_PICKPOCKET);
-		return -SKTRIG_QTY;
+		return -CSkillDef::T_QTY;
 	}
-	if ( !CanTouch(pItem) )
+	if (!CanTouch(pItem))
 	{
-		SysMessageDefault(DEFMSG_STEALING_REACH);
-		return -SKTRIG_ABORT;
+		WriteString("You can't reach it.");
+		return(-CSkillDef::T_Abort);
 	}
-	if ( !CanMove(pItem) || !CanCarry(pItem) )
+	if (!CanMove(pItem) ||
+		!CanCarry(pItem))
 	{
-		SysMessageDefault(DEFMSG_STEALING_HEAVY);
-		return -SKTRIG_ABORT;
+		WriteString("That is too heavy.");
+		return(-CSkillDef::T_Abort);
 	}
-	if ( !IsTakeCrime(pItem, &pCharMark) )
+	if (!IsTakeCrime(pItem, &pCharMark))
 	{
-		SysMessageDefault(DEFMSG_STEALING_NONEED);
-		return -SKTRIG_QTY;
+		WriteString("No need to steal this");
+
+		// Just pick it up ?
+		return(-CSkillDef::T_QTY);
 	}
-	if ( m_pArea->IsFlag(REGION_FLAG_SAFE) )
+	if (m_pArea->IsFlag(REGION_FLAG_SAFE))
 	{
-		SysMessageDefault(DEFMSG_STEALING_STOP);
-		return -SKTRIG_QTY;
+		WriteString("No stealing is possible here.");
+		return(-CSkillDef::T_QTY);
 	}
 
-	Reveal();
+	Reveal();	// If we take an item off the ground we are revealed.
 
 	bool fGround = false;
-	if ( pCharMark )
+	if (pCharMark != NULL)
 	{
-		if ( GetTopDist3D(pCharMark) > UO_MAP_DIST_INTERACT )
+		if (GetTopDist3D(pCharMark) > 2)
 		{
-			SysMessageDefault(DEFMSG_STEALING_MARK);
-			return -SKTRIG_QTY;
+			WriteString("Your mark is too far away.");
+			return -CSkillDef::T_QTY;
 		}
-		if ( m_pArea->IsFlag(REGION_FLAG_NO_PVP) && pCharMark->m_pPlayer && !IsPriv(PRIV_GM) )
+		if (m_pArea->IsFlag(REGION_FLAG_NO_PVP) &&
+			pCharMark->m_pPlayer &&
+			!IsGM())
 		{
-			SysMessageDefault(DEFMSG_STEALING_SAFE);
-			return -1;
+			WriteString("Can't harm other players here.");
+			return(-1);
 		}
-		if ( GetPrivLevel() < pCharMark->GetPrivLevel() )
+		if (GetPrivLevel() < pCharMark->GetPrivLevel())
 		{
-			return -SKTRIG_FAIL;
+			return -CSkillDef::T_Fail;
 		}
-		if ( stage == SKTRIG_START )
+		if (stage == CSkillDef::T_Start)
 		{
 			return g_Cfg.Calc_StealingItem(this, pItem, pCharMark);
 		}
 	}
 	else
 	{
-		// Stealing off the ground should always succeed
-		// It's just a matter of getting caught
-		if ( stage == SKTRIG_START )
-			return 1;
-
+		// stealing off the ground should always succeed.
+		// it's just a matter of getting caught.
+		if (stage == CSkillDef::T_Start)
+		{
+			return 1;	// town stuff on the ground is too easy.
+		}
 		fGround = true;
 	}
 
-	// Deliver the goods
-	if ( (stage == SKTRIG_SUCCESS) || fGround )
+	// Deliver the goods.
+
+	if (stage == CSkillDef::T_Success || fGround)
 	{
-		pItem->ClrAttr(ATTR_OWNED);
-		CItemContainer *pPack = GetContainer(LAYER_PACK);
-		if ( pPack && (pItem->GetParent() != pPack) )
+		pItem->ClrAttr(ATTR_OWNED);	// Now it's mine
+		CItemContainerPtr pPack = GetPack();
+		if (pItem->GetParent() != pPack && pPack)
 		{
 			pItem->RemoveFromView();
+			// Put in my invent.
 			pPack->ContentAdd(pItem);
 		}
 	}
 
-	if ( m_Act_Difficulty > 0 )
+	if (m_Act_Difficulty == 0)
+		return(0);	// Too easy to be bad. hehe
+
+	// You should only be able to go down to -1000 karma by stealing.
+	if (CheckCrimeSeen(SKILL_STEALING, pCharMark, pItem, (stage == CSkillDef::T_Fail) ? "attempting to steal" : "stealing"))
 	{
-		// You should only be able to go down to -1000 karma by stealing
-		if ( CheckCrimeSeen(SKILL_STEALING, pCharMark, pItem, g_Cfg.GetDefaultMsg((stage == SKTRIG_FAIL) ? DEFMSG_STEALING_YOUR : DEFMSG_STEALING_SOMEONE)) )
-			Noto_Karma(-100, -1000, true);
+		Noto_KarmaChangeMessage(-100, -1000);
 	}
-	return 0;
+	return(0);
 }
 
 void CChar::CallGuards()
@@ -2157,6 +2178,16 @@ int CChar::Fight_CalcDamage(const CItem *pWeapon, bool fNoRandom, bool fGetMax) 
 		return fGetMax ? iDmgMax : iDmgMin;
 	else
 		return Calc_GetRandVal(iDmgMin, iDmgMax);
+}
+
+void CChar::Fight_ResetWeaponSwingTimer()
+{
+	if (Fight_IsActive())
+	{
+		// The target or the weapon might have changed.
+		// So restart the skill
+		Skill_Start(Fight_GetWeaponSkill());
+	}
 }
 
 void CChar::Fight_Clear()

@@ -6,6 +6,8 @@
 #define _INC_CITEMBASE_H
 #pragma once
 
+#define IT_EQ_SCRIPT_BOOK IT_EQ_NPC_SCRIPT
+
 enum IT_TYPE		// double click type action.
 {
 	// NOTE: Never change this list as it will mess up the RES_ITEMDEF or RES_WORLDITEM already stored.
@@ -214,6 +216,9 @@ enum IT_TYPE		// double click type action.
 	IT_QTY,
 	IT_TRIGGER = 1000		// custom triggers starts from here
 };
+
+#define CItemDef CItemBase
+#define CItemDefPtr CItemBase*
 
 class CItemBase : public CBaseBaseDef
 {

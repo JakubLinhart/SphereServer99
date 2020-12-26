@@ -194,134 +194,127 @@ void CChar::AddGoldToPack(DWORD dwAmount, CItemContainer *pPack, bool fSound)
 }
 
 // Equip item on given layer
-void CChar::LayerAdd(CItem *pItem, LAYER_TYPE layer)
+bool CChar::LayerAdd(CItem *pItem, LAYER_TYPE layer)
 {
 	ADDTOCALLSTACK("CChar::LayerAdd");
-
-	if ( !pItem )
-		return;
-	if ( (pItem->GetParent() == this) && (pItem->GetEquipLayer() == layer) )
-		return;
-
-	if ( layer == LAYER_DRAGGING )
+	// add equipped items.
+	// check for item already in that layer ?
+	// OnTrigger for equip is done by ItemEquip()
+	// NOTE: This could be part of the Load, so it may not truly be being "equipped" at this time.
+	// NOTE: remove CanEquipLayer from here and just use ItemEquip for checking.!???
+	if (pItem == NULL)
+		return false;
+	if (IsMyChild(pItem) &&
+		pItem->GetEquipLayer() == layer)
 	{
-		pItem->RemoveSelf();	// remove from where I am before add so UNEQUIP effect takes
-		// NOTE: CanEquipLayer may bounce an item. If it stacks with this we are in trouble
+		// Already here.
+		return true;
 	}
 
-	if ( !g_Serv.IsLoading() )
+	// NOTE: CanEquipLayer may bounce an item . If it stacks with this we are in trouble !
+	// This takes care of any conflicting items in the slot !
+	LAYER_TYPE layerAct = CanEquipLayer(pItem, layer, NULL, false);
+	if (layerAct == LAYER_NONE)
 	{
-		layer = CanEquipLayer(pItem, layer, NULL, false);
-		if ( layer == LAYER_NONE )
+		// we should not allow non-layered stuff to be put here ?
+		// Put in pack instead ?
+		if (layer != LAYER_NONE && layer != LAYER_QTY && m_pPlayer)
 		{
-			// Can't equip the item on this layer, put it in pack instead
-			ItemBounce(pItem);
-			return;
+			DEBUG_MSG(("ContentAdd %s '%s' can't equip item %s '%s'" LOG_CR,
+				(LPCTSTR)GetResourceName(), (LPCTSTR)GetName(),
+				(LPCTSTR)pItem->GetResourceName(), (LPCTSTR)pItem->GetName()));
 		}
-
-		if ( !pItem->IsTypeSpellable() && !pItem->m_itSpell.m_spell && !pItem->IsType(IT_WAND) )	// can this item have a spell effect? If so we do not send 
-		{
-			if ( IsTrigUsed(TRIGGER_MEMORYEQUIP) || IsTrigUsed(TRIGGER_ITEMMEMORYEQUIP) )
-			{
-				CScriptTriggerArgs pArgs;
-				pArgs.m_iN1 = layer;
-				if ( pItem->OnTrigger(ITRIG_MemoryEquip, this, &pArgs) == TRIGRET_RET_TRUE )
-				{
-					pItem->Delete();
-					return;
-				}
-			}
-		}
+#ifdef _DEBUG
+		layerAct = CanEquipLayer(pItem, layer, NULL, false);
+#endif
+		ItemBounce(pItem);
+		return false;
 	}
 
-	if ( layer == LAYER_SPECIAL )
+	if (layerAct == LAYER_SPECIAL)
 	{
-		if ( pItem->IsType(IT_EQ_TRADE_WINDOW) )
-			layer = LAYER_NONE;
+		if (pItem->IsType(IT_EQ_TRADE_WINDOW))
+			layerAct = LAYER_NONE;
 	}
 
+	pItem->RemoveSelf(); // make sure all triggers fire. T_UnEquip
 	CContainer::ContentAddPrivate(pItem);
-	pItem->SetEquipLayer(layer);
+	pItem->SetEquipLayer(layerAct);
 
-	switch ( layer )
+	// update flags etc for having equipped this.
+	switch (layerAct)
 	{
-		case LAYER_HAND1:
-		case LAYER_HAND2:
+	case LAYER_HAND1:
+	case LAYER_HAND2:
+		// If weapon
+		if (pItem->IsTypeWeapon())
 		{
-			if ( pItem->IsTypeWeapon() )
-			{
-				m_uidWeapon = pItem->GetUID();
-				m_uidWeaponLast = pItem->GetUID();
-				if ( Fight_IsActive() )
-				{
-					m_atFight.m_Swing_NextAction = CServTime::GetCurrentTime() + g_Cfg.Calc_CombatAttackSpeed(this, pItem);
-					Skill_Start(Fight_GetWeaponSkill());	// update char action
-				}
-			}
-			else if ( pItem->IsType(IT_SHIELD) )
-				StatFlag_Set(STATF_HasShield);
-			break;
+			m_uidWeapon = pItem->GetUID();
+			Fight_ResetWeaponSwingTimer();
 		}
-		case LAYER_FLAG_Criminal:
+		else if (pItem->IsTypeArmor())
 		{
-			StatFlag_Set(STATF_Criminal);
-			NotoSave_Update();
-			if ( m_pClient )
-			{
-				m_pClient->addBuff(BI_CRIMINALSTATUS, 1153802, 1153828);
-				if ( !(g_Cfg.m_fGuardsOnMurderers && Noto_IsEvil()) )
-					SysMessageDefault(DEFMSG_MSG_GUARDS);
-			}
-			return;
+			// Shield of some sort.
+			m_ArmorDisplay = CalcArmorDefense();
+			StatFlag_Set(STATF_HasShield);
+			UpdateStatsFlag();
 		}
-		case LAYER_FLAG_SpiritSpeak:
-		{
-			StatFlag_Set(STATF_SpiritSpeak);
-			return;
-		}
-		case LAYER_FLAG_Stuck:
-		{
-			StatFlag_Set(STATF_Freeze);
-			if ( m_pClient )
-			{
-				m_pClient->addBuff(BI_PARALYZE, 1075827, 1075828, static_cast<WORD>(pItem->GetTimerAdjusted()));
-				m_pClient->addCharMove(this);		// immediately tell the client that now he's unable to move (without this, it will be unable to move only on next tick update)
-			}
-			break;
-		}
-		default:
-			break;
+		break;
+	case LAYER_SHOES:
+	case LAYER_PANTS:
+	case LAYER_SHIRT:
+	case LAYER_HELM:		// 6
+	case LAYER_GLOVES:	// 7
+	case LAYER_COLLAR:	// 10 = gorget or necklace.
+	case LAYER_HALF_APRON:
+	case LAYER_CHEST:	// 13 = armor chest
+	case LAYER_TUNIC:	// 17 = jester suit
+	case LAYER_ARMS:		// 19 = armor
+	case LAYER_CAPE:		// 20 = cape
+	case LAYER_ROBE:		// 22 = robe over all.
+	case LAYER_SKIRT:
+	case LAYER_LEGS:
+		// If armor or clothing = change in defense rating.
+		m_ArmorDisplay = CalcArmorDefense();
+		UpdateStatsFlag();
+		break;
+
+		// These effects are not magical. (make them spells !)
+
+	case LAYER_FLAG_Criminal:
+		StatFlag_Set(STATF_Criminal);
+		return true;
+	case LAYER_FLAG_SpiritSpeak:
+		StatFlag_Set(STATF_SpiritSpeak);
+		return true;
+	case LAYER_FLAG_Stuck:
+		StatFlag_Set(STATF_Immobile);
+		break;
 	}
 
-	if ( layer != LAYER_DRAGGING )
+	if (layerAct != LAYER_DRAGGING)
 	{
-		switch ( pItem->GetType() )
+		switch (pItem->GetType())
 		{
-			case IT_EQ_SCRIPT:	// pure script
-				break;
-			case IT_EQ_MEMORY_OBJ:
-			{
-				CItemMemory *pMemory = dynamic_cast<CItemMemory *>(pItem);
-				if ( pMemory && (pMemory->GetMemoryTypes() != MEMORY_NONE) )
-					Memory_UpdateFlags(pMemory);
-				break;
-			}
-			case IT_EQ_HORSE:
-			{
-				StatFlag_Set(STATF_OnHorse);
-				break;
-			}
-			case IT_COMM_CRYSTAL:
-			{
-				StatFlag_Set(STATF_COMM_CRYSTAL);
-				break;
-			}
-			default:
-				break;
+		case IT_EQ_SCRIPT:	// pure script.
+			break;
+		case IT_EQ_SCRIPT_BOOK:
+			ScriptBook_OnTick(PTR_CAST(CItemMessage, pItem), false);
+			break;
+		case IT_EQ_MEMORY_OBJ:
+			Memory_UpdateFlags(PTR_CAST(CItemMemory, pItem));
+			break;
+		case IT_EQ_HORSE:
+			StatFlag_Set(STATF_OnHorse);
+			break;
+		case IT_COMM_CRYSTAL:
+			StatFlag_Set(STATF_COMM_CRYSTAL);
+			break;
 		}
 	}
 
 	pItem->Update();
+	return true;
 }
 
 // Unequip item
@@ -3747,4 +3740,154 @@ bool CChar::OnTick()
 
 	EXC_CATCH;
 	return true;
+}
+
+void CChar::ScriptBook_OnTick(CItemMessage* pScriptItem, bool fForceStart)
+{
+//	// IT_EQ_SCRIPT_BOOK
+//	// Take a tick for the current running script book or start it.
+//
+//	if (pScriptItem == NULL)
+//		return;
+//
+//	// Default re-eval time.
+//	pScriptItem->SetTimeout(5 * 60 * TICKS_PER_SEC);
+//
+//	// Did the script get superceded by something more important ?
+//	if (m_pNPC)
+//	{
+//		if (m_pNPC->m_Act_Motivation > pScriptItem->m_itScriptBook.m_iPriorityLevel)
+//			return;
+//	}
+//
+//	// Is the script running ?
+//	int iPage = pScriptItem->m_itScriptBook.m_ExecPage;
+//	int iOffset = pScriptItem->m_itScriptBook.m_ExecOffset;
+//
+//	if (fForceStart)
+//	{
+//		if (iPage)	// we should just wait for our tick !
+//			return;
+//
+//		Skill_Cleanup();
+//
+//		// Time to play. (continue from last)
+//		if (pScriptItem->IsBookSystem())
+//		{
+//			// Need to load the book.
+//			if (!pScriptItem->LoadSystemPages())
+//				return;
+//		}
+//	}
+//	else
+//	{
+//		// just a tick.
+//		// ??? Auto starting scripts !!!
+//		if (!iPage)	// but it's not running
+//			return;
+//	}
+//
+//	if (m_pNPC)
+//	{
+//		Skill_Start(NPCACT_ScriptBook);
+//		m_pNPC->m_Act_Motivation = pScriptItem->m_itScriptBook.m_iPriorityLevel;
+//	}
+//
+//	// Sample actions.
+//	// "GO=123,23,3"			// teleport directly here.
+//	// "TARG=123,23,3;ACT=goto"	// try to walk to this place.
+//	// "S=Hello, Welcome to my show!;T=30;M=W;M=W;M=E;M=E;S=Done;ANIM=Bow"
+//
+//	LPCTSTR pszPage = pScriptItem->GetPageText(iPage);
+//	if (pszPage == NULL)
+//	{
+//		// Done playing.
+//	play_stop:
+//		pScriptItem->m_itScriptBook.m_ExecPage = 0;
+//		pScriptItem->m_itScriptBook.m_ExecOffset = 0;
+//
+//		if (pScriptItem->IsBookSystem())
+//		{
+//			// unload the book.
+//			pScriptItem->UnLoadSystemPages();
+//		}
+//		if (pScriptItem->IsAttr(ATTR_CAN_DECAY))
+//		{
+//			pScriptItem->DeleteThis();
+//		}
+//		else if (pScriptItem->GetScriptTimeout())
+//		{
+//			pScriptItem->SetTimeout(pScriptItem->GetScriptTimeout());
+//		}
+//		return;
+//	}
+//
+//	// STATF_Script_Play
+//	// Exec the script command
+//	TCHAR szTemp[CSTRING_MAX_LEN];
+//	TCHAR* pszVerb = szTemp;
+//	int len = 0;
+//
+//restart_read:
+//	for (;;)
+//	{
+//		TCHAR ch = pszPage[iOffset];
+//		if (ch)
+//		{
+//			iOffset++;
+//			if (ch == '\n' || ch == '\r' || ch == '\t')
+//				continue;	// ignore these.
+//			if (ch == ';')
+//			{
+//				break;	// end of command marker.
+//			}
+//			pszVerb[len++] = ch;
+//		}
+//		else
+//		{
+//			pszPage = pScriptItem->GetPageText(++iPage);
+//			if (pszPage == NULL || pszPage[0] == '\0')
+//			{
+//				if (!len) goto play_stop;
+//				break;
+//			}
+//			iOffset = 0;
+//		}
+//	}
+//
+//	pszVerb[len] = '\0';
+//	pScriptItem->m_itScriptBook.m_ExecPage = iPage;
+//	pScriptItem->m_itScriptBook.m_ExecOffset = iOffset;
+//
+//	// Execute the action.
+//	if (len)
+//	{
+//		// Set the default time interval.
+//		if (pszVerb[0] == 'T' && pszVerb[1] == '=')
+//		{
+//			pszVerb += 2;
+//			pScriptItem->SetScriptTimeout(Exp_GetValue(pszVerb)); // store the last time interval here.
+//			len = 0;
+//			goto restart_read;
+//		}
+//
+//		SERVMODE_TYPE iModePrv = g_Serv.m_iModeCode;
+//		g_Serv.m_iModeCode = SERVMODE_ScriptBook;	// book mode. (lower my priv level) never do account stuff here.
+//
+//		// NOTE: We should do a priv check on all verbs here.
+//		if (g_Cfg.CanUsePrivVerb(this, pszVerb, &g_Serv))
+//		{
+//			CSphereExpContext exec(this, &g_Serv);
+//			HRESULT hRes = exec.ExecuteCommand(pszVerb);
+//			if (IS_ERROR(hRes))
+//			{
+//				DEBUG_MSG(("Bad Book Script verb '%s'" LOG_CR, pszVerb));
+//				// should we stop ?
+//			}
+//		}
+//		g_Serv.m_iModeCode = iModePrv;
+//	}
+//
+//	// When to check here again.
+//	pScriptItem->SetTimeout(pScriptItem->GetScriptTimeout());
 }

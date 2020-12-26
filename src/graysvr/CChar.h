@@ -9,7 +9,6 @@
 #define m_StatDex Stat_GetVal(STAT_DEX)
 #define m_StatInt Stat_GetVal(STAT_INT)
 #define m_StatStr Stat_GetVal(STAT_STR)
-#define m_StatMana Stat_GetVal(STAT_INT)
 #define m_ArmorDisplay m_defense
 
 enum NPCBRAIN_TYPE
@@ -48,6 +47,11 @@ public:
 	static const LPCTSTR sm_szVerbKeys[];
 
 public:
+	bool IsValidNewObj() const
+	{
+		return true;
+	}
+
 	NPCBRAIN_TYPE m_Brain;
 	WORD m_Home_Dist_Wander;
 	BYTE m_Act_Motivation;		// How bad do i want to do the current action (0% - 100%)
@@ -213,6 +217,7 @@ private:
 	#define STATF_ArcherCanMove	0x00020000	// Can move with archery
 	#define STATF_Stone			0x00040000	// turned to stone
 	#define STATF_Hovering		0x00080000	// hovering (flying gargoyle)
+	#define STATF_Immobile		0x00080000	// Non modile. (but i can hit!)
 	#define STATF_Fly			0x00100000	// Flying or running
 	#define STATF_Running       0x00100000
 //							0x00200000
@@ -317,10 +322,15 @@ public:
 		WORD m_regen;		// Tick time since last regen
 	} m_Stat[STAT_QTY];
 
-	int m_StatMaxHealth()
-	{
-		return m_Stat[STAT_STR].m_max;
-	}
+#define m_StatMaxHealth	m_Stat[STAT_Health].m_max
+#define m_StatMaxMana	m_Stat[STAT_Mana].m_max
+#define m_StatMaxStam	m_Stat[STAT_Stam].m_max
+
+#define m_StatHealth	m_Stat[STAT_Health].m_val
+#define m_StatMana		m_Stat[STAT_Mana].m_val
+#define m_StatStam		m_Stat[STAT_Stam].m_val
+
+#define m_StatFood		m_Stat[STAT_Food].m_val
 
 	CServTime m_timeCreate;		// When was i created ?
 	CServTime m_timeLastRegen;	// When did i get my last regen tick ?
@@ -740,7 +750,7 @@ public:
 	void ClientAttach(CClient *pClient);
 	void ClientDetach();
 	bool IsClient() const { return(m_pClient != NULL); }
-
+	CClientPtr GetClient() const { return(m_pClient); }
 	bool SetPrivLevel(CTextConsole *pSrc, LPCTSTR pszFlags);
 	bool CanDisturb(const CChar *pChar) const;
 	void SetDisconnected();
@@ -858,7 +868,7 @@ public:
 	bool CanEquipStr(CItem *pItem) const;
 	LAYER_TYPE CanEquipLayer(CItem *pItem, LAYER_TYPE layer, CChar *pCharMsg, bool fTest);
 	CItem *LayerFind(LAYER_TYPE layer) const;
-	void LayerAdd(CItem *pItem, LAYER_TYPE layer = LAYER_QTY);
+	bool LayerAdd(CItem *pItem, LAYER_TYPE layer = LAYER_QTY);
 
 	TRIGRET_TYPE OnCharTrigForLayerLoop(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs *pArgs, CGString *pResult, LAYER_TYPE layer);
 	TRIGRET_TYPE OnCharTrigForMemTypeLoop(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs *pArgs, CGString *pResult, WORD wMemTypes);
@@ -933,6 +943,7 @@ public:
 	int Noto_GetLevel() const;
 	LPCTSTR Noto_GetFameTitle() const;
 	LPCTSTR Noto_GetTitle() const;
+	void Noto_KarmaChangeMessage(int iKarmaChange, int iLimit);
 	void Noto_Kill(CChar *pKill, bool fPetKill = false, int iTotalKillers = 0);
 	void Noto_Criminal(CChar *pChar = NULL);
 	void Noto_Murder();
@@ -985,12 +996,12 @@ public:
 	bool Skill_UseQuick(SKILL_TYPE skill, int iDifficulty, bool fAllowGain = true, bool fUseBellCurve = true);
 	bool Skill_CheckSuccess(SKILL_TYPE skill, int iDifficulty, bool fUseBellCurve = true) const;
 	bool Skill_Wait(SKILL_TYPE skill);
-	bool Skill_Start(SKILL_TYPE skill);
+	bool Skill_Start(SKILL_TYPE skill, int iDifficulty = 0);
 	void Skill_Fail(bool fCancel = false);
 	int Skill_Stroke(bool fResource);
 	ANIM_TYPE Skill_GetAnim(SKILL_TYPE skill);
 	SOUND_TYPE Skill_GetSound(SKILL_TYPE skill);
-	int Skill_Stage(SKTRIG_TYPE stage);
+	int Skill_Stage(CSkillDef::T_TYPE_ stage);
 	TRIGRET_TYPE Skill_OnTrigger(SKILL_TYPE skill, SKTRIG_TYPE stage);
 	TRIGRET_TYPE Skill_OnTrigger(SKILL_TYPE skill, SKTRIG_TYPE stage, CScriptTriggerArgs *pArgs);		// pArgs.m_iN1 will be rewritten with skill
 	TRIGRET_TYPE Skill_OnCharTrigger(SKILL_TYPE skill, CTRIG_TYPE ctrig);
@@ -999,8 +1010,8 @@ public:
 	bool Skill_SmeltOre(CItem *pOre);
 	bool Skill_SmeltItem(CItem *pItem);
 	bool Skill_Tracking(CGrayUID uidTarg, int iDistMax = SHRT_MAX);
-	bool Skill_MakeItem(ITEMID_TYPE id, CGrayUID uidTarg, SKTRIG_TYPE stage, bool fSkillOnly = false, DWORD dwReplicationQty = 1);
-	bool Skill_MakeItem_Success();
+	bool Skill_MakeItem(ITEMID_TYPE id, CSphereUID uidTarg, CSkillDef::T_TYPE_ stage);
+	bool Skill_MakeItem_Success(int iAmount);
 	bool Skill_Snoop_Check(const CItemContainer *pItem);
 	void Skill_Cleanup();
 
@@ -1022,38 +1033,45 @@ private:
 
 	int	Skill_Scripted(SKTRIG_TYPE stage);
 
-	int Skill_MakeItem(SKTRIG_TYPE stage);
-	int Skill_Information(SKTRIG_TYPE stage);
-	int Skill_Hiding(SKTRIG_TYPE stage);
-	int Skill_Enticement(SKTRIG_TYPE stage);
-	int Skill_Snooping(SKTRIG_TYPE stage);
-	int Skill_Stealing(SKTRIG_TYPE stage);
-	int Skill_Mining(SKTRIG_TYPE stage);
-	int Skill_Lumberjack(SKTRIG_TYPE stage);
-	int Skill_Taming(SKTRIG_TYPE stage);
-	int Skill_Fishing(SKTRIG_TYPE stage);
-	int Skill_DetectHidden(SKTRIG_TYPE stage);
-	int Skill_Herding(SKTRIG_TYPE stage);
-	int Skill_Blacksmith(SKTRIG_TYPE stage);
-	int Skill_Lockpicking(SKTRIG_TYPE stage);
-	int Skill_Peacemaking(SKTRIG_TYPE stage);
-	int Skill_Carpentry(SKTRIG_TYPE stage);
-	int Skill_Provocation(SKTRIG_TYPE stage);
-	int Skill_Poisoning(SKTRIG_TYPE stage);
-	int Skill_Cooking(SKTRIG_TYPE stage);
-	int Skill_Healing(SKTRIG_TYPE stage);
-	int Skill_Meditation(SKTRIG_TYPE stage);
-	int Skill_RemoveTrap(SKTRIG_TYPE stage);
-	int Skill_Begging(SKTRIG_TYPE stage);
-	int Skill_SpiritSpeak(SKTRIG_TYPE stage);
-	int Skill_Magery(SKTRIG_TYPE stage);
+	int Skill_MakeItem(CSkillDef::T_TYPE_ stage);
+	int Skill_Information(CSkillDef::T_TYPE_ stage);
+	int Skill_Hiding(CSkillDef::T_TYPE_ stage);
+	int Skill_Enticement(CSkillDef::T_TYPE_ stage);
+	int Skill_Snooping(CSkillDef::T_TYPE_ stage);
+	int Skill_Stealing(CSkillDef::T_TYPE_ stage);
+	int Skill_Mining(CSkillDef::T_TYPE_ stage);
+	int Skill_Lumberjack(CSkillDef::T_TYPE_ stage);
+	int Skill_Taming(CSkillDef::T_TYPE_ stage);
+	int Skill_Fishing(CSkillDef::T_TYPE_ stage);
+	int Skill_DetectHidden(CSkillDef::T_TYPE_ stage);
+	int Skill_Herding(CSkillDef::T_TYPE_ stage);
+	int Skill_Blacksmith(CSkillDef::T_TYPE_ stage);
+	int Skill_Inscription(CSkillDef::T_TYPE_ stage);
+	int Skill_Bowcraft(CSkillDef::T_TYPE_ stage);
+	int Skill_Lockpicking(CSkillDef::T_TYPE_ stage);
+	int Skill_Peacemaking(CSkillDef::T_TYPE_ stage);
+	int Skill_Carpentry(CSkillDef::T_TYPE_ stage);
+	int Skill_Provocation(CSkillDef::T_TYPE_ stage);
+	int Skill_Poisoning(CSkillDef::T_TYPE_ stage);
+	int Skill_Cooking(CSkillDef::T_TYPE_ stage);
+	int Skill_Healing(CSkillDef::T_TYPE_ stage);
+	int Skill_Meditation(CSkillDef::T_TYPE_ stage);
+	int Skill_RemoveTrap(CSkillDef::T_TYPE_ stage);
+	int Skill_Begging(CSkillDef::T_TYPE_ stage);
+	int Skill_SpiritSpeak(CSkillDef::T_TYPE_ stage);
+	int Skill_Magery(CSkillDef::T_TYPE_ stage);
 	int Skill_Tracking(SKTRIG_TYPE stage);
-	int Skill_Fighting(SKTRIG_TYPE stage);
-	int Skill_Musicianship(SKTRIG_TYPE stage);
+	int Skill_Alchemy(CSkillDef::T_TYPE_ stage);
+	int Skill_Fighting(CSkillDef::T_TYPE_ stage);
+	int Skill_Cartography(CSkillDef::T_TYPE_ stage);
+	int Skill_Tailoring(CSkillDef::T_TYPE_ stage);
+	int Skill_Musicianship(CSkillDef::T_TYPE_ stage);
 
-	int Skill_Act_Throwing(SKTRIG_TYPE stage);
-	int Skill_Act_Breath(SKTRIG_TYPE stage);
-	int Skill_Act_Training(SKTRIG_TYPE stage);
+	int Skill_Act_Napping(CSkillDef::T_TYPE_ stage);
+	int Skill_Act_Throwing(CSkillDef::T_TYPE_ stage);
+	int Skill_Act_Breath(CSkillDef::T_TYPE_ stage);
+	int Skill_Act_Looting(CSkillDef::T_TYPE_ stage);
+	int Skill_Act_Training(CSkillDef::T_TYPE_ stage);
 
 	void Spell_Dispel(int iLevel);
 	CChar *Spell_Summon(CREID_TYPE id, CPointMap ptTarg, bool fSpellSummon);
@@ -1154,6 +1172,7 @@ public:
 	bool Memory_Fight_OnTick(CItemMemory *pMemory);
 
 	bool Fight_Attack(CChar *pCharTarg, bool fToldByMaster = false);
+	void Fight_ResetWeaponSwingTimer();
 	void Fight_Clear();
 	void Fight_HitTry();
 	WAR_SWING_TYPE Fight_Hit(CChar *pCharTarg);
@@ -1374,6 +1393,8 @@ public:
 	bool NPC_OnReceiveItem(CChar *pCharSrc, CItem *pItem);
 	bool NPC_SetVendorPrice(CItem *pItem, int iPrice);
 	bool OnTriggerSpeech(bool fPet, LPCTSTR pszText, CChar *pSrc, TALKMODE_TYPE &mode, HUE_TYPE wHue = HUE_DEFAULT);
+
+	void ScriptBook_OnTick(CItemMessage* pScriptItem, bool fForce = false);
 
 	// Outside events that occur to us
 	int OnTakeDamage(int iDmg, CChar *pSrc, DAMAGE_TYPE uType, int iDmgPhysical = 0, int iDmgFire = 0, int iDmgCold = 0, int iDmgPoison = 0, int iDmgEnergy = 0);

@@ -288,6 +288,8 @@ enum ITEMID_TYPE	// InsideUO is great for this stuff.
 	ITEMID_HAIR_SPIKED			= 0x2FD1,
 
 	ITEMID_DIRT_TILE			= 0x31F4,
+	
+	ITEMID_FX_SPLASH			= 0x352d,
 
 	ITEMID_GAME1_CHECKER		= 0x3584,	// white
 	ITEMID_GAME1_BISHOP			= 0x3585,
@@ -629,7 +631,10 @@ enum ANIM_TYPE	// not all creatures animate the same for some reason.
 	ANIM_ATTACK_1H_SLASH	= 0x09,
 	ANIM_ATTACK_1H_PIERCE	= 0x0a,
 	ANIM_ATTACK_1H_BASH		= 0x0b,
+	ANIM_ATTACK_1H_DOWN		= 0x0b,	// 1H overhead mace - mace type
 
+
+	ANIM_ATTACK_2H_DOWN		= 0x0c,	// 2H mace jab
 	ANIM_ATTACK_2H_BASH		= 0x0c,
 	ANIM_ATTACK_2H_SLASH	= 0x0d,
 	ANIM_ATTACK_2H_PIERCE	= 0x0e,
@@ -805,6 +810,9 @@ enum DIR_TYPE	// Walking directions. m_dir
 	DIR_QTY		// also means "center"
 };
 
+#define SKILL_Stealth SKILL_STEALTH
+#define SKILL_RemoveTrap SKILL_REMOVETRAP
+
 enum SKILL_TYPE	// List of skill numbers (things that can be done at a given time)
 {
 	SKILL_NONE = -1,
@@ -894,7 +902,9 @@ enum SKILL_TYPE	// List of skill numbers (things that can be done at a given tim
 	NPCACT_THROWING,			// 112 = Throwing a stone at m_Fight_Targ.
 	NPCACT_TRAINING,			// 113 = using a training dummy etc.
 	NPCACT_FOOD,				// 114 = Searching for food
+	NPCACT_LOOTING = 114,
 	NPCACT_RUNTO,				// 115 = Run to a location x,y.
+	NPCACT_Napping = 118,		// 118 = just snoozong a little bit, but not sleeping.
 	NPCACT_QTY
 };
 
@@ -1072,6 +1082,7 @@ enum SPELL_TYPE	// List of spell numbers in spell book.
 	SPELL_Fire_Elem,
 	SPELL_Water_Elem,
 	SPELL_MAGERY_QTY = SPELL_Water_Elem,
+	SPELL_BOOK_QTY = SPELL_Water_Elem + 1,
 
 	// Necromancy (AOS)
 	SPELL_Animate_Dead_AOS = 101,

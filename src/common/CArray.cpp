@@ -47,6 +47,13 @@ void CGObList::OnRemoveOb( CGObListRec* pObRec )	// Override this = called when 
 	m_iCount --;
 }
 
+bool CGObList::IsMyChild(CGObListRec* pObRec)
+{
+	if (pObRec == NULL)
+		return false;
+	return pObRec->GetParent() == this;
+}
+
 void CGObList::InsertAfter( CGObListRec * pNewRec, CGObListRec * pPrev )
 {
 	ADDTOCALLSTACK("CGObList::InsertAfter");

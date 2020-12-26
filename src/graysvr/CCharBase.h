@@ -178,6 +178,38 @@ class CCharBase : public CBaseBaseDef	// define basic info about each "TYPE" of 
 {
 	// RES_CHARDEF
 public:
+	enum P_TYPE_
+	{
+		T_Create,
+		T_Death,
+		T_DeathCorpse,
+		T_Destroy,
+		T_EnvironChange,
+		T_GetHit,
+		T_Hit,
+		T_HitMiss,
+		T_HitTry,
+		T_LogIn, 
+		T_LogOut,
+		T_NPCAcceptItem,
+		T_NPCHearGreeting,
+		T_NPCHearNeed,
+		T_NPCHearUnknown,
+		T_NPCRefuseItem,
+		T_NPCRestock,
+		T_NPCSeeNewPlayer,
+		T_NPCSeeWantItem,
+		T_PersonalSpace,
+		T_ReceiveItem,
+		T_SpellCast,
+		T_SpellEffect,
+		T_Step,
+		T_UserButton,
+		T_UserClick,
+		T_UserDClick,
+		T_UserToolTip
+	};
+
 	static const char *m_sClassName;
 	static LPCTSTR const sm_szLoadKeys[];
 
@@ -185,8 +217,6 @@ public:
 	~CCharBase() { }
 
 public:
-	static const CTRIG_TYPE T_SpellEffect = CTRIG_SpellEffect;
-
 	ITEMID_TYPE m_trackID;			// ITEMID_TYPE what look like on tracking
 	SOUND_TYPE m_soundBase;			// sounds (typically 5 sounds per creature, humans and birds have more)
 	SOUND_TYPE m_soundIdle;

@@ -288,6 +288,24 @@ public:
 		return(PTR_CAST(CChar, FindUIDObj(uid & UID_INDEX_MASK)));
 	}
 
+	CItemPtr ItemFind(CGrayUID uid) const
+	{
+		// Does item still exist or has it been deleted
+		// IsItem() may be faster ?
+		if (!uid.IsItem())
+			return(NULL);
+		return(PTR_CAST(CItem, FindUIDObj(uid & UID_INDEX_MASK)));
+	}
+
+	CItemPtr ItemFind(CSphereUID uid) const
+	{
+		// Does item still exist or has it been deleted
+		// IsItem() may be faster ?
+		if (!uid.IsItem())
+			return(NULL);
+		return(PTR_CAST(CItem, FindUIDObj(uid & UID_INDEX_MASK)));
+	}
+
 	CPointMap FindItemTypeNearby(const CPointMap &pt, IT_TYPE type, int iDist = 0, bool fCheckMulti = false, bool fLimitZ = false);
 	bool IsItemTypeNear(const CPointMap &pt, IT_TYPE type, int iDist = 0, bool fCheckMulti = false, bool fLimitZ = false);
 
@@ -315,6 +333,7 @@ public:
 
 	void Broadcast(LPCTSTR pszMsg);
 	void __cdecl Broadcastf(LPCTSTR pszMsg, ...) __printfargs(2, 3);
+	CItemPtr Explode(CChar* pSrc, CPointMap pt, int iDist, int iDamage, WORD wFlags = DAMAGE_GENERAL | DAMAGE_HIT_BLUNT);
 
 	bool Export(LPCTSTR pszFileName, const CChar *pSrc, WORD wModeFlags = IMPFLAGS_ITEMS, int iDist = SHRT_MAX, int dx = 0, int dy = 0);
 	bool Import(LPCTSTR pszFileName, const CChar *pSrc, WORD wModeFlags = IMPFLAGS_ITEMS, int iDist = SHRT_MAX, TCHAR *pszArg1 = NULL, TCHAR *pszArg2 = NULL);

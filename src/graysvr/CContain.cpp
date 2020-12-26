@@ -226,6 +226,12 @@ bool CContainer::ContentFindKeyFor(CItem *pLocked) const
 	return (pLocked && pLocked->m_itContainer.m_lockUID && ContentFind(RESOURCE_ID(RES_TYPEDEF, IT_KEY), pLocked->m_itContainer.m_lockUID));
 }
 
+CItemPtr CContainer::ContentFindRandom(void) const
+{
+	// returns Pointer of random item, NULL if player carrying none
+	return(GetAt(Calc_GetRandVal(GetCount())));
+}
+
 DWORD CContainer::ContentConsume(RESOURCE_ID_BASE rid, DWORD dwQty, bool fTest, DWORD dwArg)
 {
 	ADDTOCALLSTACK("CContainer::ContentConsume");

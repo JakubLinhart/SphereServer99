@@ -488,6 +488,7 @@ enum RTRIG_TYPE
 	RTRIG_QTY
 };
 
+typedef CRegionBase* CRegionPtr;
 class CRegionBase : public CResourceDef, public CGRegion
 {
 	// region of the world of arbitrary size and location.

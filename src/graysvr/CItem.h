@@ -114,6 +114,7 @@ public:
 	#define ATTR_FORSALE        0x0001000
 	#define ATTR_STOLEN         0x0002000
 	#define ATTR_CANDECAY       0x0004000
+	#define ATTR_CAN_DECAY		0x0004000	// This item can decay. but it would seem that it would not (ATTR_MOVE_NEVER etc)
 	#define ATTR_STATIC			0x0008000	// Item will be locked on ground and must be saved separately on world static save (WorldForge merge marker)
 	#define ATTR_EXCEPTIONAL	0x0010000	// Item is exceptional
 	#define ATTR_ENCHANTED		0x0020000	// Item is enchanted
@@ -126,6 +127,7 @@ public:
 	#define ATTR_SECURE			0x1000000	// Item is locked down and secured on house
 	#define ATTR_REFORGED		0x2000000	// Item is runic reforged
 	#define ATTR_OPENED			0x4000000	// Door is opened (only used when DOOROPENID is set on the door)
+
 	DWORD m_Attr;
 
 	int m_StrengthBonus;
@@ -994,6 +996,8 @@ public:
 	virtual void r_Write(CScript &s);
 };
 
+#define CItemVendablePtr CItemVendable*;
+
 class CItemVendable : public CItem
 {
 	// Any item that can be sold and has value
@@ -1081,6 +1085,7 @@ public:
 	{
 		return static_cast<CItem *>(GetHead());
 	}
+
 	CItem *GetContentTail() const
 	{
 		return static_cast<CItem *>(GetTail());
@@ -1094,6 +1099,7 @@ public:
 	int FixWeight();
 
 	bool ContentFindKeyFor(CItem *pLocked) const;
+	CItemPtr ContentFindRandom(void) const;
 	void ContentsDump(const CPointMap &pt, DWORD dwAttrLeave = 0);
 	void ContentsTransfer(CItemContainer *pCont, bool fNoNewbie);
 	void ContentAttrMod(DWORD dwAttr, bool fSet);
@@ -1228,6 +1234,7 @@ public:
 	virtual void DupeCopy(const CItem *pItem);
 };
 
+#define CItemCorpsePtr CItemCorpse*;
 class CItemCorpse : public CItemContainer
 {
 	// A corpse is a special type of item (IT_CORPSE)
@@ -1291,6 +1298,7 @@ enum NPC_MEM_ACT_TYPE
 
 class CItemStone;
 
+#define CItemMemoryPtr CItemMemory*
 class CItemMemory : public CItem
 {
 	// IT_EQ_MEMORY

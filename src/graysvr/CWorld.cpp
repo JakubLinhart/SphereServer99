@@ -2052,6 +2052,27 @@ void __cdecl CWorld::Broadcastf(LPCTSTR pszMsg, ...)
 	Broadcast(sTemp);
 }
 
+CItemPtr CWorld::Explode(CChar* pSrc, CPointMap pt, int iDist, int iDamage, WORD wFlags)
+{
+	// Purple potions and dragons fire.
+	// degrade damage the farther away we are. ???
+
+	CItemPtr pItem = CItem::CreateBase(ITEMID_FX_EXPLODE_3);
+	ASSERT(pItem);
+
+	pItem->SetAttr(ATTR_MOVE_NEVER | ATTR_CAN_DECAY);
+	pItem->SetType(IT_EXPLOSION);
+	pItem->m_uidLink = pSrc ? (DWORD)pSrc->GetUID() : UID_INDEX_CLEAR;
+	pItem->m_itExplode.m_iDamage = iDamage;
+	pItem->m_itExplode.m_wFlags = wFlags | DAMAGE_GENERAL | DAMAGE_HIT_BLUNT;
+	pItem->m_itExplode.m_iDist = iDist;
+	pItem->MoveToDecay(pt, 1);	// almost Immediate Decay
+
+	pItem->Sound(0x207);	// sound is attached to the object so put the sound before the explosion.
+
+	return(pItem);
+}
+
 DWORD CWorld::GetGameWorldTime(CServTime basetime) const
 {
 	ADDTOCALLSTACK("CWorld::GetGameWorldTime");

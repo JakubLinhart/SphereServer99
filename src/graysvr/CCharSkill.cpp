@@ -1137,258 +1137,268 @@ int CChar::SkillResourceTest(const CResourceQtyArray *pResources)
 	return pResources->IsResourceMatchAll(this);
 }
 
-bool CChar::Skill_MakeItem(ITEMID_TYPE id, CGrayUID uidTarg, SKTRIG_TYPE stage, bool fSkillOnly, DWORD dwReplicationQty)
+bool CChar::Skill_MakeItem(ITEMID_TYPE id, CSphereUID uidTarg, CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_MakeItem");
-	// "MAKEITEM"
-	//
-	// SKILL_ALCHEMY
-	// SKILL_BLACKSMITHING
-	// SKILL_BOWCRAFT
-	// SKILL_CARPENTRY
-	// SKILL_CARTOGRAPHY
-	// SKILL_COOKING
-	// SKILL_INSCRIPTION
-	// SKILL_TAILORING
-	// SKILL_TINKERING
-	//
-	// Confer the new item.
-	// Test for consumable items.
-	// Fail = do a partial consume of the resources.
-	//
-	// ARGS:
-	//  uidTarg = item targetted to try to make this . (this item should be used to make somehow)
-	// Skill_GetActive()
-	//
-	// RETURN:
-	//  true = success
+	//ADDTOCALLSTACK("CChar::Skill_MakeItem");
+	//// "MAKEITEM"
+	////
+	//// SKILL_ALCHEMY
+	//// SKILL_BLACKSMITHING
+	//// SKILL_BOWCRAFT
+	//// SKILL_CARPENTRY
+	//// SKILL_INSCRIPTION
+	//// SKILL_TAILORING:
+	//// SKILL_TINKERING,
+	////
+	//// Confer the new item.
+	//// Test for consumable items.
+	//// on CSkillDef::T_Fail do a partial consume of the resources.
+	////
+	//// ARGS:
+	////  uidTarg = item targetted to try to make this . (this item should be used to make somehow)
+	////  skill = Skill_GetActive()
+	////
+	//// RETURN:
+	////   true = success.
+	////
 
-	CItemBase *pItemDef = CItemBase::FindItemBase(id);
-	if ( !pItemDef )
-		return false;
+	//if (id <= ITEMID_NOTHING)
+	//	return(true);
 
-	CItem *pItemTarg = uidTarg.ItemFind();
-	if ( pItemTarg && (stage == SKTRIG_SELECT) )
-	{
-		if ( !pItemDef->m_SkillMake.ContainsResourceMatch(pItemTarg) && !pItemDef->m_BaseResources.ContainsResourceMatch(pItemTarg) )
-			return false;
-	}
+	//CItemDefPtr pItemDef = g_Cfg.FindItemDef(id);
+	//if (pItemDef == NULL)
+	//	return(false);
 
-	if ( !SkillResourceTest(&(pItemDef->m_SkillMake)) )
-		return false;
-	if ( fSkillOnly )
-		return true;
+	//// Trigger Target item for creating the new item.
+	//CItemPtr pItemTarg = g_World.ItemFind(uidTarg);
+	//if (pItemTarg && stage == CSkillDef::T_Select)
+	//{
+	//	if (pItemDef->m_SkillMake.FindResourceMatch(pItemTarg) < 0 &&
+	//		pItemDef->m_BaseResources.FindResourceMatch(pItemTarg) < 0)
+	//	{
+	//		// Not intersect with the specified item
+	//		return(false);
+	//	}
+	//}
 
-	CItem *pItemDragging = LayerFind(LAYER_DRAGGING);
-	if ( pItemDragging )
-		ItemBounce(pItemDragging);
+	//int iReplicationQty = 1;
+	//if (pItemDef->Can(CAN_I_REPLICATE))
+	//{
+	//	// For arrows/bolts, how many do they want ?
+	//	// Set the quantity that they want to make.
+	//	if (pItemTarg != NULL)
+	//	{
+	//		iReplicationQty = pItemTarg->GetAmount();
+	//	}
+	//}
 
-	dwReplicationQty = ResourceConsume(&(pItemDef->m_BaseResources), dwReplicationQty, stage != SKTRIG_SUCCESS, pItemDef->GetResourceID().GetResIndex());
-	if ( !dwReplicationQty )
-		return false;
+	//// Test the hypothetical required skills and tools
+	//if (!pItemDef->m_SkillMake.IsResourceMatchAll(this))
+	//{
+	//	if (stage == CSkillDef::T_Start)
+	//	{
+	//		WriteString("You cannot make this");
+	//	}
+	//	return(false);
+	//}
 
-	// Test or consume the needed resources.
-	if ( stage == SKTRIG_FAIL )
-	{
-		// If fail only consume part of them.
-		int iConsumePercent = -1;
-		size_t i = pItemDef->m_SkillMake.FindResourceType(RES_SKILL);
-		if ( i != pItemDef->m_SkillMake.BadIndex() )
-		{
-			CSkillDef *pSkillDef = g_Cfg.GetSkillDef(static_cast<SKILL_TYPE>(pItemDef->m_SkillMake[i].GetResIndex()));
-			if ( pSkillDef && (pSkillDef->m_Effect.m_aiValues.GetCount() > 0) )
-				iConsumePercent = pSkillDef->m_Effect.GetRandom();
-		}
+	//// test or consume the needed resources.
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// If fail only consume part of them.
+	//	ResourceConsumePart(&(pItemDef->m_BaseResources), iReplicationQty, Calc_GetRandVal(50));
+	//	return(false);
+	//}
 
-		if ( iConsumePercent < 0 )
-			iConsumePercent = Calc_GetRandVal(50);
+	//// How many do i actually have resource for?
+	//iReplicationQty = ResourceConsume(&(pItemDef->m_BaseResources), iReplicationQty, stage != CSkillDef::T_Success);
+	//if (!iReplicationQty)
+	//{
+	//	if (stage == CSkillDef::T_Start)
+	//	{
+	//		WriteString("You lack the resources to make this");
+	//	}
+	//	return(false);
+	//}
 
-		ResourceConsumePart(&(pItemDef->m_BaseResources), dwReplicationQty, iConsumePercent, false, pItemDef->GetResourceID().GetResIndex());
-		return false;
-	}
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// Start the skill.
+	//	// Find the primary skill required.
 
-	if ( stage == SKTRIG_START )
-	{
-		// Start the skill.
-		// Find the primary skill required.
-		size_t i = pItemDef->m_SkillMake.FindResourceType(RES_SKILL);
-		if ( i == pItemDef->m_SkillMake.BadIndex() )
-			return false;
+	//	int i = pItemDef->m_SkillMake.FindResourceType(RES_Skill);
+	//	if (i < 0)
+	//	{
+	//		// Weird.
+	//		if (stage == CSkillDef::T_Start)
+	//		{
+	//			WriteString("You cannot figure this out");
+	//		}
+	//		return(false);
+	//	}
 
-		m_Act_Targ = uidTarg;	// targetted item to start the make process
-		m_atCreate.m_ItemID = id;
-		m_atCreate.m_Amount = static_cast<WORD>(dwReplicationQty);
+	//	CResourceQty RetMainSkill = pItemDef->m_SkillMake[i];
 
-		CResourceQty RetMainSkill = pItemDef->m_SkillMake[i];
-		return Skill_Start(static_cast<SKILL_TYPE>(RetMainSkill.GetResIndex()));
-	}
+	//	m_Act_Targ = uidTarg;	// targetted item to start the make process.
+	//	m_Act.m_atCreate.m_ItemID = id;
+	//	m_Act.m_atCreate.m_Amount = iReplicationQty;
 
-	if ( stage == SKTRIG_SUCCESS )
-	{
-		m_atCreate.m_Amount = static_cast<WORD>(dwReplicationQty);	// how much resources we really consumed
-		return Skill_MakeItem_Success();
-	}
+	//	return Skill_Start((SKILL_TYPE)RetMainSkill.GetResIndex(), RetMainSkill.GetResQty() / 10);
+	//}
 
-	return true;
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	return(Skill_MakeItem_Success(iReplicationQty));
+	//}
+
+	//return(true);
 }
 
-bool CChar::Skill_MakeItem_Success()
+bool CChar::Skill_MakeItem_Success(int iQty)
 {
-	ADDTOCALLSTACK("CChar::Skill_MakeItem_Success");
-	// Deliver the goods
+	//ADDTOCALLSTACK("CChar::Skill_MakeItem_Success");
+	//// deliver the goods.
+	//if (iQty <= 0)
+	//	return true;
 
-	CItem *pItem = CItem::CreateTemplate(m_atCreate.m_ItemID, NULL, this);
-	if ( !pItem )
-		return false;
+	//CItemVendablePtr pItem = REF_CAST(CItemVendable, CItem::CreateTemplate(m_Act.m_atCreate.m_ItemID, NULL, this));
+	//if (pItem == NULL)
+	//	return(false);
 
-	int iQuality = 0;
-	TCHAR *pszMsg = Str_GetTemp();
-	WORD wSkillLevel = Skill_GetBase(Skill_GetActive());					// primary skill value
-	CItemVendable *pItemVend = dynamic_cast<CItemVendable *>(pItem);		// cast CItemVendable for setting quality and exp later
+	//CGString sMakeMsg;
+	//int iSkillLevel = Skill_GetBase(Skill_GetActive());	// primary skill value.
 
-	if ( m_atCreate.m_Amount != 1 )
-	{
-		if ( pItem->IsType(IT_SCROLL) )
-			pItem->m_itSpell.m_spelllevel = wSkillLevel;
+	//if (iQty != 1)	// m_Act.m_atCreate.m_Amount
+	//{
+	//	// Some item with the REPLICATE flag ?
+	//	pItem->SetAmount(m_Act.m_atCreate.m_Amount); // Set the quantity if we are making bolts, arrows or shafts
+	//}
+	//else if (pItem->IsType(IT_SCROLL))
+	//{
+	//	// scrolls have the skill level of the inscriber ?
+	//	pItem->m_itSpell.m_spelllevel = iSkillLevel;
+	//}
+	//else if (pItem->IsType(IT_POTION))
+	//{
+	//	// Create the potion, set various properties,
+	//	// put in pack
+	//	Emote("pour the completed potion into a bottle");
+	//	Sound(0x240);	// pouring noise.
+	//}
+	//else
+	//{
+	//	// Only set the quality on single items.
+	//	int quality = IMULDIV(iSkillLevel, 2, 10);	// default value for quality.
+	//	// Quality depends on the skill of the craftsman, and a random chance.
+	//	// minimum quality is 1, maximum quality is 200.  100 is average.
+	//	// How much variance?  This is the difference in quality levels from
+	//	// what I can normally make.
+	//	int variance = 2 - (int)log10(Calc_GetRandVal(250) + 1); // this should result in a value between 0 and 2.
+	//	// Determine if lower or higher quality
+	//	if (Calc_GetRandVal(2))
+	//	{
+	//		// Better than I can normally make
+	//	}
+	//	else
+	//	{
+	//		// Worse than I can normally make
+	//		variance = -(variance);
+	//	}
+	//	// The quality levels are as follows:
+	//	// 1 - 25 Shoddy
+	//	// 26 - 50 Poor
+	//	// 51 - 75 Below Average
+	//	// 76 - 125 Average
+	//	// 125 - 150 Above Average
+	//	// 151 - 175 Excellent
+	//	// 175 - 200 Superior
+	//	// Determine which range I'm in
+	//	int qualityBase;
+	//	if (quality < 25)
+	//		qualityBase = 0;
+	//	else if (quality < 50)
+	//		qualityBase = 1;
+	//	else if (quality < 75)
+	//		qualityBase = 2;
+	//	else if (quality < 125)
+	//		qualityBase = 3;
+	//	else if (quality < 150)
+	//		qualityBase = 4;
+	//	else if (quality < 175)
+	//		qualityBase = 5;
+	//	else
+	//		qualityBase = 6;
+	//	qualityBase += variance;
+	//	if (qualityBase < 0)
+	//		qualityBase = 0;
+	//	if (qualityBase > 6)
+	//		qualityBase = 6;
 
-		CItemBase *pItemDef = CItemBase::FindItemBase(m_atCreate.m_ItemID);
-		if ( pItemDef && pItemDef->Can(CAN_I_PILE) )
-			pItem->SetAmount(m_atCreate.m_Amount);
-		else
-		{
-			for ( WORD i = 1; i < m_atCreate.m_Amount; ++i )
-			{
-				CItem *pItemNew = CItem::CreateTemplate(m_atCreate.m_ItemID, NULL, this);
-				ItemBounce(pItemNew);
-			}
-		}
-	}
-	else if ( pItem->IsType(IT_SCROLL) )
-	{
-		// scrolls have the skill level of the inscriber ?
-		pItem->m_itSpell.m_spelllevel = wSkillLevel;
-	}
-	else if ( pItem->IsType(IT_POTION) )
-	{
-		// Create the potion, set various properties,
-	}
-	else
-	{
-		// Only set the quality on single items.
-		// Quality depends on the skill of the craftsman, and a random chance.
-		// minimum quality is 1, maximum quality is 200.  100 is average.
+	//	switch (qualityBase)
+	//	{
+	//	case 0:
+	//		// Shoddy quality
+	//		sMakeMsg.Format("Due to your poor skill, the item is of shoddy quality");
+	//		quality = Calc_GetRandVal(25) + 1;
+	//		break;
+	//	case 1:
+	//		// Poor quality
+	//		sMakeMsg.Format("You were barely able to make this item.  It is of poor quality");
+	//		quality = Calc_GetRandVal(25) + 26;
+	//		break;
+	//	case 2:
+	//		// Below average quality
+	//		sMakeMsg.Format("You make the item, but it is of below average quality");
+	//		quality = Calc_GetRandVal(25) + 51;
+	//		break;
+	//	case 3:
+	//		// Average quality
+	//		quality = Calc_GetRandVal(50) + 76;
+	//		break;
+	//	case 4:
+	//		// Above average quality
+	//		sMakeMsg.Format("The item is of above average quality");
+	//		quality = Calc_GetRandVal(25) + 126;
+	//		break;
+	//	case 5:
+	//		// Excellent quality
+	//		sMakeMsg.Format("The item is of excellent quality");
+	//		quality = Calc_GetRandVal(25) + 151;
+	//		break;
+	//	case 6:
+	//		// Superior quality
+	//		sMakeMsg.Format("Due to your exceptional skill, the item is of superior quality");
+	//		quality = Calc_GetRandVal(25) + 176;
+	//		break;
+	//	default:
+	//		// How'd we get here?
+	//		quality = 1000;
+	//		break;
+	//	}
+	//	pItem->SetQuality(quality);
+	//	if (iSkillLevel > 999 && (quality > 175))
+	//	{
+	//		// A GM made this, and it is of high quality
+	//		CGString csNewName;
+	//		csNewName.Format("%s crafted by %s", (LPCTSTR)pItem->GetName(), (LPCTSTR)GetName());
+	//		pItem->SetName(csNewName);
+	//	}
+	//}
 
-		// How much variance? This is the difference in quality levels from what I can normally make.
-		int iVariance = 2 - static_cast<int>(log10(static_cast<double>(Calc_GetRandVal(250)) + 1));	// this should result in a value between 0 and 2
+	//pItem->SetAttr(ATTR_MOVE_ALWAYS | ATTR_CAN_DECAY);	// Any made item is movable.
 
-		// Determine if lower or higher quality
-		if ( !Calc_GetRandVal(2) )
-			iVariance = -iVariance;		// worse than I can normally make
+	//CSphereExpArgs execArgs(this, this, Skill_GetActive(), 0, pItem);
+	//if (OnTrigger("@SkillMakeItem", execArgs) == TRIGRET_RET_VAL)
+	//{
+	//	pItem->DeleteThis();
+	//	return(false);
+	//}
 
-		// Determine which range I'm in
-		iQuality = IMULDIV(wSkillLevel, 2, 10);	// default value for quality
-		int iQualityBase;
-		if ( iQuality < 25 )		// 1 - 25		Shoddy
-			iQualityBase = 0;
-		else if ( iQuality < 50 )	// 26 - 50		Poor
-			iQualityBase = 1;
-		else if ( iQuality < 75 )	// 51 - 75		Below Average
-			iQualityBase = 2;
-		else if ( iQuality < 125 )	// 76 - 125		Average
-			iQualityBase = 3;
-		else if ( iQuality < 150 )	// 125 - 150	Above Average
-			iQualityBase = 4;
-		else if ( iQuality < 175 )	// 151 - 175	Excellent
-			iQualityBase = 5;
-		else						// 175 - 200	Superior
-			iQualityBase = 6;
+	//if (!sMakeMsg.IsEmpty())
+	//	WriteString(sMakeMsg);
 
-		iQualityBase += iVariance;
-		if ( iQualityBase < 0 )
-			iQualityBase = 0;
-		else if ( iQualityBase > 6 )
-			iQualityBase = 6;
-
-		switch ( iQualityBase )
-		{
-			case 0:		// shoddy quality
-				strcpy(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_MAKESUCCESS_1));
-				iQuality = Calc_GetRandVal(25) + 1;
-				break;
-			case 1:		// poor quality
-				strcpy(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_MAKESUCCESS_2));
-				iQuality = Calc_GetRandVal(25) + 26;
-				break;
-			case 2:		// below average quality
-				strcpy(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_MAKESUCCESS_3));
-				iQuality = Calc_GetRandVal(25) + 51;
-				break;
-			case 3:		// average quality
-				iQuality = Calc_GetRandVal(50) + 76;
-				break;
-			case 4:		// above average quality
-				strcpy(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_MAKESUCCESS_4));
-				iQuality = Calc_GetRandVal(25) + 126;
-				break;
-			case 5:		// excellent quality
-				strcpy(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_MAKESUCCESS_5));
-				iQuality = Calc_GetRandVal(25) + 151;
-				break;
-			case 6:		// superior quality
-				strcpy(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_MAKESUCCESS_6));
-				iQuality = Calc_GetRandVal(25) + 176;
-				break;
-		}
-
-		if ( pItemVend )	// only set quality property on vendable items
-			pItemVend->SetQuality(static_cast<WORD>(iQuality));
-
-		if ( (iQuality > 175) && (wSkillLevel > 999) && !IsSetOF(OF_NoItemNaming) )
-		{
-			// A GM made this, and it is of high quality
-			TCHAR *pszNewName = Str_GetTemp();
-			sprintf(pszNewName, g_Cfg.GetDefaultMsg(DEFMSG_GRANDMASTER_MARK), pItem->GetName(), GetName());
-			pItem->SetName(pszNewName);
-			//pItem->SetDefNum("CRAFTEDBY", GetUID());		// TO-DO: before enable this we must find away to properly clear CRAFTEDBY value on items when CRAFTEDBY char got deleted
-		}
-	}
-
-	// Item goes into ACT of player
-	CGrayUID uidOldAct = m_Act_Targ;
-	m_Act_Targ = pItem->GetUID();
-	TRIGRET_TYPE iRet = TRIGRET_RET_DEFAULT;
-	if ( IsTrigUsed(TRIGGER_SKILLMAKEITEM) )
-	{
-		CScriptTriggerArgs Args(wSkillLevel, iQuality, uidOldAct.ObjFind());
-		iRet = OnTrigger(CTRIG_SkillMakeItem, this, &Args);
-	}
-	m_Act_Targ = uidOldAct;		// restore
-
-	if ( iRet == TRIGRET_RET_TRUE )
-	{
-		pItem->Delete();
-		return false;
-	}
-	if ( iRet == TRIGRET_RET_DEFAULT )
-	{
-		if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOSFX) && pItem->IsType(IT_POTION) )
-			Sound(SOUND_LIQUID);
-		if ( *pszMsg )
-			SysMessage(pszMsg);
-	}
-
-	// Experience gain on craftings
-	if ( g_Cfg.m_bExperienceSystem && (g_Cfg.m_iExperienceMode & EXP_MODE_RAISE_CRAFT) )
-	{
-		int iExp = 0;
-		if ( pItemVend )
-			iExp = pItemVend->GetVendorPrice(0) / 100;	// calculate cost for buying this item if it is vendable (gain = +1 exp each 100gp)
-		if ( iExp )
-			ChangeExperience(iExp);
-	}
-
-	ItemBounce(pItem);
-	return true;
+	//ItemBounce(pItem);
+	//return(true);
 }
 
 int CChar::Skill_NaturalResource_Setup(CItem *pResBit)
@@ -1667,245 +1677,345 @@ int CChar::Skill_Tracking(SKTRIG_TYPE stage)
 	return -SKTRIG_ABORT;
 }
 
-int CChar::Skill_Mining(SKTRIG_TYPE stage)
+int CChar::Skill_Alchemy(CSkillDef::T_TYPE_ stage)
+{
+	// SKILL_ALCHEMY
+	// m_Act.m_atCreate.m_ItemID = potion we are making.
+	// We consume resources on each stroke.
+	// This was start in Skill_MakeItem()
+
+	//CItemDefPtr pPotionDef = g_Cfg.FindItemDef(m_Act.m_atCreate.m_ItemID);
+	//if (pPotionDef == NULL)
+	//{
+	//	WriteString("You have no clue how to make this potion.");
+	//	return -CSkillDef::T_Abort;
+	//}
+
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// See if skill allows a potion made out of targ'd reagent		// Sound( 0x243 );
+	//	m_Act.m_atCreate.m_Stroke_Count = 0; // counts up.
+	//	return(m_Act.m_Difficulty);
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// resources have already been consumed.
+	//	Emote("toss the failed mixture from the mortar");
+	//	return(0);	// normal failure
+	//}
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	// Resources have already been consumed.
+	//	// Now deliver the goods.
+	//	Skill_MakeItem_Success(1);
+	//	return(0);
+	//}
+
+	//ASSERT(stage == CSkillDef::T_Stroke);
+	//if (stage != CSkillDef::T_Stroke)
+	//	return(-CSkillDef::T_QTY);
+
+	//if (m_Act.m_atCreate.m_Stroke_Count >= pPotionDef->m_BaseResources.GetSize())
+	//{
+	//	// done.
+	//	return 0;
+	//}
+
+	//// Keep trying and grinding
+	////  OK, we know potion being attempted and the bottle
+	////  it's going in....do a loop for each reagent
+
+	//CResourceQty item = pPotionDef->m_BaseResources[m_Act.m_atCreate.m_Stroke_Count];
+	//CSphereUID rid = item.GetResourceID();
+
+	//CItemDefPtr pReagDef = REF_CAST(CItemDef, g_Cfg.ResourceGetDef(rid));
+	//if (pReagDef == NULL)
+	//{
+	//	return -CSkillDef::T_Abort;
+	//}
+
+	//if (pReagDef->IsType(IT_POTION_EMPTY) && m_Act.m_Difficulty < 0) // going to fail anyhow.
+	//{
+	//	// NOTE: Assume the bottle is ALWAYS LAST !
+	//	// Don't consume the bottle.
+	//	return -CSkillDef::T_Abort;
+	//}
+
+	//if (ContentConsume(rid, item.GetResQty()))
+	//{
+	//	Printf("Hmmm, you lack %s for this potion.", (LPCTSTR)pReagDef->GetName());
+	//	return -CSkillDef::T_Abort;
+	//}
+
+	//if (GetTopSector()->GetCharComplexity() < 5 && pReagDef->IsType(IT_REAGENT))
+	//{
+	//	CGString sSpeak;
+	//	sSpeak.Format((m_Act.m_atCreate.m_Stroke_Count == 0) ?
+	//		"start grinding some %s in the mortar" :
+	//		"add %s and continue grinding", (LPCTSTR)pReagDef->GetName());
+	//	Emote(sSpeak);
+	//}
+
+	//Sound(0x242);
+	//m_Act.m_atCreate.m_Stroke_Count++;
+	//Skill_SetTimeout();
+	//return -CSkillDef::T_Stroke;	// keep active.
+	return 0;
+}
+
+int CChar::Skill_Mining(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Mining");
 	// SKILL_MINING
-	// m_Act_p = target point to look for resources
-	// m_Act_TargPrv = tool item (pickaxe / shovel)
+	// m_Act.m_pt = the point we want to mine at.
+	// m_Act.m_TargPrv = Shovel
 	//
+	// Test the chance of precious ore.
+	// resource check  to IT_ORE. How much can we get ?
 	// RETURN:
-	//  Difficulty = 0-100
+	//  Difficulty 0-100
 
-	if ( stage == SKTRIG_FAIL )
+	if (m_Act_p.m_x == 0xFFFF)
+	{
+		WriteString("Try mining in rock!");
+		return(-CSkillDef::T_QTY);
+	}
+
+	// Verify so we have a line of sight.
+	if (!CanSeeLOS(m_Act_p, NULL, 2))
+	{
+		if (GetTopPoint().GetDist(m_Act_p) > 2)
+		{
+			WriteString("That is too far away.");
+		}
+		else
+		{
+			WriteString("You have no line of sight to that location");
+		}
+		return(-CSkillDef::T_QTY);
+	}
+
+	// resource check
+	CItemPtr pResBit = g_World.CheckNaturalResource(m_Act_p, IT_ROCK, stage == CSkillDef::T_Start);
+	if (pResBit == NULL)
+	{
+		WriteString("Try mining in rock.");
+		return(-CSkillDef::T_QTY);
+	}
+	if (pResBit->GetAmount() == 0)
+	{
+		WriteString("There is no ore here to mine.");
+		return(-CSkillDef::T_QTY);
+	}
+
+	CItemPtr pShovel = g_World.ItemFind(m_Act_TargPrv);
+	if (pShovel == NULL)
+	{
+		WriteString("You must use a shovel or pick.");
+		return(-CSkillDef::T_Abort);
+	}
+
+	if (stage == CSkillDef::T_Fail)
 		return 0;
 
-	if ( m_Act_p.m_x == -1 )
+	if (stage == CSkillDef::T_Start)
 	{
-		SysMessageDefault(DEFMSG_MINING_NORESOURCE);
-		return -SKTRIG_QTY;
+		m_atResource.m_Stroke_Count = Calc_GetRandVal(5) + 2;
+
+		pShovel->OnTakeDamage(1, this, DAMAGE_HIT_BLUNT);
+
+		return(Skill_NaturalResource_Setup(pResBit));
 	}
 
-	// Distance check
-	CSkillDef *pSkillDef = g_Cfg.GetSkillDef(SKILL_MINING);
-	if ( pSkillDef->m_Range <= 0 )
-		pSkillDef->m_Range = 2;
+	if (stage == CSkillDef::T_Stroke)
+	{
+		// Pick a "mining" type sound
+		Sound((Calc_GetRandVal(2)) ? 0x125 : 0x126);
+		UpdateDir(m_Act_p);
 
-	int iTargRange = GetTopPoint().GetDist(m_Act_p);
-	int iMaxRange = pSkillDef->m_Range;
-	if ( (iTargRange < 1) && !g_Cfg.IsSkillFlag(SKILL_MINING, SKF_NOMINDIST) )
-	{
-		SysMessageDefault(DEFMSG_MINING_CLOSE);
-		return -SKTRIG_QTY;
-	}
-	if ( iTargRange > iMaxRange )
-	{
-		SysMessageDefault(DEFMSG_MINING_REACH);
-		return -SKTRIG_QTY;
-	}
-	if ( !CanSeeLOS(m_Act_p, NULL, iMaxRange) )
-	{
-		SysMessageDefault(DEFMSG_MINING_LOS);
-		return -SKTRIG_QTY;
+		if (m_atResource.m_Stroke_Count)
+		{
+			// Keep trying and updating the animation
+			m_atResource.m_Stroke_Count--;
+			UpdateAnimate(ANIM_ATTACK_1H_DOWN);
+			Skill_SetTimeout();
+			return(-CSkillDef::T_Stroke);	// keep active.
+		}
+
+		return(0);
 	}
 
-	// Resource check
-	CItem *pResBit = g_World.CheckNaturalResource(m_Act_p, static_cast<IT_TYPE>(GETINTRESOURCE(m_atResource.m_ridType)), (stage == SKTRIG_START), this);
-	if ( !pResBit || (pResBit->GetAmount() == 0) )
+	ASSERT(stage == CSkillDef::T_Success);
+
+	CItemPtr pItem = Skill_NaturalResource_Create(pResBit, SKILL_MINING);
+	if (pItem == NULL)
 	{
-		SysMessageDefault(DEFMSG_MINING_NORESOURCE);
-		return -SKTRIG_QTY;
+		WriteString("There is no ore here to mine.");
+		return(-CSkillDef::T_Fail);
 	}
 
-	if ( stage == SKTRIG_START )
-	{
-		m_atResource.m_Stroke_Count = static_cast<WORD>(Calc_GetRandVal(5) + 2);
-		return Skill_NaturalResource_Setup(pResBit);
-	}
-
-	// Create the item
-	CItem *pItem = Skill_NaturalResource_Create(pResBit, SKILL_MINING);
-	if ( !pItem )
-	{
-		SysMessageDefault(DEFMSG_MINING_NORESOURCE);
-		return -SKTRIG_FAIL;
-	}
-
-	SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_MINING_SUCCESS), pItem->GetName());
-	if ( m_atResource.m_bounceItem )
-		ItemBounce(pItem, false);
-	else
-		pItem->MoveToCheck(GetTopPoint(), this, true);
-	return 0;
+	ItemBounce(pItem);
+	return(0);
 }
 
-int CChar::Skill_Fishing(SKTRIG_TYPE stage)
+int CChar::Skill_Fishing(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Fishing");
-	// SKILL_FISHING
-	// m_Act_p = target point to look for resources
-	// m_Act_TargPrv = tool item (fishing pole / fishing net)
-	//
+	// m_Act.m_pt = where to fish.
+	// NOTE: don't check LOS else you can't fish off boats.
+	// Check that we dont stand too far away
+	// Make sure we aren't in a house
 	// RETURN:
-	//  Difficulty = 0-100
+	//   difficulty = 0-100
 
-	if ( stage == SKTRIG_FAIL )
-		return 0;
+	//CRegionPtr pRegion = GetTopRegion(REGION_TYPE_MULTI);
+	//if (pRegion && !pRegion->IsFlag(REGION_FLAG_SHIP))
+	//{
+	//	// We are in a house ?
+	//	WriteString("You can't fish from where you are standing.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	if ( (m_Act_p.m_x == -1) || m_Act_p.GetRegion(REGION_TYPE_MULTI) )		// do not allow fishing through ship floor
-	{
-		SysMessageDefault(DEFMSG_FISHING_NOWATER);
-		return -SKTRIG_QTY;
-	}
+	//if (GetTopPoint().GetDist(m_Act_p) > 6)	// cast works for long distances.
+	//{
+	//	WriteString("That is too far away.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	// Distance check
-	CSkillDef *pSkillDef = g_Cfg.GetSkillDef(SKILL_FISHING);
-	if ( pSkillDef->m_Range <= 0 )
-		pSkillDef->m_Range = 4;
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	return 0;
+	//}
 
-	int iTargRange = GetTopPoint().GetDist(m_Act_p);
-	int iMaxRange = pSkillDef->m_Range;
-	if ( (iTargRange < 1) && !g_Cfg.IsSkillFlag(SKILL_FISHING, SKF_NOMINDIST) )
-	{
-		SysMessageDefault(DEFMSG_FISHING_CLOSE);
-		return -SKTRIG_QTY;
-	}
-	if ( iTargRange > iMaxRange )
-	{
-		SysMessageDefault(DEFMSG_FISHING_REACH);
-		return -SKTRIG_QTY;
-	}
-	if ( (m_pPlayer && (g_Cfg.m_iAdvancedLos & ADVANCEDLOS_PLAYER)) || (m_pNPC && (g_Cfg.m_iAdvancedLos & ADVANCEDLOS_NPC)) )
-	{
-		// Only check LOS when AdvancedLOS is enabled, because standard LOS will always fail (it doesn't check LOS over water)
-		if ( !CanSeeLOS(m_Act_p, NULL, iMaxRange, LOS_FISHING) )
-		{
-			SysMessageDefault(DEFMSG_FISHING_LOS);
-			return -SKTRIG_QTY;
-		}
-	}
+	//// resource check
+	//CItemPtr pResBit = g_World.CheckNaturalResource(m_Act_p, IT_WATER, stage == CSkillDef::T_Start);
+	//if (pResBit == NULL)
+	//{
+	//	WriteString("There are no fish here.");
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (pResBit->GetAmount() == 0)
+	//{
+	//	WriteString("There are no fish here.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	// Resource check
-	CItem *pResBit = g_World.CheckNaturalResource(m_Act_p, static_cast<IT_TYPE>(GETINTRESOURCE(m_atResource.m_ridType)), (stage == SKTRIG_START), this);
-	if ( !pResBit || (pResBit->GetAmount() == 0) )
-	{
-		SysMessageDefault(DEFMSG_FISHING_NORESOURCE);
-		return -SKTRIG_QTY;
-	}
+	//Sound(0x027);
 
-	if ( stage == SKTRIG_START )
-	{
-		m_atResource.m_Stroke_Count = 1;
-		m_Act_Targ = pResBit->GetUID();
-		return Skill_NaturalResource_Setup(pResBit);
-	}
+	//// Create the little splash effect.
+	//CItemPtr pItemFX = CItem::CreateBase(ITEMID_FX_SPLASH);
+	//ASSERT(pItemFX);
+	//pItemFX->SetType(IT_WATER_WASH);	// can't fish here.
 
-	// Create the item
-	CItem *pItem = Skill_NaturalResource_Create(pResBit, SKILL_FISHING);
-	if ( !pItem )
-	{
-		SysMessageDefault(DEFMSG_FISHING_NORESOURCE);
-		return -SKTRIG_FAIL;
-	}
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	pItemFX->MoveToDecay(m_Act_p, 1 * TICKS_PER_SEC);
 
-	SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_FISHING_SUCCESS), pItem->GetName());
-	if ( m_atResource.m_bounceItem )
-		ItemBounce(pItem, false);
-	else
-		pItem->MoveToCheck(GetTopPoint(), this, true);
-	return 0;
+	//	UpdateAnimate(ANIM_ATTACK_2H_DOWN);
+	//	return(Skill_NaturalResource_Setup(pResBit));
+	//}
+
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	pItemFX->MoveToDecay(m_Act_p, 3 * TICKS_PER_SEC);
+
+	//	CItemPtr pFish = Skill_NaturalResource_Create(pResBit, SKILL_FISHING);
+	//	if (pFish == NULL)
+	//	{
+	//		return(-CSkillDef::T_Abort);
+	//	}
+
+	//	Printf("You pull out a %s!", (LPCTSTR)pFish->GetName());
+	//	pFish->MoveToCheck(GetTopPoint(), this);	// put at my feet.
+	//	return(0);
+	//}
+
+	//ASSERT(0);
+	//return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Lumberjack(SKTRIG_TYPE stage)
+int CChar::Skill_Lumberjack(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Lumberjack");
-	// SKILL_LUMBERJACK
-	// m_Act_p = target point to look for resources
-	// m_Act_TargPrv = tool item (axe / dagger)
-	//
 	// RETURN:
-	//  Difficulty = 0-100
+	//   difficulty = 0-100
 
-	if ( stage == SKTRIG_FAIL )
+	if (m_Act_p.m_x == 0xFFFF)
+	{
+		WriteString("Try chopping a tree.");
+		return(-CSkillDef::T_QTY);
+	}
+
+	if (stage == CSkillDef::T_Fail)
+	{
 		return 0;
-
-	if ( m_Act_p.m_x == -1 )
-	{
-		SysMessageDefault(DEFMSG_LUMBERJACKING_NORESOURCE);
-		return -SKTRIG_QTY;
 	}
 
-	// Distance check
-	CSkillDef *pSkillDef = g_Cfg.GetSkillDef(SKILL_MINING);
-	if ( pSkillDef->m_Range <= 0 )
-		pSkillDef->m_Range = 2;
-
-	int iTargRange = GetTopPoint().GetDist(m_Act_p);
-	int iMaxRange = pSkillDef->m_Range;
-	if ( (iTargRange < 1) && !g_Cfg.IsSkillFlag(SKILL_LUMBERJACKING, SKF_NOMINDIST) )
+	// 3D distance check and LOS
+	if (!CanTouch(m_Act_p) || GetTopPoint().GetDist3D(m_Act_p) > 3)
 	{
-		SysMessageDefault(DEFMSG_LUMBERJACKING_CLOSE);
-		return -SKTRIG_QTY;
-	}
-	if ( iTargRange > iMaxRange )
-	{
-		SysMessageDefault(DEFMSG_LUMBERJACKING_REACH);
-		return -SKTRIG_QTY;
-	}
-	if ( !CanSeeLOS(m_Act_p, NULL, iMaxRange) )
-	{
-		SysMessageDefault(DEFMSG_LUMBERJACKING_LOS);
-		return -SKTRIG_QTY;
-	}
-
-	// Resource check
-	CItem *pResBit = g_World.CheckNaturalResource(m_Act_p, static_cast<IT_TYPE>(GETINTRESOURCE(m_atResource.m_ridType)), (stage == SKTRIG_START), this);
-	if ( !pResBit || (pResBit->GetAmount() == 0) )
-	{
-		SysMessageDefault(DEFMSG_LUMBERJACKING_NORESOURCE);
-		return -SKTRIG_QTY;
-	}
-
-	if ( stage == SKTRIG_START )
-	{
-		m_atResource.m_Stroke_Count = static_cast<WORD>(Calc_GetRandVal(5) + 2);
-		return Skill_NaturalResource_Setup(pResBit);
-	}
-
-	// Create the item
-	CItem *pItem = NULL;
-	CItem *pTool = m_Act_TargPrv.ItemFind();
-	if ( pTool && pTool->IsType(IT_WEAPON_FENCE) )
-	{
-		pItem = CItem::CreateScript(ITEMID_KINDLING1, this);
-		if ( !pItem )
+		if (GetTopPoint().GetDist(m_Act_p) > 3)
 		{
-			SysMessageDefault(DEFMSG_LUMBERJACKING_NORESOURCE);
-			return -SKTRIG_FAIL;
+			WriteString("That is too far away.");
 		}
-		pResBit->ConsumeAmount();
-		SysMessageDefault(DEFMSG_LUMBERJACKING_KINDLING_SUCCESS);
-		SysMessageDefault(DEFMSG_LUMBERJACKING_KINDLING_AXE);
-	}
-	else
-	{
-		pItem = Skill_NaturalResource_Create(pResBit, SKILL_LUMBERJACKING);
-		if ( !pItem )
+		else
 		{
-			SysMessageDefault(DEFMSG_LUMBERJACKING_NORESOURCE);
-			return -SKTRIG_FAIL;
+			WriteString("You have no line of sight to that location");
 		}
-		SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_LUMBERJACKING_SUCCESS), pItem->GetName());
+		return(-CSkillDef::T_QTY);
 	}
 
-	if ( m_atResource.m_bounceItem )
-		ItemBounce(pItem, false);
-	else
-		pItem->MoveToCheck(GetTopPoint(), this, true);
-	return 0;
+	// resource check
+	CItemPtr pResBit = g_World.CheckNaturalResource(m_Act_p, IT_TREE, stage == CSkillDef::T_Start);
+	if (pResBit == NULL)
+	{
+		WriteString("Try chopping a tree.");
+		return(-CSkillDef::T_QTY);
+	}
+	if (pResBit->GetAmount() == 0)
+	{
+		WriteString("There are no logs here to chop.");
+		return(-CSkillDef::T_QTY);
+	}
+
+	if (stage == CSkillDef::T_Start)
+	{
+		m_atResource.m_Stroke_Count = Calc_GetRandVal(5) + 2;
+		return(Skill_NaturalResource_Setup(pResBit));
+	}
+
+	if (stage == CSkillDef::T_Stroke)
+	{
+		Sound(0x13e);	// 0135, 013e, 148, 14a
+		UpdateDir(m_Act_p);
+		if (m_atResource.m_Stroke_Count)
+		{
+			// Keep trying and updating the animation
+			m_atResource.m_Stroke_Count--;
+			UpdateAnimate(ANIM_ATTACK_WEAPON);
+			Skill_SetTimeout();
+			return(-CSkillDef::T_Stroke);	// keep active.
+		}
+		return 0;
+	}
+
+	ASSERT(stage == CSkillDef::T_Success);
+
+	// resource check
+
+	CItemPtr pItem = Skill_NaturalResource_Create(pResBit, SKILL_LUMBERJACKING);
+	if (pItem == NULL)
+		return(-CSkillDef::T_Fail);
+
+	ItemBounce(pItem);
+	return(0);
 }
 
-int CChar::Skill_DetectHidden(SKTRIG_TYPE stage)
+int CChar::Skill_DetectHidden(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_DetectHidden");
 	// SKILL_DETECTINGHIDDEN
@@ -1913,1148 +2023,1354 @@ int CChar::Skill_DetectHidden(SKTRIG_TYPE stage)
 	// Detect them based on skill diff.
 	// ??? Hidden objects ?
 
-	if ( stage == SKTRIG_START )
-		return 10;		// based on who is hiding ?
-	if ( (stage == SKTRIG_FAIL) || (stage == SKTRIG_STROKE) )
+	if (stage == CSkillDef::T_Start)
+	{
+		// Based on who is hiding ?
+		return(10);
+	}
+	if (stage == CSkillDef::T_Fail)
+	{
 		return 0;
-
-	if ( stage != SKTRIG_SUCCESS )
+	}
+	if (stage == CSkillDef::T_Stroke)
+	{
+		return 0;
+	}
+	if (stage != CSkillDef::T_Success)
 	{
 		ASSERT(0);
-		return -SKTRIG_QTY;
+		return(-CSkillDef::T_QTY);
 	}
 
-	if ( !(g_Cfg.m_iRevealFlags & REVEALF_DETECTINGHIDDEN) )	// skill succeeded, but effect is disabled
-		return 0;
-
-	WORD wSkillLevel = Skill_GetAdjusted(SKILL_DETECTINGHIDDEN);
-	int iRadius = wSkillLevel / 100;
-
+	int iRadius = (Skill_GetAdjusted(SKILL_DETECTINGHIDDEN) / 8) + 1;
 	CWorldSearch Area(GetTopPoint(), iRadius);
 	bool fFound = false;
 	for (;;)
 	{
-		CChar *pChar = Area.GetChar();
-		if ( !pChar )
+		CCharPtr pChar = Area.GetNextChar();
+		if (pChar == NULL)
 			break;
-		if ( (pChar == this) || !pChar->IsStatFlag(STATF_Invisible|STATF_Hidden) )
+		if (pChar == this)
 			continue;
-
-		// Check chance to reveal the target
-		WORD wSkillSrc = wSkillLevel + static_cast<WORD>(Calc_GetRandVal(210)) - 100;
-		WORD wSkillTarg = pChar->Skill_GetAdjusted(SKILL_HIDING) + static_cast<WORD>(Calc_GetRandVal(210) - 100);
-		if ( wSkillSrc < wSkillTarg )
+		if (!pChar->IsStatFlag(STATF_Invisible | STATF_Hidden))
 			continue;
-
+		// Try to detect them.
+		if (pChar->IsStatFlag(STATF_Hidden))
+		{
+			// If there hiding skill is much better than our detect then stay hidden
+		}
 		pChar->Reveal();
-		SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_DETECTHIDDEN_SUCC), pChar->GetName());
+		Printf("You find %s", (LPCTSTR)pChar->GetName());
 		fFound = true;
 	}
 
-	if ( !fFound )
-		return -SKTRIG_FAIL;
-	return 0;
+	if (!fFound)
+	{
+		return(-CSkillDef::T_Fail);
+	}
+
+	return(0);
 }
 
-int CChar::Skill_Musicianship(SKTRIG_TYPE stage)
+int CChar::Skill_Cartography(CSkillDef::T_TYPE_ stage)
+{
+	//// Selected a map type and now we are making it.
+	//// m_Act_Cartography_Dist = the map distance.
+	//// Find the blank map to write on first.
+
+	//if (stage == CSkillDef::T_Stroke)
+	//	return 0;
+
+	//CPointMap pnt = GetTopPoint();
+	//if (pnt.m_x >= pnt.GetMulMap()->m_iSizeXWrap)	// maps don't work out here !
+	//{
+	//	WriteString("You can't seem to figure out your surroundings.");
+	//	return(-CSkillDef::T_QTY);
+	//}
+
+	//CItemPtr pItem = ContentFind(CSphereUID(RES_TypeDef, IT_MAP_BLANK), 0);
+	//if (pItem == NULL)
+	//{
+	//	WriteString("You have no blank parchment to draw on");
+	//	return(-CSkillDef::T_QTY);
+	//}
+
+	//if (!CanUse(pItem, true))
+	//{
+	//	Printf("You can't use the %s where it is.", (LPCTSTR)pItem->GetName());
+	//	return(false);
+	//}
+
+	//m_Act_Targ = pItem->GetUID();
+
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	Sound(0x249);
+
+	//	// difficulty related to m_Act.m_atCartography.m_Dist ???
+
+	//	return(Calc_GetRandVal(100));
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// consume the map sometimes ?
+	//	// pItem->ConsumeAmount( 1 );
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	pItem->ConsumeAmount(1);
+
+	//	// Get a valid region.
+	//	CRectMap rect;
+	//	rect.SetRect(pnt.m_x - m_Act.m_atCartography.m_Dist,
+	//		pnt.m_y - m_Act.m_atCartography.m_Dist,
+	//		pnt.m_x + m_Act.m_atCartography.m_Dist,
+	//		pnt.m_y + m_Act.m_atCartography.m_Dist);
+
+	//	// Now create the map
+	//	pItem = CItem::CreateScript(ITEMID_MAP, this);
+	//	pItem->m_itMap.m_top = rect.top;
+	//	pItem->m_itMap.m_left = rect.left;
+	//	pItem->m_itMap.m_bottom = rect.bottom;
+	//	pItem->m_itMap.m_right = rect.right;
+	//	ItemBounce(pItem);
+	//	return(0);
+	//}
+
+	//ASSERT(0);
+	return(-CSkillDef::T_QTY);
+}
+
+
+int CChar::Skill_Musicianship(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Musicianship");
-	// m_Act_Targ = the intrument i targetted to play.
-
-	if ( stage == SKTRIG_STROKE )
+	// m_Act.m_Targ = the intrument i targetted to play.
+	if (stage == CSkillDef::T_Stroke)
 		return 0;
-	if ( stage == SKTRIG_START )
-		return Use_PlayMusic(m_Act_Targ.ItemFind(), Calc_GetRandVal(90));	// no instrument fail immediate
-	return 0;
+	if (stage == CSkillDef::T_Start)
+	{
+		// no instrument fail immediate
+		return Use_PlayMusic(g_World.ItemFind(m_Act_Targ), Calc_GetRandVal(90));;
+	}
+
+	return(0);
 }
 
-int CChar::Skill_Peacemaking(SKTRIG_TYPE stage)
+int CChar::Skill_Peacemaking(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Peacemaking");
 	// try to make all those listening peacable.
 	// General area effect.
 	// make peace if possible. depends on who is listening/fighting.
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
-
-	switch ( stage )
+	if (stage == CSkillDef::T_Stroke)
 	{
-		case SKTRIG_START:
-		{
-			// Basic skill check.
-			int iDifficulty = Use_PlayMusic(NULL, Calc_GetRandVal(40));
-			if ( iDifficulty < -1 )	// no instrument fail immediate
-				return -SKTRIG_FAIL;
-			if ( !iDifficulty )
-				iDifficulty = Calc_GetRandVal(40);	// Depend on evil of the creatures here.
-			return iDifficulty;
-		}
-
-		case SKTRIG_FAIL:
-			return 0;
-
-		case SKTRIG_SUCCESS:
-		{
-			WORD wSkillLevel = Skill_GetAdjusted(SKILL_PEACEMAKING);
-			int iRadius = (wSkillLevel / 100) + 2;	// 2..12
-			CWorldSearch Area(GetTopPoint(), iRadius);
-			for (;;)
-			{
-				CChar *pChar = Area.GetChar();
-				if ( !pChar )
-					return -SKTRIG_FAIL;
-				if ( (pChar == this) || !CanSee(pChar) )
-					continue;
-
-				if ( pChar->Skill_GetAdjusted(SKILL_PEACEMAKING) > wSkillLevel )
-					SysMessagef("%s %s.", pChar->GetName(), g_Cfg.GetDefaultMsg(DEFMSG_PEACEMAKING_IGNORE));
-				else if ( pChar->Skill_GetAdjusted(SKILL_PROVOCATION) > wSkillLevel )
-				{
-					SysMessagef("%s %s.", pChar->GetName(), g_Cfg.GetDefaultMsg(DEFMSG_PEACEMAKING_DISOBEY));
-					if ( pChar->Noto_IsEvil() )
-						pChar->Fight_Attack(this);
-				}
-				else
-					pChar->Fight_Clear();
-
-				break;
-			}
-			return 0;
-		}
-
-		default:
-			break;
+		return 0;
 	}
-	return -SKTRIG_QTY;
+	if (stage == CSkillDef::T_Start)
+	{
+		// Find musical inst first.
+
+		// Basic skill check.
+		int iDifficulty = Use_PlayMusic(NULL, Calc_GetRandVal(40));
+		if (iDifficulty < -1)	// no instrument fail immediate
+			return(-CSkillDef::T_Fail);
+
+		if (!iDifficulty)
+		{
+			iDifficulty = Calc_GetRandVal(40);	// Depend on evil of the creatures here.
+		}
+
+		// Who is fighting around us ? determines difficulty.
+		return(iDifficulty);
+	}
+
+	if (stage == CSkillDef::T_Fail || stage == CSkillDef::T_Success)
+	{
+		// Failure just irritates.
+
+		int iRadius = (Skill_GetAdjusted(SKILL_PEACEMAKING) / 8) + 1;
+		CWorldSearch Area(GetTopPoint(), iRadius);
+		for (;;)
+		{
+			CCharPtr pChar = Area.GetNextChar();
+			if (pChar == NULL)
+				return(-CSkillDef::T_Fail);
+			if (pChar == this)
+				continue;
+			break;
+		}
+		return 0;
+	}
+
+	ASSERT(0);
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Enticement(SKTRIG_TYPE stage)
+int CChar::Skill_Enticement(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Enticement");
-	// m_Act_Targ = my target
-	// Just keep playing and trying to allure them til we can't
-	// Must have a musical instrument.
+	//// m_Act.m_Targ = my target
+	//// Just keep playing and trying to allure them til we can't
+	//// Must have a musical instrument.
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
+	//CCharPtr pChar = g_World.CharFind(m_Act_Targ);
+	//if (pChar == NULL)
+	//{
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	// Walk to me ?
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// Base music diff, (whole thing won't work if this fails)
+	//	int iDifficulty = Use_PlayMusic(NULL, Calc_GetRandVal(55));
+	//	if (iDifficulty < -1)	// no instrument fail immediate
+	//		return(-CSkillDef::T_QTY);
 
-	CChar *pChar = m_Act_Targ.CharFind();
-	if ( !pChar || !CanSee(pChar) )
-		return -SKTRIG_QTY;
+	//	m_Act.m_atMusician.m_iMusicDifficulty = iDifficulty;
 
-	switch ( stage )
-	{
-		case SKTRIG_START:
-		{
-			// Basic skill check.
-			int iDifficulty = Use_PlayMusic(NULL, Calc_GetRandVal(40));
-			if ( iDifficulty < -1 )	// no instrument fail immediate
-				return -SKTRIG_FAIL;
-			if ( !iDifficulty )
-				iDifficulty = Calc_GetRandVal(40);	// Depend on evil of the creatures here.
-			return iDifficulty;
-		}
+	//	// Based on the STAT_Int and will of the target.
+	//	if (!iDifficulty)
+	//	{
+	//		return pChar->m_StatInt;
+	//	}
 
-		case SKTRIG_FAIL:
-			return 0;
+	//	return(iDifficulty);
+	//}
 
-		case SKTRIG_SUCCESS:
-		{
-			if ( pChar->m_pPlayer )
-			{
-				SysMessageDefault(DEFMSG_ENTICEMENT_PLAYER);
-				return -SKTRIG_ABORT;
-			}
-			else if ( pChar->IsStatFlag(STATF_War) )
-			{
-				SysMessagef("%s %s.", pChar->GetName(), g_Cfg.GetDefaultMsg(DEFMSG_ENTICEMENT_BATTLE));
-				return -SKTRIG_ABORT;
-			}
-
-			pChar->m_Act_p = GetTopPoint();
-			pChar->NPC_WalkToPoint((pChar->m_Act_p.GetDist(pChar->GetTopPoint()) > 3));
-			return 0;
-		}
-
-		default:
-			break;
-	}
-	return -SKTRIG_QTY;
+	//ASSERT(0);
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Provocation(SKTRIG_TYPE stage)
+int CChar::Skill_Provocation(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Provocation");
-	// m_Act_TargPrv = provoke this person
-	// m_Act_Targ = against this person.
+	// m_Act.m_TargPrv = provoke this person
+	// m_Act.m_Targ = against this person.
 
-	if ( stage == SKTRIG_STROKE )
+	if (stage == CSkillDef::T_Stroke)
+	{
 		return 0;
-
-	CChar *pCharProv = m_Act_TargPrv.CharFind();
-	CChar *pCharTarg = m_Act_Targ.CharFind();
-
-	if ( !pCharProv || !pCharTarg || (pCharProv == this) || (pCharTarg == this) || (pCharProv == pCharTarg) || pCharProv->IsStatFlag(STATF_Pet|STATF_Conjured|STATF_Stone|STATF_DEAD|STATF_INVUL) || pCharTarg->IsStatFlag(STATF_Pet|STATF_Conjured|STATF_Stone|STATF_DEAD|STATF_INVUL) )
-	{
-		SysMessageDefault(DEFMSG_PROVOCATION_UPSET);
-		return -SKTRIG_QTY;
 	}
 
-	if ( pCharProv->m_pPlayer || pCharTarg->m_pPlayer )
+	CCharPtr pCharProv = g_World.CharFind(m_Act_TargPrv);
+	CCharPtr pCharTarg = g_World.CharFind(m_Act_Targ);
+
+	// If no provoker, then we fail (naturally!)
+	if (pCharProv == NULL || pCharProv == this)
 	{
-		SysMessageDefault(DEFMSG_PROVOCATION_PLAYER);
-		return -SKTRIG_ABORT;
+		WriteString("You are really upset about this");
+		return -CSkillDef::T_QTY;
 	}
 
-	if ( !CanSee(pCharProv) || !CanSee(pCharTarg) )
-		return -SKTRIG_ABORT;
-
-	switch ( stage )
+	if (stage == CSkillDef::T_Fail)
 	{
-		case SKTRIG_START:
-		{
-			int iDifficulty = Use_PlayMusic(NULL, Calc_GetRandVal(40));
-			if ( iDifficulty < -1 )	// no instrument fail immediate
-				return -SKTRIG_ABORT;
-			if ( !iDifficulty )
-				iDifficulty = pCharProv->Stat_GetAdjusted(STAT_INT);	// Depend on evil of the creature.
-			if ( pCharProv->Skill_GetAdjusted(SKILL_PROVOCATION) >= Skill_GetAdjusted(SKILL_PROVOCATION) )	// cannot provoke more experienced provoker
-				iDifficulty = 0;
-			return iDifficulty;
-		}
+		if (pCharProv->IsClient())
+			CheckCrimeSeen(SKILL_NONE, pCharProv, pCharTarg, "provoking");
 
-		case SKTRIG_FAIL:
-		{
-			pCharProv->Fight_Attack(this);
-			return 0;
-		}
-
-		case SKTRIG_SUCCESS:
-		{
-			// They are just too good for this.
-			if ( pCharProv->Stat_GetAdjusted(STAT_KARMA) >= Calc_GetRandVal(1000, 10000) )
-			{
-				pCharProv->Emote(g_Cfg.GetDefaultMsg(DEFMSG_PROVOCATION_EMOTE_1));
-				return -SKTRIG_ABORT;
-			}
-
-			pCharProv->Emote(g_Cfg.GetDefaultMsg(DEFMSG_PROVOCATION_EMOTE_2));
-
-			// He realizes that you are the real bad guy as well.
-			if ( !pCharTarg->OnAttackedBy(this, true) )
-				return -SKTRIG_ABORT;
-
-			pCharProv->Memory_AddObjTypes(this, MEMORY_AGGREIVED|MEMORY_IRRITATEDBY);
-
-			// If out of range we might get attacked ourself.
-			if ( (pCharProv->GetTopDist3D(pCharTarg) > UO_MAP_VIEW_SIGHT) || (pCharProv->GetTopDist3D(this) > UO_MAP_VIEW_SIGHT) )
-			{
-				// Check that only "evil" monsters attack provoker back
-				if ( pCharProv->Noto_IsEvil() )
-					pCharProv->Fight_Attack(this);
-
-				return -SKTRIG_ABORT;
-			}
-
-			// or just the npcs are in the same ally groups so can both attack you
-			if ( NPC_GetAllyGroupType(pCharProv->GetDispID()) == NPC_GetAllyGroupType(pCharTarg->GetDispID()) )
-			{
-				if ( pCharProv->Noto_IsEvil() )
-				{
-					pCharProv->Fight_Attack(this);
-					pCharTarg->Fight_Attack(this);
-				}
-
-				return -SKTRIG_ABORT;
-			}
-
-			// If we are provoking against a "good" PC/NPC and the provoked NPC/PC is good,
-			// we are flagged criminal for it and guards are called.
-			if ( pCharProv->Noto_GetFlag(this) == NOTO_GOOD )
-			{
-				// lose some karma for this.
-				CheckCrimeSeen(SKILL_PROVOCATION, NULL, pCharProv, g_Cfg.GetDefaultMsg(DEFMSG_PROVOKING_CRIME));
-				return -SKTRIG_ABORT;
-			}
-
-			// If we provoke upon a good char we should go criminal for it
-			// but skill still succeed.
-			if ( pCharTarg->Noto_GetFlag(this) == NOTO_GOOD )
-				CheckCrimeSeen(SKILL_PROVOCATION, NULL, pCharTarg, "provoking");
-
-			pCharProv->Fight_Attack(pCharTarg); // Make the actual provoking.
-			return 0;
-		}
-
-		default:
-			break;
+		// Might just attack you !
+		pCharProv->Fight_Attack(this);
+		return(0);
 	}
-	return -SKTRIG_QTY;
-}
 
-int CChar::Skill_Poisoning(SKTRIG_TYPE stage)
-{
-	ADDTOCALLSTACK("CChar::Skill_Poisoning");
-	// Act_TargPrv = poison this weapon/food
-	// Act_Targ = with this poison.
+	if (stage == CSkillDef::T_Start)
+	{
+		int iDifficulty = Use_PlayMusic(NULL, Calc_GetRandVal(40));
+		if (iDifficulty < -1)	// no instrument fail immediate
+			return(false);
+		if (!iDifficulty)
+		{
+			iDifficulty = pCharProv->m_StatInt;	// Depend on evil of the creature.
+		}
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
+		return(iDifficulty);
+	}
 
-	CItem *pPoison = m_Act_Targ.ItemFind();
-	if ( !pPoison || !pPoison->IsType(IT_POTION) )
-		return -SKTRIG_ABORT;
-	if ( stage == SKTRIG_START )
-		return Calc_GetRandVal(60);
-	if ( stage == SKTRIG_FAIL )
-		return 0;	// lose the poison sometimes ?
-	if ( RES_GET_INDEX(pPoison->m_itPotion.m_Type) != SPELL_Poison )
-		return -SKTRIG_ABORT;
-
-	CItem *pItem = m_Act_TargPrv.ItemFind();
-	if ( !pItem )
-		return -SKTRIG_QTY;
-
-	if ( stage != SKTRIG_SUCCESS )
+	if (stage != CSkillDef::T_Success)
 	{
 		ASSERT(0);
-		return -SKTRIG_ABORT;
+		return -CSkillDef::T_QTY;
 	}
 
-	if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOSFX) )
-		Sound(SOUND_RUSTLE);	// powdering.
-
-	switch ( pItem->GetType() )
+	if (pCharProv->IsClient())
 	{
-		case IT_FRUIT:
-		case IT_FOOD:
-		case IT_FOOD_RAW:
-		case IT_MEAT_RAW:
-			pItem->m_itFood.m_poison_skill = static_cast<BYTE>(pPoison->m_itPotion.m_skillquality / 10);
-			break;
-		case IT_WEAPON_MACE_SHARP:
-		case IT_WEAPON_SWORD:
-		case IT_WEAPON_FENCE:
-			pItem->m_itWeapon.m_poison_skill = static_cast<BYTE>(pPoison->m_itPotion.m_skillquality / 10);
-			pItem->UpdatePropertyFlag();
-			break;
-		default:
-			SysMessageDefault(DEFMSG_POISONING_WITEM);
-			return -SKTRIG_QTY;
+		CheckCrimeSeen(SKILL_NONE, pCharProv, pCharTarg, "provoking");
+		return -CSkillDef::T_Fail;
 	}
 
-	// skill + quality of the poison.
-	SysMessageDefault(DEFMSG_POISONING_SUCCESS);
-	pPoison->ConsumeAmount();
-	return 0;
+	// If out of range or something, then we might get attacked ourselves.
+	if (pCharProv->Stat_Get(STAT_Karma) >= 10000)
+	{
+		// They are just too good for this.
+		pCharProv->Emote("looks peaceful");
+		return -CSkillDef::T_Abort;
+	}
+
+	pCharProv->Emote("looks furious");
+
+	// If no target then skill fails
+	if (pCharTarg == NULL)
+	{
+		return -CSkillDef::T_Fail;
+	}
+
+	// He realizes that you are the real bad guy as well.
+	if (!pCharTarg->OnAttackedBy(this, 1, true))
+	{
+		return -CSkillDef::T_Abort;
+	}
+
+	pCharProv->Memory_AddObjTypes(this, MEMORY_AGGREIVED | MEMORY_IRRITATEDBY);
+
+	// If out of range we might get attacked ourself.
+	if (pCharProv->GetTopDist3D(pCharTarg) > SPHEREMAP_VIEW_SIGHT ||
+		pCharProv->GetTopDist3D(this) > SPHEREMAP_VIEW_SIGHT)
+	{
+		// Check that only "evil" monsters attack provoker back
+		if (pCharProv->Noto_IsEvil())
+		{
+			pCharProv->Fight_Attack(this);
+		}
+		return -CSkillDef::T_Abort;
+	}
+
+	// If we are provoking against a "good" PC/NPC and the provoked
+	// NPC/PC is good, we are flagged criminal for it and guards
+	// are called.
+	if (pCharProv->Noto_GetFlag(this) == NOTO_GOOD)
+	{
+		// lose some karma for this.
+		CheckCrimeSeen(SKILL_NONE, pCharProv, pCharTarg, "provoking");
+		return -CSkillDef::T_Abort;
+	}
+
+	// If we provoke upon a good char we should go criminal for it
+	// but skill still succeed.
+	if (pCharTarg->Noto_GetFlag(this) == NOTO_GOOD)
+	{
+		CheckCrimeSeen(SKILL_NONE, pCharTarg, pCharProv, "provoking");
+	}
+
+	pCharProv->Fight_Attack(pCharTarg); // Make the actual provoking.
+	return(0);
 }
 
-int CChar::Skill_Cooking(SKTRIG_TYPE stage)
+int CChar::Skill_Poisoning(CSkillDef::T_TYPE_ stage)
+{
+	ADDTOCALLSTACK("CChar::Skill_Poisoning");
+	//// Act_TargPrv = poison this weapon/food
+	//// Act_Targ = with this poison.
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
+
+	//CItemPtr pPoison = g_World.ItemFind(m_Act.m_Targ);
+	//if (pPoison == NULL ||
+	//	!pPoison->IsType(IT_POTION))
+	//{
+	//	return(-CSkillDef::T_Abort);
+	//}
+
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	return Calc_GetRandVal(60);
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// Lose the poison sometimes ?
+	//	return(0);
+	//}
+
+	//if (RES_GET_INDEX(pPoison->m_itPotion.m_Type) != SPELL_Poison)
+	//{
+	//	return(-CSkillDef::T_Abort);
+	//}
+
+	//CItemPtr pItem = g_World.ItemFind(m_Act.m_TargPrv);
+	//if (pItem == NULL)
+	//{
+	//	return(-CSkillDef::T_QTY);
+	//}
+
+	//if (stage != CSkillDef::T_Success)
+	//{
+	//	ASSERT(0);
+	//	return(-CSkillDef::T_Abort);
+	//}
+
+	//Sound(0x247);	// powdering.
+
+	//switch (pItem->GetType())
+	//{
+
+	//case IT_FRUIT:
+	//case IT_FOOD:
+	//case IT_FOOD_RAW:
+	//case IT_MEAT_RAW:
+	//	pItem->m_itFood.m_poison_skill = pPoison->m_itPotion.m_skillquality / 10;
+	//	break;
+	//case IT_WEAPON_MACE_SHARP:
+	//case IT_WEAPON_SWORD:		// 13 =
+	//case IT_WEAPON_FENCE:		// 14 = can't be used to chop trees. (make kindling)
+	//	pItem->m_itWeapon.m_poison_skill = pPoison->m_itPotion.m_skillquality / 10;
+	//	break;
+	//default:
+	//	WriteString("You can only poison food or piercing weapons.");
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//// skill + quality of the poison.
+	//WriteString("You apply the poison.");
+	//pPoison->ConsumeAmount();
+	return(0);
+}
+
+int CChar::Skill_Cooking(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Cooking");
-	// m_atCreate.m_ItemID = create this item
-	// m_Act_p = the heat source
-	// m_Act_Targ = the skill tool
+	//// m_Act.m_Targ = food object to cook.
+	//// m_Act.m_pt = my fire.
+	//// How hard to cook is this ?
 
-	int iMaxDist = 3;
-	if ( stage == SKTRIG_START )
-	{
-		m_Act_p = g_World.FindItemTypeNearby(GetTopPoint(), IT_FIRE, iMaxDist, false, true);
-		if ( !m_Act_p.IsValidPoint() )
-		{
-			m_Act_p = g_World.FindItemTypeNearby(GetTopPoint(), IT_FORGE, iMaxDist, false, true);
-			if ( !m_Act_p.IsValidPoint() )
-			{
-				m_Act_p = g_World.FindItemTypeNearby(GetTopPoint(), IT_CAMPFIRE, iMaxDist, false, true);
-				if ( !m_Act_p.IsValidPoint() )
-				{
-					SysMessageDefault(DEFMSG_COOKING_FIRE_SOURCE);
-					return -SKTRIG_QTY;
-				}
-			}
-		}
-		UpdateDir(m_Act_p);	// toward the fire source
-	}
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
 
-	if ( stage == SKTRIG_SUCCESS )
-	{
-		if ( GetTopPoint().GetDist(m_Act_p) > iMaxDist )
-			return -SKTRIG_FAIL;
-	}
+	//CItemPtr pFoodRaw = g_World.ItemFind(m_Act_Targ);
+	//if (pFoodRaw == NULL)
+	//{
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (!pFoodRaw->IsType(IT_FOOD_RAW) && !pFoodRaw->IsType(IT_MEAT_RAW))
+	//{
+	//	return(-CSkillDef::T_Abort);
+	//}
 
-	return Skill_MakeItem(stage);
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	return Calc_GetRandVal(50);
+	//}
+
+	//// Convert uncooked food to cooked food.
+	//ITEMID_TYPE id = (ITEMID_TYPE)RES_GET_INDEX(pFoodRaw->m_itFood.m_cook_id);
+	//if (!id)
+	//{
+	//	id = (ITEMID_TYPE)pFoodRaw->Item_GetDef()->m_ttFoodRaw.m_cook_id.GetResIndex();
+	//	if (!id)	// does not cook into anything.
+	//	{
+	//		return(-CSkillDef::T_QTY);
+	//	}
+	//}
+
+	//CItemPtr pFoodCooked;
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	pFoodCooked = CItem::CreateTemplate(id, NULL, this);
+	//	if (pFoodCooked)
+	//	{
+	//		WriteString("Mmm, smells good");
+	//		pFoodCooked->m_itFood.m_MeatType = pFoodRaw->m_itFood.m_MeatType;
+	//		ItemBounce(pFoodCooked);
+	//	}
+	//}
+	//else	// CSkillDef::T_Fail
+	//{
+	//	// Burn food
+	//}
+
+	//pFoodRaw->ConsumeAmount();
+
+	//if (pFoodCooked == NULL)
+	//{
+	//	return(-CSkillDef::T_QTY);
+	//}
+
+	return(0);
 }
 
-int CChar::Skill_Taming(SKTRIG_TYPE stage)
+int CChar::Skill_Taming(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Taming");
-	// m_Act_Targ = creature to tame.
-	// Check the min required skill for this creature.
+	//ADDTOCALLSTACK("CChar::Skill_Taming");
+	//// m_Act.m_Targ = creature to tame.
+	//// Check the min required skill for this creature.
+	//// Related to INT ?
 
-	CChar *pChar = m_Act_Targ.CharFind();
-	if ( !pChar )
-		return -SKTRIG_QTY;
+	//CCharPtr pChar = g_World.CharFind(m_Act_Targ);
+	//if (pChar == NULL)
+	//{
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (pChar == this)
+	//{
+	//	WriteString("You are your own master.");
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (pChar->m_pPlayer->IsValidNewObj())
+	//{
+	//	WriteString("You can't tame them.");
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (!CanTouch(pChar))
+	//{
+	//	WriteString("You are too far away");
+	//	return -CSkillDef::T_QTY;
+	//}
 
-	if ( pChar == this )
-	{
-		SysMessageDefault(DEFMSG_TAMING_YMASTER);
-		return -SKTRIG_QTY;
-	}
-	if ( pChar->m_pPlayer )
-	{
-		SysMessageDefault(DEFMSG_TAMING_CANT);
-		return -SKTRIG_QTY;
-	}
+	//UpdateDir(pChar);
 
-	CSkillDef *pSkillDef = g_Cfg.GetSkillDef(SKILL_TAMING);
-	if ( pSkillDef->m_Range <= 0 )
-		pSkillDef->m_Range = 7;
+	//ASSERT(pChar->m_pNPC.IsValidNewObj());
 
-	if ( GetTopDist3D(pChar) > pSkillDef->m_Range )
-	{
-		SysMessageDefault(DEFMSG_TAMING_REACH);
-		return -SKTRIG_QTY;
-	}
-	if ( !CanSeeLOS(pChar) )
-	{
-		SysMessageDefault(DEFMSG_TAMING_LOS);
-		return -SKTRIG_QTY;
-	}
-	UpdateDir(pChar);
+	//int iTameBase = pChar->Skill_GetBase(SKILL_TAMING);
+	//if (!IsGM()) // if its a gm doing it, just check that its not
+	//{
+	//	// Is it tamable ?
+	//	if (pChar->IsStatFlag(STATF_Pet))
+	//	{
+	//		Printf("%s is already tame.", (LPCTSTR)pChar->GetName());
+	//		return(-CSkillDef::T_QTY);
+	//	}
 
-	ASSERT(pChar->m_pNPC);
+	//	// Too smart or not an animal.
+	//	if (!iTameBase || pChar->Skill_GetBase(SKILL_ANIMALLORE))
+	//	{
+	//		Printf("%s cannot be tamed.", (LPCTSTR)pChar->GetName());
+	//		return(-CSkillDef::T_QTY);
+	//	}
 
-	WORD wTameBase = pChar->Skill_GetBase(SKILL_TAMING);
-	if ( !IsPriv(PRIV_GM) )
-	{
-		if ( pChar->IsStatFlag(STATF_Pet) )
-		{
-			SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_TAMING_TAME), pChar->GetName());
-			return -SKTRIG_QTY;
-		}
-		if ( !wTameBase )
-		{
-			SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_TAMING_TAMED), pChar->GetName());
-			return -SKTRIG_QTY;
-		}
-		if ( IsSetOF(OF_PetSlots) )
-		{
-			if ( !FollowersUpdate(pChar, pChar->m_FollowerSlots, true) )
-			{
-				SysMessageDefault(DEFMSG_PETSLOTS_TRY_TAMING);
-				return -SKTRIG_QTY;
-			}
-		}
-	}
+	//	// You shouldn't be able to tame creatures that are above your level
+	//	if (iTameBase > Skill_GetBase(SKILL_TAMING))
+	//	{
+	//		Printf("You have no chance of taming %s.", (LPCTSTR)pChar->GetName());
+	//		return(-CSkillDef::T_QTY);
+	//	}
+	//}
 
-	if ( stage == SKTRIG_START )
-	{
-		int iDifficulty = wTameBase / 10;
-		if ( pChar->Memory_FindObjTypes(this, MEMORY_FIGHT|MEMORY_HARMEDBY|MEMORY_IRRITATEDBY|MEMORY_AGGREIVED) )	// I've attacked it before ?
-			iDifficulty += 50;
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// The difficulty should be based on the difference between your skill level
+	//	// and the creature's base taming value
+	//	// If TameBase == My taming, difficulty should be 100
+	//	// If TameBase == 0, difficulty should be 0
+	//	// Make it linear for now
+	//	int iDifficulty = (iTameBase * 100) / Skill_GetBase(SKILL_TAMING);
+	//	if (iDifficulty > 100)
+	//		iDifficulty = 100;
 
-		m_atTaming.m_Stroke_Count = static_cast<WORD>(Calc_GetRandVal(4) + 2);
-		return iDifficulty;
-	}
+	//	if (pChar->Memory_FindObjTypes(this, MEMORY_FIGHT | MEMORY_HARMEDBY | MEMORY_IRRITATEDBY | MEMORY_AGGREIVED))
+	//	{
+	//		// I've attacked it b4 ?
+	//		iDifficulty += 50;
+	//	}
 
-	if ( stage == SKTRIG_FAIL )
-		return 0;
+	//	m_atTaming.m_Stroke_Count = Calc_GetRandVal(4) + 2;
+	//	return(iDifficulty);
+	//}
 
-	if ( stage == SKTRIG_STROKE )
-	{
-		if ( (m_atTaming.m_Stroke_Count <= 0) || IsPriv(PRIV_GM) )
-			return 0;
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// chance of being attacked ?
+	//	return(0);
+	//}
 
-		static const LPCTSTR sm_szTameSpeak[] =
-		{
-			g_Cfg.GetDefaultMsg(DEFMSG_TAMING_1),
-			g_Cfg.GetDefaultMsg(DEFMSG_TAMING_2),
-			g_Cfg.GetDefaultMsg(DEFMSG_TAMING_3),
-			g_Cfg.GetDefaultMsg(DEFMSG_TAMING_4)
-		};
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	static LPCTSTR const sm_szTameSpeak[] =
+	//	{
+	//		"I won't hurt you.",
+	//		"I always wanted a %s like you",
+	//		"Good %s",
+	//		"Here %s",
+	//	};
 
-		TCHAR *pszMsg = Str_GetTemp();
-		sprintf(pszMsg, sm_szTameSpeak[Calc_GetRandVal(COUNTOF(sm_szTameSpeak))], pChar->GetName());
-		Speak(pszMsg);
+	//	if (IsGM())
+	//		return(0);
+	//	if (m_atTaming.m_Stroke_Count <= 0)
+	//		return(0);
 
-		// Keep trying and updating the animation
-		--m_atTaming.m_Stroke_Count;
-		Skill_SetTimeout();
-		return -SKTRIG_STROKE;
-	}
+	//	CGString sSpeak;
+	//	sSpeak.Format(sm_szTameSpeak[Calc_GetRandVal(COUNTOF(sm_szTameSpeak))], (LPCTSTR)pChar->GetName());
+	//	Speak(sSpeak);
 
-	ASSERT(stage == SKTRIG_SUCCESS);
+	//	// Keep trying and updating the animation
+	//	m_atTaming.m_Stroke_Count--;
+	//	Skill_SetTimeout();
+	//	return -CSkillDef::T_Stroke;
+	//}
 
-	// Check if I tamed it before
-	CItemMemory *pMemory = pChar->Memory_FindObjTypes(this, MEMORY_SPEAK);
-	if ( pMemory && (pMemory->m_itEqMemory.m_Action == NPC_MEM_ACT_TAMED) )
-	{
-		// I did, no skill to tame it again
-		TCHAR *pszMsg = Str_GetTemp();
-		sprintf(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_TAMING_REMEMBER), pChar->GetName());
-		ObjMessage(pszMsg, pChar);
+	//ASSERT(stage == CSkillDef::T_Success);
 
-		pChar->NPC_PetSetOwner(this);
-		pChar->m_Act_Targ = GetUID();
-		pChar->Skill_Start(NPCACT_FOLLOW_TARG);
-		return -SKTRIG_QTY;	// no credit for this.
-	}
+	//// Create the memory of being tamed to prevent lame macroers
+	//CItemMemoryPtr pMemory = pChar->Memory_FindObjTypes(this, MEMORY_SPEAK);
+	//if (pMemory &&
+	//	pMemory->m_itEqMemory.m_Arg1 == NPC_MEM_ACT_TAMED)
+	//{
+	//	// See if I tamed it before
+	//	// I did, no skill to tame it again
+	//	CGString sSpeak;
+	//	sSpeak.Format("The %s remembers you and accepts you once more as it's master.", (LPCTSTR)pChar->GetName());
+	//	ObjMessage(sSpeak, pChar);
 
-	pChar->NPC_PetSetOwner(this);
-	pChar->m_Act_Targ = GetUID();
-	pChar->Skill_Start(NPCACT_FOLLOW_TARG);
-	SysMessageDefault(DEFMSG_TAMING_SUCCESS);
+	//	pChar->NPC_PetSetOwner(this);
+	//	// pChar->Stat_Set( STAT_Food, 50 );	// this is good for something.
+	//	pChar->m_Act_Targ = GetUID();
+	//	pChar->Skill_Start(NPCACT_FOLLOW_TARG);
+	//	return -CSkillDef::T_QTY;	// no credit for this.
+	//}
 
-	// Create the memory of being tamed to prevent lame macroers
-	pMemory = pChar->Memory_AddObjTypes(this, MEMORY_SPEAK);
-	if ( pMemory )
-		pMemory->m_itEqMemory.m_Action = NPC_MEM_ACT_TAMED;
+	//pChar->NPC_PetSetOwner(this);
+	//pChar->Stat_Set(STAT_Food, 50);	// this is good for something.
+	//pChar->m_Act_Targ = GetUID();
+	//pChar->Skill_Start(NPCACT_FOLLOW_TARG);
+	//WriteString("It seems to accept you as master");
 
-	return 0;
+	//// Create the memory of being tamed to prevent lame macroers
+	//pMemory = pChar->Memory_AddObjTypes(this, MEMORY_SPEAK);
+	//ASSERT(pMemory);
+	//pMemory->m_itEqMemory.m_Arg1 = NPC_MEM_ACT_TAMED;
+	return(0);
 }
 
-int CChar::Skill_Lockpicking(SKTRIG_TYPE stage)
+int CChar::Skill_Lockpicking(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Lockpicking");
-	// m_Act_Targ = the item to be picked.
-	// m_Act_TargPrv = The pick.
+	//ADDTOCALLSTACK("CChar::Skill_Lockpicking");
+	//// m_Act.m_Targ = the item to be picked.
+	//// m_Act.m_TargPrv = The pick.
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
 
-	CItem *pPick = m_Act_TargPrv.ItemFind();
-	if ( !pPick || !pPick->IsType(IT_LOCKPICK) )
-	{
-		SysMessageDefault(DEFMSG_LOCKPICKING_NOPICK);
-		return -SKTRIG_QTY;
-	}
+	//CItemPtr pPick = g_World.ItemFind(m_Act.m_TargPrv);
+	//if (pPick == NULL || !pPick->IsType(IT_LOCKPICK))
+	//{
+	//	WriteString("You need a lock pick.");
+	//	return -CSkillDef::T_QTY;
+	//}
 
-	CItem *pLock = m_Act_Targ.ItemFind();
-	if ( !pLock )
-	{
-		SysMessageDefault(DEFMSG_LOCKPICKING_WITEM);
-		return -SKTRIG_QTY;
-	}
+	//CItemPtr pLock = g_World.ItemFind(m_Act.m_Targ);
+	//if (pLock == NULL)
+	//{
+	//	WriteString("Use the lock pick on a lockable item.");
+	//	return -CSkillDef::T_QTY;
+	//}
 
-	if ( pPick->GetTopLevelObj() != this )	// the pick is gone !
-	{
-		SysMessageDefault(DEFMSG_LOCKPICKING_PREACH);
-		return -SKTRIG_QTY;
-	}
+	//if (pPick->GetTopLevelObj() != this)	// the pick is gone !
+	//{
+	//	WriteString("Your pick must be on your person.");
+	//	return -CSkillDef::T_QTY;
+	//}
 
-	if ( stage == SKTRIG_FAIL )
-	{
-		pPick->OnTakeDamage(1, this, DAMAGE_HIT_BLUNT);	// damage my pick
-		return 0;
-	}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// Damage my pick
+	//	pPick->OnTakeDamage(1, this, DAMAGE_HIT_BLUNT);
+	//	return(0);
+	//}
 
-	if ( !CanTouch(pLock) )	// we moved too far from the lock
-	{
-		SysMessageDefault(DEFMSG_LOCKPICKING_REACH);
-		return -SKTRIG_QTY;
-	}
+	//if (!CanTouch(pLock))	// we moved too far from the lock.
+	//{
+	//	WriteString("You can't reach that.");
+	//	return -CSkillDef::T_QTY;
+	//}
 
-	if ( stage == SKTRIG_START )
-		return pLock->Use_LockPick(this, true, false);
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	return(pLock->Use_LockPick(this, true, false));
+	//}
 
-	ASSERT(stage == SKTRIG_SUCCESS);
+	//ASSERT(stage == CSkillDef::T_Success);
 
-	if ( pLock->Use_LockPick(this, false, false) < 0 )
-		return -SKTRIG_FAIL;
-
-	return 0;
+	//if (pLock->Use_LockPick(this, false, false) < 0)
+	//{
+	//	return -CSkillDef::T_Fail;
+	//}
+	//return 0;
 }
 
-int CChar::Skill_Hiding(SKTRIG_TYPE stage)
+int CChar::Skill_Hiding(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Hiding");
+	// SKILL_Stealth = move while already hidden !
 	// SKILL_Hiding
 	// Skill required varies with terrain and situation ?
 	// if we are carrying a light source then this should not work.
 
-	if ( stage == SKTRIG_STROKE )	// we shoud just stay in HIDING skill ?
-		return 0;
-
-	if ( stage == SKTRIG_FAIL )
+#if 0
+	// We shoud just stay in HIDING skill. ?
+#else
+	if (stage == CSkillDef::T_Stroke)
 	{
-		Reveal();
+		return 0;
+	}
+	if (stage == CSkillDef::T_Fail)
+	{
+		Reveal(STATF_Hidden);
 		return 0;
 	}
 
-	if ( stage == SKTRIG_SUCCESS )
+	if (stage == CSkillDef::T_Success)
 	{
-		ObjMessage(g_Cfg.GetDefaultMsg(DEFMSG_HIDING_SUCCESS), this);
-		StatFlag_Set(STATF_Hidden);
-		Reveal(STATF_Invisible);	// clear previous invisibility spell effect (this will not reveal the char because STATF_Hidden still set)
-		Update(false);
-		if ( m_pClient )
+		if (IsStatFlag(STATF_Hidden))
 		{
-			m_pClient->removeBuff(BI_HIDDEN);
-			m_pClient->addBuff(BI_HIDDEN, 1075655, 1075656);
+			// I was already hidden ? so un-hide.
+			Reveal(STATF_Hidden);
+			return(-CSkillDef::T_Abort);
 		}
-		return 0;
+
+		ObjMessage("You have hidden yourself well", this);
+		StatFlag_Set(STATF_Hidden);
+		UpdateMode();
+		return(0);
 	}
 
-	if ( stage == SKTRIG_START )
+	if (stage == CSkillDef::T_Start)
 	{
-		// Make sure I'm not carrying a light ?
-		for ( CItem *pItem = GetContentHead(); pItem != NULL; pItem = pItem->GetNext() )
+		// Make sure i am not carrying a light ?
+
+		CItemPtr pItem = GetContentHead();
+		for (; pItem; pItem = pItem->GetNext())
 		{
-			if ( !CItemBase::IsVisibleLayer(pItem->GetEquipLayer()) )
+			LAYER_TYPE layer = pItem->GetEquipLayer();
+			if (!CItemDef::IsVisibleLayer(layer))
 				continue;
-			if ( pItem->Item_GetDef()->Can(CAN_I_LIGHT) )
+			if (pItem->IsType(IT_EQ_HORSE))
 			{
-				SysMessageDefault(DEFMSG_HIDING_TOOLIT);
-				return -SKTRIG_QTY;
+				// Horses are hard to hide !
+				WriteString("Your horse reveals you");
+				return(-CSkillDef::T_QTY);
+			}
+			if (pItem->Item_GetDef()->Can(CAN_I_LIGHT))
+			{
+				WriteString("You are too well lit to hide");
+				return(-CSkillDef::T_QTY);
 			}
 		}
+
 		return Calc_GetRandVal(70);
 	}
+#endif
+
 	ASSERT(0);
-	return -SKTRIG_QTY;
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Herding(SKTRIG_TYPE stage)
+int CChar::Skill_Herding(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Herding");
-	// m_Act_Targ = move this creature.
-	// m_Act_p = move to here.
+	// m_Act.m_Targ = move this creature.
+	// m_Act.m_pt = move to here.
 	// How do I make them move fast ? or with proper speed ???
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
 
-	CChar *pChar = m_Act_Targ.CharFind();
-	if ( !pChar )
-	{
-		SysMessageDefault(DEFMSG_HERDING_LTARG);
-		return -SKTRIG_QTY;
-	}
+	//CCharPtr pChar = g_World.CharFind(m_Act_Targ);
+	//if (pChar == NULL)
+	//{
+	//	WriteString("You lost your target!");
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//CItemPtr pCrook = g_World.ItemFind(m_Act_TargPrv);
+	//if (pCrook == NULL)
+	//{
+	//	WriteString("You lost your crook!");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	CItem *pCrook = m_Act_TargPrv.ItemFind();
-	if ( !pCrook )
-	{
-		SysMessageDefault(DEFMSG_HERDING_NOCROOK);
-		return -SKTRIG_QTY;
-	}
+	//// special GM version to move to coordinates.
+	//if (!IsGM())
+	//{
+	//	// Herdable ?
+	//	if (pChar->m_pPlayer->IsValidNewObj() ||
+	//		!pChar->m_pNPC->IsValidNewObj() ||
+	//		pChar->m_pNPC->m_Brain != NPCBRAIN_ANIMAL)
+	//	{
+	//		WriteString("They look somewhat annoyed");
+	//		return(-CSkillDef::T_QTY);
+	//	}
+	//}
+	//else
+	//{
+	//	if (GetPrivLevel() < pChar->GetPrivLevel())
+	//		return(-CSkillDef::T_QTY);
+	//}
 
-	switch ( stage )
-	{
-		case SKTRIG_START:
-		{
-			if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOANIM) )
-				UpdateAnimate(ANIM_ATTACK_WEAPON);
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	UpdateAnimate(ANIM_ATTACK_WEAPON);
+	//	int iIntVal = pChar->m_StatInt / 2;
+	//	return(iIntVal + Calc_GetRandVal(iIntVal));
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// Irritate the animal.
+	//	return 0;
+	//}
 
-			int iIntVal = pChar->Stat_GetAdjusted(STAT_INT);
-			return Calc_GetRandVal(iIntVal / 2, iIntVal);
-		}
+	////
+	//// Try to make them walk there.
+	//ASSERT(stage == CSkillDef::T_Success);
 
-		case SKTRIG_FAIL:
-			return 0;
+	//if (IsGM())
+	//{
+	//	pChar->Spell_Effect_Teleport(m_Act_p, true, false);
+	//}
+	//else
+	//{
+	//	pChar->m_Act_p = m_Act_p;
+	//	pChar->Skill_Start(NPCACT_GOTO);
+	//}
 
-		case SKTRIG_SUCCESS:
-		{
-			if ( IsPriv(PRIV_GM) )
-			{
-				if ( pChar->GetPrivLevel() > GetPrivLevel() )
-				{
-					SysMessagef("%s %s", pChar->GetName(), g_Cfg.GetDefaultMsg(DEFMSG_HERDING_PLAYER));
-					return -SKTRIG_ABORT;
-				}
-				pChar->Spell_Teleport(m_Act_p, true, false);
-			}
-			else
-			{
-				if ( !pChar->NPC_IsAnimal() )
-				{
-					SysMessagef("%s %s", pChar->GetName(), g_Cfg.GetDefaultMsg(DEFMSG_HERDING_PLAYER));
-					return -SKTRIG_ABORT;
-				}
-				pChar->m_Act_p = m_Act_p;
-				pChar->Skill_Start(NPCACT_GOTO);
-			}
-
-			ObjMessage(g_Cfg.GetDefaultMsg(DEFMSG_HERDING_SUCCESS), pChar);
-			return 0;
-		}
-
-		default:
-			break;
-	}
-	return -SKTRIG_QTY;
+	//ObjMessage("The animal goes where it is instructed", pChar);
+	return(0);
 }
 
-int CChar::Skill_SpiritSpeak(SKTRIG_TYPE stage)
+int CChar::Skill_SpiritSpeak(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_SpiritSpeak");
-	if ( (stage == SKTRIG_FAIL) || (stage == SKTRIG_STROKE) )
-		return 0;
-
-	if ( stage == SKTRIG_START )
-		return Calc_GetRandVal(90);		// difficulty based on spirits near ?
-
-	if ( stage == SKTRIG_SUCCESS )
+	if (stage == CSkillDef::T_Fail)
 	{
-		if ( IsStatFlag(STATF_SpiritSpeak) )
-			return -SKTRIG_ABORT;
-		if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOSFX) )
-			Sound(SOUND_SPIRITSPEAK);
-
-		SysMessageDefault(DEFMSG_SPIRITSPEAK_SUCCESS);
-		Spell_Effect_Create(SPELL_NONE, LAYER_FLAG_SpiritSpeak, 1, 4 * 60 * TICK_PER_SEC, this);
+		// bring ghosts ? hehe
 		return 0;
+	}
+	if (stage == CSkillDef::T_Stroke)
+	{
+		return 0;
+	}
+	if (stage == CSkillDef::T_Start)
+	{
+		// difficulty based on spirits near ?
+		return(Calc_GetRandVal(90));
+	}
+	if (stage == CSkillDef::T_Success)
+	{
+		if (IsStatFlag(STATF_SpiritSpeak))
+			return(-CSkillDef::T_Abort);
+		WriteString("You establish a connection to the netherworld.");
+		Sound(0x24a);
+		Spell_Equip_Create(SPELL_NONE, LAYER_FLAG_SpiritSpeak, m_Act_Difficulty * 10, 4 * 60 * TICKS_PER_SEC, this, false);
+		return(0);
 	}
 
 	ASSERT(0);
-	return -SKTRIG_ABORT;
+	return(-CSkillDef::T_Abort);
 }
 
-int CChar::Skill_Meditation(SKTRIG_TYPE stage)
+int CChar::Skill_Meditation(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Meditation");
 	// SKILL_MEDITATION
 	// Try to regen your mana even faster than normal.
 	// Give experience only when we max out.
 
-	if ( (stage == SKTRIG_FAIL) || (stage == SKTRIG_ABORT) )
+	if (stage == CSkillDef::T_Fail || stage == CSkillDef::T_Abort)
 	{
-		if ( m_pClient )
-			m_pClient->removeBuff(BI_ACTIVEMEDITATION);
 		return 0;
 	}
 
-	if ( stage == SKTRIG_START )
+	if (stage == CSkillDef::T_Start)
 	{
-		if ( Stat_GetVal(STAT_INT) >= Stat_GetMax(STAT_INT) )
+		if (m_StatMana >= m_StatMaxMana)
 		{
-			SysMessageDefault(DEFMSG_MEDITATION_PEACE_1);
-			return -SKTRIG_QTY;
+			WriteString("You are at peace.");
+			return(-CSkillDef::T_QTY);
 		}
-
 		m_atTaming.m_Stroke_Count = 0;
-		SysMessageDefault(DEFMSG_MEDITATION_TRY);
+
+		WriteString("You attempt a meditative trance.");
+
 		return Calc_GetRandVal(100);	// how hard to get started ?
 	}
-
-	if ( stage == SKTRIG_STROKE )
-		return 0;
-
-	if ( stage == SKTRIG_SUCCESS )
+	if (stage == CSkillDef::T_Stroke)
 	{
-		if ( Stat_GetVal(STAT_INT) >= Stat_GetMax(STAT_INT) )
+		return 0;
+	}
+	if (stage == CSkillDef::T_Success)
+	{
+		if (m_StatMana >= m_StatMaxMana)
 		{
-			if ( m_pClient )
-				m_pClient->removeBuff(BI_ACTIVEMEDITATION);
-			SysMessageDefault(DEFMSG_MEDITATION_PEACE_2);
-			return 0;	// only give skill credit now.
+			WriteString("You are at peace.");
+			return(0);	// only give skill credit now.
 		}
 
-		if ( m_atTaming.m_Stroke_Count == 0 )
+		if (m_atTaming.m_Stroke_Count == 0)
 		{
-			if ( m_pClient )
-				m_pClient->addBuff(BI_ACTIVEMEDITATION, 1075657, 1075658);
-			if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOSFX) )
-				Sound(SOUND_SFX6);
+			Sound(0x0f9);
 		}
-		++m_atTaming.m_Stroke_Count;
-		UpdateStatVal(STAT_INT, 1);
-		Skill_SetTimeout();		// next update (depends on skill)
-		return -SKTRIG_STROKE;
+		m_atTaming.m_Stroke_Count++;
+
+		Stat_Change(STAT_Mana, 1);
+
+		// next update. (depends on skill)
+		Skill_SetTimeout();
+
+		// Set a new possibility for failure ?
+		// iDifficulty = Calc_GetRandVal(100);
+		return(-CSkillDef::T_Stroke);
 	}
-	return -SKTRIG_QTY;
+
+	DEBUG_CHECK(0);
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Healing(SKTRIG_TYPE stage)
+int CChar::Skill_Healing(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Healing");
-	// SKILL_VETERINARY:
-	// SKILL_HEALING
-	// m_Act_TargPrv = bandages.
-	// m_Act_Targ = heal target.
-	//
-	// should depend on the severity of the wounds ?
-	// should be just a fast regen over time ?
-	// RETURN:
-	//  = -3 = failure.
+	//// SKILL_VETERINARY:
+	//// SKILL_HEALING
+	//// m_Act.m_TargPrv = bandages.
+	//// m_Act.m_Targ = heal target.
+	////
+	//// should depend on the severity of the wounds ?
+	//// should be just a fast regen over time ?
+	//// RETURN:
+	////  = -3 = failure.
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
 
-	CItem *pBandage = m_Act_TargPrv.ItemFind();
-	if ( !pBandage )
-	{
-		SysMessageDefault(DEFMSG_HEALING_NOAIDS);
-		return -SKTRIG_QTY;
-	}
-	if ( !pBandage->IsType(IT_BANDAGE) )
-	{
-		SysMessageDefault(DEFMSG_HEALING_WITEM);
-		return -SKTRIG_QTY;
-	}
+	//CItemPtr pBandage = g_World.ItemFind(m_Act.m_TargPrv);
+	//if (pBandage == NULL)
+	//{
+	//	WriteString("Where are your bandages?");
+	//	return(-CSkillDef::T_QTY);
+	//}
+	//if (!pBandage->IsType(IT_BANDAGE))
+	//{
+	//	WriteString("Use a bandage");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	CObjBase *pObj = m_Act_Targ.ObjFind();
-	if ( !CanTouch(pObj) )
-	{
-		SysMessageDefault(DEFMSG_HEALING_REACH);
-		return -SKTRIG_QTY;
-	}
+	//CObjBasePtr pObj = g_World.ObjFind(m_Act.m_Targ);
+	//if (!CanTouch(pObj))
+	//{
+	//	WriteString("You must be able to reach the target");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	CItemCorpse *pCorpse = NULL;	// resurrect by corpse
-	CChar *pChar = m_Act_Targ.CharFind();
-	if ( pObj->IsItem() )
-	{
-		pCorpse = dynamic_cast<CItemCorpse *>(pObj);
-		if ( !pCorpse )
-		{
-			SysMessageDefault(DEFMSG_HEALING_NONCHAR);
-			return -SKTRIG_QTY;
-		}
-		pChar = pCorpse->m_uidLink.CharFind();
-	}
+	//CItemCorpsePtr pCorpse;	// resurrect by corpse.
+	//CCharPtr pChar;
+	//if (pObj->IsItem())
+	//{
+	//	// Corpse ?
+	//	pCorpse = REF_CAST(CItemCorpse, pObj);
+	//	if (pCorpse == NULL)
+	//	{
+	//		WriteString("Try healing a creature.");
+	//		return(-CSkillDef::T_QTY);
+	//	}
 
-	if ( !pChar )
-	{
-		SysMessageDefault(DEFMSG_HEALING_BEYOND);
-		return -SKTRIG_QTY;
-	}
+	//	pChar = g_World.CharFind(pCorpse->m_uidLink);
+	//}
+	//else
+	//{
+	//	pCorpse = NULL;
+	//	pChar = g_World.CharFind(m_Act.m_Targ);
+	//}
 
-	if ( GetDist(pObj) > UO_MAP_DIST_INTERACT )
-	{
-		SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_TOOFAR), pObj->GetName());
-		if ( pChar != this )
-			pChar->SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_ATTEMPT), GetName(), pCorpse ? pCorpse->GetName() : g_Cfg.GetDefaultMsg(DEFMSG_HEALING_WHO));
+	//if (pChar == NULL)
+	//{
+	//	WriteString("This creature is beyond help.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-		return -SKTRIG_QTY;
-	}
+	//if (GetDist(pObj) > 2)
+	//{
+	//	Printf("You are too far away to apply bandages on %s", (LPCTSTR)pObj->GetName());
+	//	if (pChar != this)
+	//	{
+	//		pChar->Printf("%s is attempting to apply bandages to %s, but they are too far away!",
+	//			(LPCTSTR)GetName(), (LPCTSTR)(pCorpse ? (pCorpse->GetName()) : "you"));
+	//	}
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	if ( pCorpse )
-	{
-		if ( !pCorpse->IsTopLevel() )
-		{
-			SysMessageDefault(DEFMSG_HEALING_CORPSEG);
-			return -SKTRIG_QTY;
-		}
+	//if (pCorpse)
+	//{
+	//	if (!pCorpse->IsTopLevel())
+	//	{
+	//		WriteString("Put the corpse on the ground");
+	//		return(-CSkillDef::T_QTY);
+	//	}
+	//	CRegionPtr pRegion = pCorpse->GetTopRegion(REGION_TYPE_AREA | REGION_TYPE_MULTI);
+	//	if (pRegion == NULL)
+	//	{
+	//		return(-CSkillDef::T_QTY);
+	//	}
+	//	if (pRegion->IsFlag(REGION_ANTIMAGIC_ALL | REGION_ANTIMAGIC_RECALL_IN | REGION_ANTIMAGIC_TELEPORT))
+	//	{
+	//		WriteString("Your resurrection attempt is blocked by antimagic.");
+	//		if (pChar != this)
+	//		{
+	//			pChar->Printf("%s is attempting to apply bandages to %s, but they are blocked by antimagic!",
+	//				(LPCTSTR)GetName(), (LPCTSTR)pCorpse->GetName());
+	//		}
+	//		return(-CSkillDef::T_QTY);
+	//	}
+	//}
+	//else if (pChar->IsStatFlag(STATF_DEAD))
+	//{
+	//	WriteString("You can't heal a ghost! Try healing their corpse.");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-		CRegionBase *pRegion = pCorpse->GetTopPoint().GetRegion(REGION_TYPE_AREA|REGION_TYPE_MULTI);
-		if ( !pRegion )
-			return -SKTRIG_QTY;
+	//if (!pChar->IsStatFlag(STATF_Poisoned | STATF_DEAD) &&
+	//	pChar->GetHealthPercent() >= 100)
+	//{
+	//	if (pChar == this)
+	//	{
+	//		Printf("You are healthy");
+	//	}
+	//	else
+	//	{
+	//		Printf("%s does not require you to heal or cure them!", (LPCTSTR)pChar->GetName());
+	//	}
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-		if ( pRegion->IsFlag(REGION_ANTIMAGIC_ALL|REGION_ANTIMAGIC_RECALL_IN|REGION_ANTIMAGIC_TELEPORT) )
-		{
-			SysMessageDefault(DEFMSG_HEALING_AM);
-			if ( pChar != this )
-				pChar->SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_ATTEMPT), GetName(), pCorpse->GetName());
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	// just consume the bandage on fail and give some credit for trying.
+	//	pBandage->ConsumeAmount();
 
-			return -SKTRIG_QTY;
-		}
-	}
-	else if ( pChar->IsStatFlag(STATF_DEAD) )
-	{
-		SysMessageDefault(DEFMSG_HEALING_GHOST);
-		return -SKTRIG_QTY;
-	}
+	//	if (pChar != this)
+	//	{
+	//		pChar->Printf("%s is attempting to apply bandages to %s, but has failed",
+	//			(LPCTSTR)GetName(), (LPCTSTR)pCorpse->GetName());
+	//	}
 
-	if ( !pChar->IsStatFlag(STATF_Poisoned|STATF_DEAD) && (pChar->Stat_GetVal(STAT_STR) >= pChar->Stat_GetMax(STAT_STR)) )
-	{
-		if ( pChar == this )
-			SysMessageDefault(DEFMSG_HEALING_HEALTHY);
-		else
-			SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_NONEED), pChar->GetName());
-
-		return -SKTRIG_QTY;
-	}
-
-	if ( stage == SKTRIG_FAIL )
-	{
-		// just consume the bandage on fail and give some credit for trying.
-		pBandage->ConsumeAmount();
-
-		if ( pChar != this )
-			pChar->SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_ATTEMPTF), GetName(), pCorpse ? pCorpse->GetName() : g_Cfg.GetDefaultMsg(DEFMSG_HEALING_WHO));
-
-		// Harm the creature ?
-		return -SKTRIG_FAIL;
-	}
-
-	if ( stage == SKTRIG_START )
-	{
-		if ( pChar != this )
-		{
-			TCHAR *pszMsg = Str_GetTemp();
-			sprintf(pszMsg, g_Cfg.GetDefaultMsg(DEFMSG_HEALING_TO), pChar->GetName());
-			Emote(pszMsg);
-		}
-		else
-		{
-			Emote(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_SELF));
-		}
-		if ( pCorpse )	// resurrect
-			return 85 + Calc_GetRandVal(25);
-		if ( pChar->IsStatFlag(STATF_Poisoned) )	// poison level
-			return 50 + Calc_GetRandVal(50);
-
-		return Calc_GetRandVal(80);
-	}
-
-	ASSERT(stage == SKTRIG_SUCCESS);
-	pBandage->ConsumeAmount();
-
-	CItem *pBloodyBandage = CItem::CreateScript(Calc_GetRandVal(2) ? ITEMID_BANDAGES_BLOODY1 : ITEMID_BANDAGES_BLOODY2, this);
-	ItemBounce(pBloodyBandage);
-
-	const CSkillDef *pSkillDef = g_Cfg.GetSkillDef(Skill_GetActive());
-	if ( !pSkillDef )
-		return -SKTRIG_QTY;
-
-	if ( pCorpse )
-	{
-		pChar->Spell_Resurrection(pCorpse, this);
-		return 0;
-	}
-
-	WORD wSkillLevel = Skill_GetAdjusted(Skill_GetActive());
-	if ( pChar->IsStatFlag(STATF_Poisoned) )
-	{
-		if ( !SetPoisonCure(wSkillLevel, true) )
-			return -SKTRIG_ABORT;
-
-		SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_CURE_1), (pChar == this) ? g_Cfg.GetDefaultMsg(DEFMSG_HEALING_YOURSELF) : pChar->GetName());
-		if ( pChar != this )
-			pChar->SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_HEALING_CURE_2), GetName());
-
-		return 0;
-	}
-
-	// LAYER_FLAG_Bandage
-	pChar->UpdateStatVal(STAT_STR, pSkillDef->m_Effect.GetLinear(wSkillLevel));
-	return 0;
+	//	// Harm the creature ?
+	//	return(-CSkillDef::T_Fail);
+	//}
 }
 
-int CChar::Skill_RemoveTrap(SKTRIG_TYPE stage)
+int CChar::Skill_RemoveTrap(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_RemoveTrap");
-	// m_Act_Targ = trap
+	// m_Act.m_Targ = trap
 	// Is it a trap ?
 
-	if ( stage == SKTRIG_STROKE )
+	if (stage == CSkillDef::T_Stroke)
+	{
 		return 0;
-
-	CItem *pTrap = m_Act_Targ.ItemFind();
-	if ( !pTrap || !pTrap->IsType(IT_TRAP) )
-	{
-		SysMessageDefault(DEFMSG_REMOVETRAPS_WITEM);
-		return -SKTRIG_QTY;
 	}
-	if ( !CanTouch(pTrap) )
+	CItemPtr pTrap = g_World.ItemFind(m_Act_Targ);
+	if (pTrap == NULL || !pTrap->IsType(IT_TRAP))
 	{
-		SysMessageDefault(DEFMSG_REMOVETRAPS_REACH);
-		return -SKTRIG_QTY;
+		WriteString("You should use this skill to disable traps");
+		return(-CSkillDef::T_QTY);
 	}
-	if ( stage == SKTRIG_START )
+	if (!CanTouch(pTrap))
+	{
+		WriteString("You can't reach it.");
+		return(-CSkillDef::T_QTY);
+	}
+	if (stage == CSkillDef::T_Start)
 	{
 		// How difficult ?
 		return Calc_GetRandVal(95);
 	}
-	if ( stage == SKTRIG_FAIL )
+	if (stage == CSkillDef::T_Fail)
 	{
 		Use_Item(pTrap);	// set it off ?
 		return 0;
 	}
-	if ( stage == SKTRIG_SUCCESS )
+	if (stage == CSkillDef::T_Success)
 	{
-		pTrap->SetTrapState(IT_TRAP_INACTIVE, ITEMID_NOTHING, 5 * 60);	// disable it
+		// disable it.
+		pTrap->SetTrapState(IT_TRAP_INACTIVE, ITEMID_NOTHING, 5 * 60);
 		return 0;
 	}
 	ASSERT(0);
-	return -SKTRIG_QTY;
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Begging(SKTRIG_TYPE stage)
+int CChar::Skill_Begging(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Begging");
-	// m_Act_Targ = Our begging target..
+	// m_Act.m_Targ = Our begging target..
 
-	CChar *pChar = m_Act_Targ.CharFind();
-	if ( !pChar || (pChar == this) )
-		return -SKTRIG_QTY;
-
-	if ( stage == SKTRIG_START )
+	CCharPtr pChar = g_World.CharFind(m_Act_Targ);
+	if (pChar == NULL || pChar == this)
 	{
-		UpdateAnimate(ANIM_BOW);
-		SysMessagef(g_Cfg.GetDefaultMsg(DEFMSG_BEGGING_START), pChar->GetName());
-		return pChar->Stat_GetAdjusted(STAT_INT);
+		return(-CSkillDef::T_QTY);
 	}
-	if ( stage == SKTRIG_STROKE )
-	{
-		if ( m_pNPC )
-			return -SKTRIG_STROKE;	// Keep it active.
-		return 0;
-	}
-	if ( stage == SKTRIG_FAIL )
-		return 0;	// Might they do something bad ?
 
-	if ( stage == SKTRIG_SUCCESS )
-		return 0;	// Now what ? Not sure how to make begging successful. Give something from my inventory ?
+	switch (stage)
+	{
+	case CSkillDef::T_Start:
+		Printf("You grovel at %s's feet", (LPCTSTR)pChar->GetName());
+		return(pChar->m_StatInt);
+	case CSkillDef::T_Stroke:
+		if (m_pNPC->IsValidNewObj())
+			return -CSkillDef::T_Stroke;	// Keep it active.
+		return(0);
+	case CSkillDef::T_Fail:
+		// Might they do something bad ?
+		return(0);
+	case CSkillDef::T_Success:
+		// Now what ? Not sure how to make begging successful.
+		// Give something from my inventory ?
+		return(0);
+	}
 
 	ASSERT(0);
-	return -SKTRIG_QTY;
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Magery(SKTRIG_TYPE stage)
+int CChar::Skill_Magery(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Magery");
 	// SKILL_MAGERY
-	//  m_Act_p = location to cast to.
-	//  m_Act_TargPrv = the source of the spell.
-	//  m_Act_Targ = target for the spell.
+	//  m_Act.m_pt = location to cast to.
+	//  m_Act.m_TargPrv = the source of the spell.
+	//  m_Act.m_Targ = target for the spell.
 	//  m_atMagery.m_Spell = the spell.
 
-	if ( stage == SKTRIG_STROKE )
-		return 0;
-
-	if ( stage == SKTRIG_FAIL )
+	switch (stage)
 	{
+	case CSkillDef::T_Start:
+		// NOTE: this should call SetTimeout();
+		return Spell_CastStart();
+	case CSkillDef::T_Stroke:
+		return(0);
+	case CSkillDef::T_Fail:
 		Spell_CastFail();
-		return 0;
-	}
-	if ( stage == SKTRIG_SUCCESS )
-	{
-		const CSpellDef *pSpellDef = g_Cfg.GetSpellDef(m_atMagery.m_Spell);
-		if ( !pSpellDef )
-			return 0;
-
-		if ( m_pClient && IsSetMagicFlags(MAGICF_PRECAST) && !pSpellDef->IsSpellType(SPELLFLAG_NOPRECAST) )
+		return(0);
+	case CSkillDef::T_Success:
+		if (!Spell_CastDone())
 		{
-			m_pClient->Cmd_Skill_Magery(m_atMagery.m_Spell, m_pClient->m_Targ_PrvUID.ObjFind());
-			return -SKTRIG_QTY;		// don't increase skill at this point. The client should select a target first.
+			return(-CSkillDef::T_Abort);
 		}
-		else
-		{
-			if ( !Spell_CastDone() )
-				return -SKTRIG_ABORT;
-			return 0;
-		}
+		return(0);
 	}
-	if ( stage == SKTRIG_START )
-		return Spell_CastStart();	// NOTE: this should call SetTimeout();
 
 	ASSERT(0);
-	return -SKTRIG_ABORT;
+	return(-CSkillDef::T_Abort);
 }
 
-int CChar::Skill_Fighting(SKTRIG_TYPE stage)
+int CChar::Skill_Fighting(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Fighting");
-	// SKILL_ARCHERY
-	// SKILL_SWORDSMANSHIP
-	// SKILL_MACEFIGHTING
-	// SKILL_FENCING
-	// SKILL_WRESTLING
-	// SKILL_THROWING
+	//ADDTOCALLSTACK("CChar::Skill_Fighting");
+	//// SKILL_ARCHERY
+	//// m_Act.m_Targ = attack target.
+	//// RETURN:
+	////  Difficulty against my skill.
 
-	if ( stage == SKTRIG_START )
-	{
-		m_atFight.m_Swing_State = WAR_SWING_EQUIPPING;
-		INT64 iRemainingDelay = g_World.GetTimeDiff(m_atFight.m_Swing_NextAction);
-		if ( (iRemainingDelay < 0) || (iRemainingDelay > 255) )
-			iRemainingDelay = 0;
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// When do we get our next shot?
 
-		SetTimeout(iRemainingDelay);
-		return g_Cfg.Calc_CombatChanceToHit(this, m_Fight_Targ.CharFind());
-	}
+	//	DEBUG_CHECK(IsStatFlag(STATF_War));
 
-	if ( stage == SKTRIG_STROKE )
-	{
-		// Waited my recoil time, so I'm ready to hit my current target
-		if ( !IsStatFlag(STATF_War) )
-			return -SKTRIG_ABORT;
+	//	m_atFight.m_War_Swing_State = WAR_SWING_EQUIPPING;
 
-		if ( m_atFight.m_Swing_State != WAR_SWING_SWINGING )
-			m_atFight.m_Swing_State = WAR_SWING_READY;
+	//	int iDifficulty = g_Cfg.Calc_CombatChanceToHit(this, Skill_GetActive(),
+	//		g_World.CharFind(m_Act_Targ),
+	//		g_World.ItemFind(m_uidWeapon));
 
-		Fight_HitTry();
-		return -SKTRIG_STROKE;
-	}
+	//	// Set the swing timer.
+	//	int iWaitTime = Fight_GetWeaponSwingTimer() / 2;	// start the anim immediately.
+	//	if (Skill_GetActive() == SKILL_ARCHERY)	// anim is funny for archery
+	//		iWaitTime /= 2;
+	//	SetTimeout(iWaitTime);
 
-	return -SKTRIG_QTY;
+	//	return(iDifficulty);
+	//}
+
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	// Hit or miss my current target.
+	//	if (!IsStatFlag(STATF_War))
+	//		return -CSkillDef::T_Abort;
+
+	//	if (m_atFight.m_War_Swing_State != WAR_SWING_SWINGING)
+	//	{
+	//		m_atFight.m_War_Swing_State = WAR_SWING_READY;  // Waited my recoil time. So I'm ready.
+	//	}
+
+	//	Fight_HitTry();	// this cleans up itself.
+	//	return -CSkillDef::T_Stroke;	// Stay in the skill till we hit.
+	//}
+
+	return -CSkillDef::T_QTY;
 }
 
-int CChar::Skill_MakeItem(SKTRIG_TYPE stage)
+int CChar::Skill_MakeItem(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_MakeItem");
-	// SKILL_ALCHEMY
-	// SKILL_BLACKSMITHING
-	// SKILL_BOWCRAFT
-	// SKILL_CARPENTRY
-	// SKILL_CARTOGRAPHY
-	// SKILL_COOKING
-	// SKILL_INSCRIPTION
-	// SKILL_TAILORING
-	// SKILL_TINKERING
-	//
-	// m_Act_Targ = the item we want to be part of this process.
-	// m_atCreate.m_ItemID = new item we are making
-	// m_atCreate.m_Amount = amount of said item.
+	//// SKILL_BLACKSMITHING:
+	//// SKILL_BOWCRAFT:
+	//// SKILL_CARPENTRY:
+	//// SKILL_INSCRIPTION:
+	//// SKILL_TAILORING:
+	//// SKILL_TINKERING:
+	////
+	//// m_Act.m_Targ = the item we want to be part of this process.
+	//// m_Act.m_atCreate.m_ItemID = new item we are making
+	//// m_Act.m_atCreate.m_Amount = amount of said item.
 
-	if ( stage == SKTRIG_START )
-		return m_Act_Difficulty;	// keep the already set difficulty
-
-	if ( stage == SKTRIG_SUCCESS )
-	{
-		if ( !Skill_MakeItem(m_atCreate.m_ItemID, m_Act_Targ, SKTRIG_SUCCESS, false, m_atCreate.m_Amount ? m_atCreate.m_Amount : 1) )
-			return -SKTRIG_ABORT;
-		return 0;
-	}
-	if ( stage == SKTRIG_FAIL )
-	{
-		Skill_MakeItem(m_atCreate.m_ItemID, m_Act_Targ, SKTRIG_FAIL);
-		return 0;
-	}
-	ASSERT(0);
-	return -SKTRIG_QTY;
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	return m_Act_Difficulty;	// keep the already set difficulty
+	//}
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Success)
+	//{
+	//	if (!Skill_MakeItem(m_Act.m_atCreate.m_ItemID, m_Act.m_Targ, CSkillDef::T_Success))
+	//		return(-CSkillDef::T_Abort);
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Fail)
+	//{
+	//	Skill_MakeItem(m_Act.m_atCreate.m_ItemID, m_Act.m_Targ, CSkillDef::T_Fail);
+	//	return(0);
+	//}
+	//ASSERT(0);
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Blacksmith(SKTRIG_TYPE stage)
+int CChar::Skill_Blacksmith(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Blacksmith");
-	// m_atCreate.m_ItemID = create this item
-	// m_Act_p = the anvil.
-	// m_Act_Targ = the hammer.
+	//ADDTOCALLSTACK("CChar::Skill_Blacksmith");
+	//// m_Act.m_atCreate.m_ItemID = create this item
+	//// m_Act.m_pt = the anvil.
+	//// m_Act.m_Targ = the hammer.
 
-	int iMaxDist = 2;
-	if ( stage == SKTRIG_START )
-	{
-		m_Act_p = g_World.FindItemTypeNearby(GetTopPoint(), IT_FORGE, iMaxDist, false, true);
-		if ( !m_Act_p.IsValidPoint() )
-		{
-			SysMessageDefault(DEFMSG_SMITHING_FORGE);
-			return -SKTRIG_QTY;
-		}
-		UpdateDir(m_Act_p);				// toward the forge
-		m_atCreate.m_Stroke_Count = 2;	// + Calc_GetRandVal(4)
-	}
+	//m_Act_p = g_World.FindItemTypeNearby(GetTopPoint(), IT_FORGE, 3);
+	//if (!m_Act_p.IsValidPoint())
+	//{
+	//	WriteString("You must be near a forge to smith");
+	//	return(-CSkillDef::T_QTY);
+	//}
 
-	if ( stage == SKTRIG_SUCCESS )
-	{
-		if ( GetTopPoint().GetDist(m_Act_p) > iMaxDist )
-			return -SKTRIG_FAIL;
-	}
+	//UpdateDir(m_Act_p);	// toward the forge
 
-	return Skill_MakeItem(stage);
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	m_Act.m_atCreate.m_Stroke_Count = Calc_GetRandVal(4) + 2;
+	//}
+
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	Sound(0x02a);
+	//	if (m_Act.m_atCreate.m_Stroke_Count <= 0)
+	//		return 0;
+
+	//	// Keep trying and updating the animation
+	//	m_Act.m_atCreate.m_Stroke_Count--;
+	//	UpdateAnimate(ANIM_ATTACK_WEAPON);	// ANIM_ATTACK_1H_DOWN
+	//	Skill_SetTimeout();
+	//	return(-CSkillDef::T_Stroke);	// keep active.
+	//}
+
+	return(Skill_MakeItem(stage));
 }
 
-int CChar::Skill_Carpentry(SKTRIG_TYPE stage)
+int CChar::Skill_Tailoring(CSkillDef::T_TYPE_ stage)
+{
+	if (stage == CSkillDef::T_Success)
+	{
+		Sound(SOUND_SNIP);	// snip noise
+	}
+
+	return(Skill_MakeItem(stage));
+}
+
+int CChar::Skill_Inscription(CSkillDef::T_TYPE_ stage)
+{
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// Can we even attempt to make this scroll ?
+	//	// m_Act.m_atCreate.m_ItemID = create this item
+	//	Sound(0x249);
+
+	//	// Stratics says you loose mana regardless of success or failure
+	//	for (DWORD dwSpell = SPELL_Clumsy; dwSpell < SPELL_BOOK_QTY; dwSpell++)
+	//	{
+	//		CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef((SPELL_TYPE)dwSpell);
+	//		if (pSpellDef == NULL)
+	//			continue;
+	//		if (pSpellDef->m_idScroll == m_Act.m_atCreate.m_ItemID)
+	//		{
+	//			// Consume mana.
+	//			Stat_Change(STAT_Mana, -pSpellDef->m_wManaUse);
+	//		}
+	//	}
+	//}
+
+	//return(Skill_MakeItem(stage));
+}
+
+int CChar::Skill_Bowcraft(CSkillDef::T_TYPE_ stage)
+{
+	//// SKILL_BOWCRAFT
+	//// m_Act.m_Targ = the item we want to be part of this process.
+	//// m_Act.m_atCreate.m_ItemID = new item we are making
+	//// m_Act.m_atCreate.m_Amount = amount of said item.
+
+	//Sound(0x055);
+	//UpdateAnimate(ANIM_SALUTE);
+
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// Might be based on how many arrows to make ???
+	//	m_Act.m_atCreate.m_Stroke_Count = Calc_GetRandVal(2) + 1;
+	//}
+
+	return(Skill_MakeItem(stage));
+}
+
+int CChar::Skill_Carpentry(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Carpentry");
-	// m_Act_Targ = the item we want to be part of this process.
-	// m_atCreate.m_ItemID = new item we are making
-	// m_atCreate.m_Amount = amount of said item.
+	//// m_Act.m_Targ = the item we want to be part of this process.
+	//// m_Act.m_atCreate.m_ItemID = new item we are making
+	//// m_Act.m_atCreate.m_Amount = amount of said item.
 
-	if ( stage == SKTRIG_START )
-		m_atCreate.m_Stroke_Count = 2;	// + Calc_GetRandVal( 3 )
+	//Sound(0x23d);
 
-	return Skill_MakeItem(stage);
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	// m_Act.m_atCreate.m_ItemID = create this item
+	//	m_Act.m_atCreate.m_Stroke_Count = Calc_GetRandVal(3) + 2;
+	//}
+
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	if (m_Act.m_atCreate.m_Stroke_Count <= 0)
+	//		return 0;
+
+	//	// Keep trying and updating the animation
+	//	m_Act.m_atCreate.m_Stroke_Count--;
+	//	UpdateAnimate(ANIM_ATTACK_WEAPON);
+	//	Skill_SetTimeout();
+	//	return(-CSkillDef::T_Stroke);	// keep active.
+	//}
+
+	return(Skill_MakeItem(stage));
 }
 
 int CChar::Skill_Scripted(SKTRIG_TYPE stage)
@@ -3066,222 +3382,250 @@ int CChar::Skill_Scripted(SKTRIG_TYPE stage)
 	return -SKTRIG_QTY;	// something odd
 }
 
-int CChar::Skill_Information(SKTRIG_TYPE stage)
+int CChar::Skill_Information(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Information");
-	// SKILL_ANATOMY
-	// SKILL_ANIMALLORE
-	// SKILL_ITEMID
-	// SKILL_ARMSLORE
-	// SKILL_EVALINT
-	// SKILL_FORENSICS
-	// SKILL_TASTEID
-	// m_Act_Targ = target
+	// SKILL_ANIMALLORE:
+	// SKILL_ARMSLORE:
+	// SKILL_ANATOMY:
+	// SKILL_ITEMID:
+	// SKILL_EVALINT:
+	// SKILL_FORENSICS:
+	// SKILL_TASTEID:
+	// Difficulty should depend on the target item !!!??
+	// m_Act.m_Targ = target.
 
-	if ( !m_pClient )	// purely informational
-		return -SKTRIG_QTY;
+	if (!IsClient())	// purely informational
+		return(-CSkillDef::T_QTY);
 
-	if ( (stage == SKTRIG_FAIL) || (stage == SKTRIG_STROKE) )
+	if (stage == CSkillDef::T_Fail)
+	{
 		return 0;
+	}
+	if (stage == CSkillDef::T_Stroke)
+	{
+		return 0;
+	}
 
-	if ( stage == SKTRIG_START )
-		return m_pClient->OnSkill_Info(Skill_GetActive(), m_Act_Targ, true);
-	if ( stage == SKTRIG_SUCCESS )
-		return m_pClient->OnSkill_Info(Skill_GetActive(), m_Act_Targ, false);
+	SKILL_TYPE skill = Skill_GetActive();
+	int iSkillLevel = Skill_GetAdjusted(skill);
+
+	if (stage == CSkillDef::T_Start)
+	{
+		return GetClient()->OnSkill_Info(skill, m_Act_Targ, iSkillLevel, true);
+	}
+	if (stage == CSkillDef::T_Success)
+	{
+		return GetClient()->OnSkill_Info(skill, m_Act_Targ, iSkillLevel, false);
+	}
 
 	ASSERT(0);
-	return -SKTRIG_QTY;
+	return(-CSkillDef::T_QTY);
 }
 
-int CChar::Skill_Act_Breath(SKTRIG_TYPE stage)
+int CChar::Skill_Act_Napping(CSkillDef::T_TYPE_ stage)
+{
+	// NPCACT_Napping:
+	// we are taking a small nap. keep napping til we wake. (or move)
+	// AFK command
+
+	if (stage == CSkillDef::T_Start)
+	{
+		// we are taking a small nap.
+		SetTimeout(2 * TICKS_PER_SEC);
+		return(0);
+	}
+
+	if (stage == CSkillDef::T_Stroke)
+	{
+		if (m_Act_p != GetTopPoint())
+			return(-CSkillDef::T_QTY);	// we moved.
+		SetTimeout(8 * TICKS_PER_SEC);
+		Speak("z", HUE_WHITE, TALKMODE_WHISPER);
+		return -CSkillDef::T_Stroke;	// Stay in the skill till we hit.
+	}
+
+	return(-CSkillDef::T_QTY);	// something odd
+}
+
+int CChar::Skill_Act_Breath(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Act_Breath");
 	// NPCACT_BREATH
 	// A Dragon I assume.
-	// m_Fight_Targ = my target.
+	// m_Act.m_Targ = my target.
 
-	if ( (stage == SKTRIG_STROKE) || (stage == SKTRIG_FAIL) )
+	if ( stage == CSkillDef::T_Stroke )
+	{
 		return 0;
+	}
+	if ( stage == CSkillDef::T_Fail )
+	{
+		return 0;
+	}
+	if ( stage == CSkillDef::T_Stroke )
+	{
+		return 0;
+	}
 
-	CChar *pChar = m_Fight_Targ.CharFind();
-	if ( !pChar )
-		return -SKTRIG_QTY;
+	CCharPtr pChar = g_World.CharFind(m_Act_Targ);
+	if ( pChar == NULL )
+	{
+		return -CSkillDef::T_QTY;
+	}
 
 	m_Act_p = pChar->GetTopPoint();
-	if ( !IsSetCombatFlags(COMBAT_NODIRCHANGE) )
-		UpdateDir(m_Act_p);
+	UpdateDir( m_Act_p );
 
-	if ( stage == SKTRIG_START )
+	if ( stage == CSkillDef::T_Start )
 	{
-		UpdateStatVal(STAT_DEX, -10);
-		if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOANIM) )
-			UpdateAnimate(ANIM_MON_Stomp);
-
-		SetTimeout(3 * TICK_PER_SEC);
+		Stat_Change( STAT_Stam, -10 );
+		UpdateAnimate( ANIM_MON_Stomp, false );
+		SetTimeout( 3*TICKS_PER_SEC );
 		return 0;
 	}
 
-	ASSERT(stage == SKTRIG_SUCCESS);
+	ASSERT( stage == CSkillDef::T_Success );
 
-	if ( !CanSeeLOS(pChar) )
-		return -SKTRIG_QTY;
-
-	CPointMap pt = GetTopPoint();
-	if ( pt.GetDist(m_Act_p) > UO_MAP_VIEW_SIGHT )
-		m_Act_p.StepLinePath(pt, UO_MAP_VIEW_SIGHT);
-
-	int iDamage = static_cast<int>(GetDefNum("BREATH.DAM"));
-	if ( !iDamage )
+	CPointMap pntMe = GetTopPoint();
+	if ( pntMe.GetDist( m_Act_p ) > SPHEREMAP_VIEW_SIGHT )
 	{
-		iDamage = (Stat_GetVal(STAT_STR) * 5) / 100;
-		if ( iDamage < 1 )
-			iDamage = 1;
-		else if ( iDamage > 200 )
-			iDamage = 200;
+		m_Act_p.StepLinePath( pntMe, SPHEREMAP_VIEW_SIGHT );
 	}
 
-	HUE_TYPE hue = static_cast<HUE_TYPE>(GetDefNum("BREATH.HUE"));
-	ITEMID_TYPE id = static_cast<ITEMID_TYPE>(GetDefNum("BREATH.ANIM"));
-	EFFECT_TYPE effect = static_cast<EFFECT_TYPE>(GetDefNum("BREATH.TYPE"));
-	if ( !id )
-		id = ITEMID_FX_FIRE_BALL;
-	if ( !effect )
-		effect = EFFECT_BOLT;
-	Sound(SOUND_FLAME5);
-	pChar->Effect(effect, id, this, 20, 30, false, hue);
-	pChar->OnTakeDamage(iDamage, this, DAMAGE_FIRE, 0, 100, 0, 0, 0);
-	return 0;
+	Sound( 0x227 );
+	int iDamage = m_StatStam/4 + Calc_GetRandVal( m_StatStam/4 );
+	g_World.Explode( this, m_Act_p, 3, iDamage, DAMAGE_FIRE | DAMAGE_GENERAL );
+	return( 0 );
 }
 
-int CChar::Skill_Act_Throwing(SKTRIG_TYPE stage)
+int CChar::Skill_Act_Looting(CSkillDef::T_TYPE_ stage)
+{
+	//// NPCACT_LOOTING
+	//// m_Act.m_Targ = the item i want.
+
+	//if (stage == CSkillDef::T_Stroke)
+	//{
+	//	return 0;
+	//}
+	//if (stage == CSkillDef::T_Start)
+	//{
+	//	if (m_atLooting.m_iDistCurrent == 0)
+	//	{
+	//		CSphereExpArgs Args(this, this, g_World.ItemFind(m_Act_Targ));
+	//		if (OnTrigger(CCharDef::T_NPCSeeWantItem, Args) == TRIGRET_RET_VAL)
+	//			return(false);
+	//	}
+	//	SetTimeout(1 * TICKS_PER_SEC);
+	//	return 0;
+	//}
+
+	return(-CSkillDef::T_QTY);
+}
+
+int CChar::Skill_Act_Throwing(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Act_Throwing");
-	// NPCACT_THROWING
-	// m_Fight_Targ = my target.
-
-	if ( stage == SKTRIG_STROKE )
+	if (stage == CSkillDef::T_Stroke)
+	{
 		return 0;
-
-	CChar *pChar = m_Fight_Targ.CharFind();
-	if ( !pChar )
-		return -SKTRIG_QTY;
+	}
+	CCharPtr pChar = g_World.CharFind(m_Act_Targ);
+	if (pChar == NULL)
+	{
+		return(-CSkillDef::T_QTY);
+	}
 
 	m_Act_p = pChar->GetTopPoint();
-	if ( !IsSetCombatFlags(COMBAT_NODIRCHANGE) )
-		UpdateDir(m_Act_p);
+	UpdateDir(m_Act_p);
 
-	if ( stage == SKTRIG_START )
+	if (stage == CSkillDef::T_Start)
 	{
-		UpdateStatVal(STAT_DEX, -Calc_GetRandVal(4, 10));
-		if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOANIM) )
-			UpdateAnimate(ANIM_MON_Stomp);
-
+		Stat_Change(STAT_Stam, -(4 + Calc_GetRandVal(6)));
+		UpdateAnimate(ANIM_MON_Stomp);
 		return 0;
 	}
 
-	if ( stage != SKTRIG_SUCCESS )
-		return -SKTRIG_QTY;
-
-	CPointMap pt = GetTopPoint();
-	if ( pt.GetDist(m_Act_p) > UO_MAP_VIEW_SIGHT )
-		m_Act_p.StepLinePath(pt, UO_MAP_VIEW_SIGHT);
-
-	SoundChar(CRESND_GETHIT);
-
-	int iDamage = 0;
-	CVarDefCont *pDam = GetDefKey("THROWDAM", true);
-	if ( pDam )
+	if (stage != CSkillDef::T_Success)
 	{
-		INT64 iVal[2];
-		size_t iQty = Str_ParseCmds(const_cast<TCHAR *>(pDam->GetValStr()), iVal, COUNTOF(iVal));
-		switch ( iQty )
-		{
-			case 1:
-				iDamage = static_cast<int>(iVal[0]);
-				break;
-			case 2:
-				iDamage = static_cast<int>(iVal[0] + Calc_GetRandLLVal(iVal[1] - iVal[0]));
-				break;
-		}
+		return(-CSkillDef::T_QTY);
 	}
 
-	ITEMID_TYPE id = ITEMID_NOTHING;
-	CVarDefCont *pRock = GetDefKey("THROWOBJ", true);
-	if ( pRock )
+	CPointMap pntMe = GetTopPoint();
+	if (pntMe.GetDist(m_Act_p) > SPHEREMAP_VIEW_SIGHT)
 	{
-		LPCTSTR pszRock = pRock->GetValStr();
-		RESOURCE_ID_BASE rid = static_cast<RESOURCE_ID_BASE>(g_Cfg.ResourceGetID(RES_ITEMDEF, pszRock));
-		id = static_cast<ITEMID_TYPE>(rid.GetResIndex());
-		if ( !iDamage )
-			iDamage = Stat_GetVal(STAT_DEX) / 4 + Calc_GetRandVal(Stat_GetVal(STAT_DEX) / 4);
+		m_Act_p.StepLinePath(pntMe, SPHEREMAP_VIEW_SIGHT);
+	}
+	SoundChar(CRESND_GETHIT);
+
+	// a rock or a boulder ?
+	ITEMID_TYPE id;
+	int iDamage;
+	if (!Calc_GetRandVal(3))
+	{
+		iDamage = m_StatStam / 4 + Calc_GetRandVal(m_StatStam / 4);
+		id = (ITEMID_TYPE)(ITEMID_ROCK_B_LO + Calc_GetRandVal(ITEMID_ROCK_B_HI - ITEMID_ROCK_B_LO));
 	}
 	else
 	{
-		if ( Calc_GetRandVal(3) )
-		{
-			id = static_cast<ITEMID_TYPE>(ITEMID_ROCK_B_LO + Calc_GetRandVal(ITEMID_ROCK_B_HI - ITEMID_ROCK_B_LO));
-			if ( !iDamage )
-				iDamage = Stat_GetVal(STAT_DEX) / 4 + Calc_GetRandVal(Stat_GetVal(STAT_DEX) / 4);
-		}
-		else
-		{
-			id = static_cast<ITEMID_TYPE>(ITEMID_ROCK_2_LO + Calc_GetRandVal(ITEMID_ROCK_2_HI - ITEMID_ROCK_2_LO));
-			if ( !iDamage )
-				iDamage = 2 + Calc_GetRandVal(Stat_GetVal(STAT_DEX) / 4);
-		}
+		iDamage = 2 + Calc_GetRandVal(m_StatStam / 4);
+		id = (ITEMID_TYPE)(ITEMID_ROCK_2_LO + Calc_GetRandVal(ITEMID_ROCK_2_HI - ITEMID_ROCK_2_LO));
 	}
 
-	if ( id != ITEMID_NOTHING )
+	CItemPtr pRock = CItem::CreateScript(id, this);
+	ASSERT(pRock);
+	pRock->SetAttr(ATTR_CAN_DECAY);
+	pRock->MoveToCheck(m_Act_p, this);
+	pRock->Effect(EFFECT_BOLT, id, this);
+
+	// did it hit ?
+	if (!Calc_GetRandVal(pChar->GetTopPoint().GetDist(m_Act_p)))
 	{
-		CItem *pItemRock = CItem::CreateScript(id, this);
-		if ( pItemRock )
-		{
-			pItemRock->MoveToCheck(m_Act_p, this, true);
-			pItemRock->Effect(EFFECT_BOLT, id, this);
-		}
-		if ( !Calc_GetRandVal(pChar->GetTopPoint().GetDist(m_Act_p)) )
-			pChar->OnTakeDamage(iDamage, this, DAMAGE_HIT_BLUNT);
+		pChar->OnTakeDamage(iDamage, this, DAMAGE_HIT_BLUNT);
 	}
-	return 0;
+
+	return(0);
 }
 
-int CChar::Skill_Act_Training(SKTRIG_TYPE stage)
+int CChar::Skill_Act_Training(CSkillDef::T_TYPE_ stage)
 {
 	ADDTOCALLSTACK("CChar::Skill_Act_Training");
 	// NPCACT_TRAINING
 	// finished some traing maneuver.
 
-	if ( stage == SKTRIG_START )
+	if (stage == CSkillDef::T_Start)
 	{
-		SetTimeout(TICK_PER_SEC);
+		SetTimeout(1 * TICKS_PER_SEC);
 		return 0;
 	}
-	if ( stage == SKTRIG_STROKE )
-		return 0;
-	if ( stage != SKTRIG_SUCCESS )
-		return -SKTRIG_QTY;
-
-	if ( m_Act_TargPrv == m_uidWeapon )
+	if (stage == CSkillDef::T_Stroke)
 	{
-		CItem *pItem = m_Act_Targ.ItemFind();
-		if ( pItem )
+		return 0;
+	}
+	if (stage != CSkillDef::T_Success)
+	{
+		return(-CSkillDef::T_QTY);
+	}
+
+	if (m_Act_TargPrv == m_uidWeapon)
+	{
+		CItemPtr pItem = g_World.ItemFind(m_Act_Targ);
+		if (pItem)
 		{
-			switch ( pItem->GetType() )
+			switch (pItem->GetType())
 			{
-				case IT_TRAIN_DUMMY:
-					Use_Train_Dummy(pItem, false);
-					break;
-				case IT_TRAIN_PICKPOCKET:
-					Use_Train_PickPocketDip(pItem, false);
-					break;
-				case IT_ARCHERY_BUTTE:
-					Use_Train_ArcheryButte(pItem, false);
-					break;
-				default:
-					break;
+			case IT_TRAIN_DUMMY:	// Train dummy.
+				Use_Train_Dummy(pItem, false);
+				break;
+			case IT_TRAIN_PICKPOCKET:
+				Use_Train_PickPocketDip(pItem, false);
+				break;
+			case IT_ARCHERY_BUTTE:	// Archery Butte
+				Use_Train_ArcheryButte(pItem, false);
+				break;
 			}
 		}
 	}
+
 	return 0;
 }
 
@@ -3406,131 +3750,158 @@ int CChar::Skill_Stroke(bool fResource)
 	return -SKTRIG_STROKE;	// keep active.
 }
 
-int CChar::Skill_Stage(SKTRIG_TYPE stage)
+int CChar::Skill_Stage(CSkillDef::T_TYPE_ stage)
 {
-	ADDTOCALLSTACK("CChar::Skill_Stage");
-	if ( stage == SKTRIG_STROKE )
-	{
-		if ( g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_CRAFT) )
-			return Skill_Stroke(false);
+	// Call Triggers
 
-		if ( g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_GATHER) )
-			return Skill_Stroke(true);
+	SKILL_TYPE skill = Skill_GetActive();
+	if (skill == SKILL_NONE)
+		return -1;
+
+	CSphereExpArgs execArgs(this, this, skill, 0, 0);
+
+	TRIGRET_TYPE iTrigRet = OnTrigger((CCharDef::T_TYPE_)(CCharDef::T_SkillAbort + (stage - CSkillDef::T_Abort)), execArgs);
+	if (iTrigRet == TRIGRET_RET_VAL)
+	{
+		return execArgs.m_vValRet;
 	}
 
-	if ( g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_SCRIPTED) )
-		return Skill_Scripted(stage);
-	else if ( g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_FIGHT) )
-		return Skill_Fighting(stage);
-	else if ( g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_MAGIC) )
+	CSkillDefPtr pSkillDef = g_Cfg.GetSkillDef(skill);
+	if (pSkillDef)
+	{
+		// RES_Skill
+		//CCharActState SaveState = m_Act;
+		iTrigRet = pSkillDef->OnTriggerScript(execArgs, stage, CSkillDef::sm_Triggers[stage].m_pszName);
+		// m_Act = SaveState;
+		if (iTrigRet == TRIGRET_RET_VAL)
+		{
+			// They handled success, just clean up, don't do skill experience
+			return execArgs.m_vValRet;
+		}
+	}
+
+	switch (skill)
+	{
+	case SKILL_NONE:	// idling.
+		return 0;
+	case SKILL_ALCHEMY:
+		return Skill_Alchemy(stage);
+	case SKILL_ANATOMY:
+	case SKILL_ANIMALLORE:
+	case SKILL_ITEMID:
+	case SKILL_ARMSLORE:
+		return Skill_Information(stage);
+	case SKILL_PARRYING:
+		return 0;
+	case SKILL_BEGGING:
+		return Skill_Begging(stage);
+	case SKILL_BLACKSMITHING:
+		return Skill_Blacksmith(stage);
+	case SKILL_BOWCRAFT:
+		return Skill_Bowcraft(stage);
+	case SKILL_PEACEMAKING:
+		return Skill_Peacemaking(stage);
+	case SKILL_CAMPING:
+		return 0;
+	case SKILL_CARPENTRY:
+		return Skill_Carpentry(stage);
+	case SKILL_CARTOGRAPHY:
+		return Skill_Cartography(stage);
+	case SKILL_COOKING:
+		return Skill_Cooking(stage);
+	case SKILL_DETECTINGHIDDEN:
+		return Skill_DetectHidden(stage);
+	case SKILL_ENTICEMENT:
+		return Skill_Enticement(stage);
+	case SKILL_EVALINT:
+		return Skill_Information(stage);
+	case SKILL_HEALING:
+		return Skill_Healing(stage);
+	case SKILL_FISHING:
+		return Skill_Fishing(stage);
+	case SKILL_FORENSICS:
+		return Skill_Information(stage);
+	case SKILL_HERDING:
+		return Skill_Herding(stage);
+	case SKILL_HIDING:
+		return Skill_Hiding(stage);
+	case SKILL_PROVOCATION:
+		return Skill_Provocation(stage);
+	case SKILL_INSCRIPTION:
+		return Skill_Inscription(stage);
+	case SKILL_LOCKPICKING:
+		return Skill_Lockpicking(stage);
+	case SKILL_MAGERY:
 		return Skill_Magery(stage);
-	/*else if ( g_Cfg.IsSkillFlag( Skill_GetActive(), SKF_CRAFT ) )
-		return Skill_MakeItem(stage);*/
-	else switch ( Skill_GetActive() )
-	{
-		case SKILL_NONE:	// idling.
-		case SKILL_PARRYING:
-		case SKILL_CAMPING:
-		case SKILL_MAGICRESISTANCE:
-		case SKILL_TACTICS:
-		case SKILL_STEALTH:
+	case SKILL_MAGICRESISTANCE:
+		return 0;
+	case SKILL_TACTICS:
+		return 0;
+	case SKILL_SNOOPING:
+		return Skill_Snooping(stage);
+	case SKILL_MUSICIANSHIP:
+		return Skill_Musicianship(stage);
+	case SKILL_POISONING:	// 30
+		return Skill_Poisoning(stage);
+	case SKILL_ARCHERY:
+		return Skill_Fighting(stage);
+	case SKILL_SPIRITSPEAK:
+		return Skill_SpiritSpeak(stage);
+	case SKILL_STEALING:
+		return Skill_Stealing(stage);
+	case SKILL_TAILORING:
+		return Skill_Tailoring(stage);
+	case SKILL_TAMING:
+		return Skill_Taming(stage);
+	case SKILL_TASTEID:
+		return Skill_Information(stage);
+	case SKILL_TINKERING:
+		return Skill_MakeItem(stage);
+	case SKILL_TRACKING:
+		return Skill_Tracking(stage);
+	case SKILL_VETERINARY:
+		return Skill_Healing(stage);
+	case SKILL_SWORDSMANSHIP:
+	case SKILL_MACEFIGHTING:
+	case SKILL_FENCING:
+	case SKILL_WRESTLING:
+		return Skill_Fighting(stage);
+	case SKILL_LUMBERJACKING:
+		return Skill_Lumberjack(stage);
+	case SKILL_MINING:
+		return Skill_Mining(stage);
+	case SKILL_MEDITATION:
+		return Skill_Meditation(stage);
+	case SKILL_Stealth:
+		return Skill_Hiding(stage);
+	case SKILL_RemoveTrap:
+		return Skill_RemoveTrap(stage);
+	case SKILL_NECROMANCY:
+		return Skill_Magery(stage);
+
+	case NPCACT_BREATH:
+		return Skill_Act_Breath(stage);
+	case NPCACT_LOOTING:
+		return Skill_Act_Looting(stage);
+	case NPCACT_THROWING:
+		return Skill_Act_Throwing(stage);
+	case NPCACT_TRAINING:
+		return Skill_Act_Training(stage);
+	case NPCACT_Napping:
+		return Skill_Act_Napping(stage);
+
+	default:
+		if (!IsSkillBase(skill))
+		{
+			DEBUG_CHECK(IsSkillNPC(skill));
+			if (stage == CSkillDef::T_Stroke)
+				return(-CSkillDef::T_Stroke); // keep these active. (NPC modes)
 			return 0;
-		case SKILL_ALCHEMY:
-		case SKILL_BOWCRAFT:
-		case SKILL_CARTOGRAPHY:
-		case SKILL_INSCRIPTION:
-		case SKILL_TAILORING:
-		case SKILL_TINKERING:
-			return Skill_MakeItem(stage);
-		case SKILL_ANATOMY:
-		case SKILL_ANIMALLORE:
-		case SKILL_ITEMID:
-		case SKILL_ARMSLORE:
-		case SKILL_EVALINT:
-		case SKILL_FORENSICS:
-		case SKILL_TASTEID:
-			return Skill_Information(stage);
-		case SKILL_BEGGING:
-			return Skill_Begging(stage);
-		case SKILL_BLACKSMITHING:
-			return Skill_Blacksmith(stage);
-		case SKILL_PEACEMAKING:
-			return Skill_Peacemaking(stage);
-		case SKILL_CARPENTRY:
-			return Skill_Carpentry(stage);
-		case SKILL_COOKING:
-			return Skill_Cooking(stage);
-		case SKILL_DETECTINGHIDDEN:
-			return Skill_DetectHidden(stage);
-		case SKILL_ENTICEMENT:
-			return Skill_Enticement(stage);
-		case SKILL_HEALING:
-		case SKILL_VETERINARY:
-			return Skill_Healing(stage);
-		case SKILL_FISHING:
-			return Skill_Fishing(stage);
-		case SKILL_HERDING:
-			return Skill_Herding(stage);
-		case SKILL_HIDING:
-			return Skill_Hiding(stage);
-		case SKILL_PROVOCATION:
-			return Skill_Provocation(stage);
-		case SKILL_LOCKPICKING:
-			return Skill_Lockpicking(stage);
-		case SKILL_MAGERY:
-		case SKILL_NECROMANCY:
-		case SKILL_CHIVALRY:
-		case SKILL_BUSHIDO:
-		case SKILL_NINJITSU:
-		case SKILL_SPELLWEAVING:
-		case SKILL_MYSTICISM:
-			return Skill_Magery(stage);
-		case SKILL_SNOOPING:
-			return Skill_Snooping(stage);
-		case SKILL_MUSICIANSHIP:
-			return Skill_Musicianship(stage);
-		case SKILL_POISONING:
-			return Skill_Poisoning(stage);
-		case SKILL_ARCHERY:
-		case SKILL_SWORDSMANSHIP:
-		case SKILL_MACEFIGHTING:
-		case SKILL_FENCING:
-		case SKILL_WRESTLING:
-		case SKILL_THROWING:
-			return Skill_Fighting(stage);
-		case SKILL_SPIRITSPEAK:
-			return Skill_SpiritSpeak(stage);
-		case SKILL_STEALING:
-			return Skill_Stealing(stage);
-		case SKILL_TAMING:
-			return Skill_Taming(stage);
-		case SKILL_TRACKING:
-			return Skill_Tracking(stage);
-		case SKILL_LUMBERJACKING:
-			return Skill_Lumberjack(stage);
-		case SKILL_MINING:
-			return Skill_Mining(stage);
-		case SKILL_MEDITATION:
-			return Skill_Meditation(stage);
-		case SKILL_REMOVETRAP:
-			return Skill_RemoveTrap(stage);
-		case NPCACT_BREATH:
-			return Skill_Act_Breath(stage);
-		case NPCACT_THROWING:
-			return Skill_Act_Throwing(stage);
-		case NPCACT_TRAINING:
-			return Skill_Act_Training(stage);
-		default:
-			if ( !IsSkillBase(Skill_GetActive()) )
-			{
-				if ( stage == SKTRIG_STROKE )
-					return -SKTRIG_STROKE;	// keep these active. (NPC modes)
-				return 0;
-			}
+		}
 	}
 
-	SysMessageDefault(DEFMSG_SKILL_NOSKILL);
-	return -SKTRIG_QTY;
+	WriteString("Skill not implemented!");
+	return -CSkillDef::T_QTY;
 }
 
 void CChar::Skill_Fail(bool fCancel)
@@ -3540,59 +3911,29 @@ void CChar::Skill_Fail(bool fCancel)
 	// Other types of failure don't come here.
 	//
 	// ARGS:
-	//  fCancel = no credit (otherwise get some credit for having tried)
+	//	fCancel = no credt.
+	//  else We still get some credit for having tried.
 
 	SKILL_TYPE skill = Skill_GetActive();
-	if ( skill == SKILL_NONE )
+	if (skill == SKILL_NONE)
 		return;
 
-	if ( !IsSkillBase(skill) )
+	if (!IsSkillBase(skill))
 	{
+		DEBUG_CHECK(IsSkillNPC(skill));
 		Skill_Cleanup();
 		return;
 	}
 
-	if ( m_Act_Difficulty > 0 )
+	if (m_Act_Difficulty > 0)
+	{
 		m_Act_Difficulty = -m_Act_Difficulty;
-
-	if ( !fCancel )
-	{
-		if ( IsTrigUsed(TRIGGER_SKILLFAIL) )
-		{
-			if ( Skill_OnCharTrigger(skill, CTRIG_SkillFail) == TRIGRET_RET_TRUE )
-				fCancel = true;
-		}
-		if ( IsTrigUsed(TRIGGER_FAIL) && !fCancel )
-		{
-			if ( Skill_OnTrigger(skill, SKTRIG_FAIL) == TRIGRET_RET_TRUE )
-				fCancel = true;
-		}
-	}
-	else
-	{
-		if ( IsTrigUsed(TRIGGER_SKILLABORT) )
-		{
-			if ( Skill_OnCharTrigger(skill, CTRIG_SkillAbort) == TRIGRET_RET_TRUE )
-			{
-				Skill_Cleanup();
-				return;
-			}
-		}
-		if ( IsTrigUsed(TRIGGER_ABORT) )
-		{
-			if ( Skill_OnTrigger(skill, SKTRIG_ABORT) == TRIGRET_RET_TRUE )
-			{
-				Skill_Cleanup();
-				return;
-			}
-		}
 	}
 
-	if ( Skill_Stage(SKTRIG_FAIL) >= 0 )
+	if (Skill_Stage(CSkillDef::T_Fail) >= 0)
 	{
 		// Get some experience for failure ?
-		if ( !fCancel )
-			Skill_Experience(skill, m_Act_Difficulty);
+		Skill_Experience(skill, m_Act_Difficulty);
 	}
 
 	Skill_Cleanup();
@@ -3663,52 +4004,36 @@ int CChar::Skill_Done()
 	// calc skill gain based on this.
 	//
 	// RETURN: Did we succeed or fail ?
-	//  0 = success
-	//  -SKTRIG_STROKE = stay in skill (stroke)
-	//  -SKTRIG_FAIL = we must print the fail msg (credit for trying)
-	//  -SKTRIG_ABORT = we must print the fail msg (But get no credit, canceled )
-	//  -SKTRIG_QTY = special failure. clean up the skill but say nothing (no credit)
+	//   0 = success
+	//	 -CSkillDef::T_Stroke = stay in skill. (stroke)
+	//   -CSkillDef::T_Fail = we must print the fail msg. (credit for trying)
+	//   -CSkillDef::T_Abort = we must print the fail msg. (But get no credit, canceled )
+	//   -CSkillDef::T_QTY = special failure. clean up the skill but say nothing. (no credit)
 
 	SKILL_TYPE skill = Skill_GetActive();
-	if ( skill == SKILL_NONE )	// we should not be coming here (timer should not have expired)
-		return -SKTRIG_QTY;
+	if (skill == SKILL_NONE)	// we should not be coming here (timer should not have expired)
+		return -CSkillDef::T_QTY;
 
 	// multi stroke tried stuff here first.
 	// or stuff that never really fails.
-	int iRet = Skill_Stage(SKTRIG_STROKE);
-	if ( iRet < 0 )
-		return iRet;
-
-	if ( m_Act_Difficulty < 0 )		// was Bound to fail, but we had to wait for the timer anyhow.
-		return -SKTRIG_FAIL;
-
-	if ( IsTrigUsed(TRIGGER_SKILLSUCCESS) )
+	int iRet = Skill_Stage(CSkillDef::T_Stroke);
+	if (iRet < 0)
+		return(iRet);
+	if (m_Act_Difficulty < 0 && !IsGM())
 	{
-		if ( Skill_OnCharTrigger(skill, CTRIG_SkillSuccess) == TRIGRET_RET_TRUE )
-		{
-			Skill_Cleanup();
-			return -SKTRIG_ABORT;
-		}
-	}
-	if ( IsTrigUsed(TRIGGER_SUCCESS) )
-	{
-		if ( Skill_OnTrigger(skill, SKTRIG_SUCCESS) == TRIGRET_RET_TRUE )
-		{
-			Skill_Cleanup();
-			return -SKTRIG_ABORT;
-		}
+		// Was Bound to fail. But we had to wait for the timer anyhow.
+		return -CSkillDef::T_Fail;
 	}
 
 	// Success for the skill.
-	iRet = Skill_Stage(SKTRIG_SUCCESS);
-	if ( iRet < 0 )
+	iRet = Skill_Stage(CSkillDef::T_Success);
+	if (iRet < 0)
 		return iRet;
 
 	// Success = Advance the skill
 	Skill_Experience(skill, m_Act_Difficulty);
 	Skill_Cleanup();
-
-	return -SKTRIG_SUCCESS;
+	return(-CSkillDef::T_Success);
 }
 
 bool CChar::Skill_Wait(SKILL_TYPE skilltry)
@@ -3781,138 +4106,74 @@ bool CChar::Skill_Wait(SKILL_TYPE skilltry)
 	return true;
 }
 
-bool CChar::Skill_Start(SKILL_TYPE skill)
+bool CChar::Skill_Start(SKILL_TYPE skill, int iDifficulty)
 {
 	ADDTOCALLSTACK("CChar::Skill_Start");
 	// We have all the info we need to do the skill. (targeting etc)
 	// Set up how long we have to wait before we get the desired results from this skill.
 	// Set up any animations/sounds in the mean time.
 	// Calc if we will succeed or fail.
+	// ARGS:
+	//  iDifficulty = 0-100
 	// RETURN:
 	//  false = failed outright with no wait. "You have no chance of taming this"
 
-	if ( g_Serv.IsLoading() )
+	if (g_Serv.IsLoading())
 	{
-		if ( (skill != SKILL_NONE) && !IsSkillBase(skill) && !IsSkillNPC(skill) )
+		if (skill != SKILL_NONE &&
+			!IsSkillBase(skill) &&
+			!IsSkillNPC(skill))
 		{
-			DEBUG_ERR(("Char '%s' (UID=0%" FMTDWORDH ") is trying to use bad skill %d\n", GetName(), static_cast<DWORD>(GetUID()), skill));
-			return false;
+			DEBUG_ERR(("UID:0%x Bad Skill %d for '%s'" LOG_CR, GetUID(), skill, (LPCTSTR)GetName()));
+			return(false);
 		}
 		m_Act_SkillCurrent = skill;
-		return true;
+		return(true);
 	}
 
-	if ( !Skill_CanUse(skill) )
-		return false;
-
-	SKILL_TYPE skillPrev = Skill_GetActive();
-	if ( skillPrev != SKILL_NONE )
-		Skill_Fail(true);		// fail previous skill unfinished. (with NO skill gain!)
-
-	if ( skill != SKILL_NONE )
+	if (Skill_GetActive() != SKILL_NONE)
 	{
-		if ( IsTrigUsed(TRIGGER_SKILLPRESTART) )
-		{
-			if ( Skill_OnCharTrigger(skill, CTRIG_SkillPreStart) == TRIGRET_RET_TRUE )
-				return false;
-		}
-		if ( IsTrigUsed(TRIGGER_PRESTART) )
-		{
-			if ( Skill_OnTrigger(skill, SKTRIG_PRESTART) == TRIGRET_RET_TRUE )
-				return false;
-		}
+		Skill_Fail(true);	// Fail previous skill unfinished. (with NO skill gain!)
+	}
 
-		m_Act_SkillCurrent = skill;
-		m_Act_Difficulty = Skill_Stage(SKTRIG_START);
+	if (skill != SKILL_NONE)
+	{
+		m_Act_SkillCurrent = skill;	// Start using a skill.
+		m_Act_Difficulty = iDifficulty;
 
-		CScriptTriggerArgs pArgs;
-		bool fCraftSkill = g_Cfg.IsSkillFlag(skill, SKF_CRAFT);
-		bool fGatherSkill = g_Cfg.IsSkillFlag(skill, SKF_GATHER);
-		RESOURCE_ID pResBase(RES_ITEMDEF, fCraftSkill ? m_atCreate.m_ItemID : 0, 0);
+		ASSERT(IsSkillBase(skill) || IsSkillNPC(skill));
 
-		if ( fCraftSkill )
+		// Some skill can start right away. Need no targeting.
+		// 0-100 scale of Difficulty
+		m_Act_Difficulty = Skill_Stage(CSkillDef::T_Start);
+		if (m_Act_Difficulty < 0)
 		{
-			m_atCreate.m_Stroke_Count = 1;
-			pArgs.m_VarsLocal.SetNum("CraftItemdef", pResBase.GetPrivateUID());
-			pArgs.m_VarsLocal.SetNum("CraftStrokeCnt", m_atCreate.m_Stroke_Count);
-			pArgs.m_VarsLocal.SetNum("CraftAmount", m_atCreate.m_Amount);
-		}
-		if ( fGatherSkill )
-		{
-			m_atResource.m_bounceItem = 1;
-			pArgs.m_VarsLocal.SetNum("GatherStrokeCnt", m_atResource.m_Stroke_Count);
+			Skill_Cleanup();
+			return(false);
 		}
 
-		if ( IsTrigUsed(TRIGGER_SKILLSTART) )
+		if (IsSkillBase(skill))
 		{
-			if ( (Skill_OnCharTrigger(skill, CTRIG_SkillStart, &pArgs) == TRIGRET_RET_TRUE) || (m_Act_Difficulty < 0) )
+			CSkillDefPtr pSkillDef = g_Cfg.GetSkillDef(skill);
+			ASSERT(pSkillDef);
+			int iWaitTime = pSkillDef->m_Delay.GetLinear(Skill_GetBase(skill));
+			if (iWaitTime)
 			{
-				Skill_Cleanup();
-				return false;
+				// How long before complete skill.
+				SetTimeout(iWaitTime);
 			}
 		}
-		if ( IsTrigUsed(TRIGGER_START) )
+		if (IsTimerExpired())
 		{
-			if ( (Skill_OnTrigger(skill, SKTRIG_START, &pArgs) == TRIGRET_RET_TRUE) || (m_Act_Difficulty < 0) )
-			{
-				Skill_Cleanup();
-				return false;
-			}
+			// the skill should have set it's own delay!?
+			SetTimeout(1);
 		}
-
-		if ( fCraftSkill )
+		if (m_Act_Difficulty > 0)
 		{
-			// read crafting parameters
-			pResBase.SetPrivateUID(static_cast<DWORD>(pArgs.m_VarsLocal.GetKeyNum("CraftItemdef")));
-			m_atCreate.m_Stroke_Count = static_cast<WORD>(maximum(1, pArgs.m_VarsLocal.GetKeyNum("CraftStrokeCnt")));
-			m_atCreate.m_ItemID = static_cast<ITEMID_TYPE>(pResBase.GetResIndex());
-			m_atCreate.m_Amount = static_cast<WORD>(pArgs.m_VarsLocal.GetKeyNum("CraftAmount"));
-		}
-		if ( fGatherSkill )
-			m_atResource.m_Stroke_Count = static_cast<WORD>(pArgs.m_VarsLocal.GetKeyNum("GatherStrokeCnt"));
-
-		// Casting sound & animation when starting, Skill_Stroke() will do it the next times.
-		if ( fCraftSkill || fGatherSkill )
-		{
-			if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOSFX) )
-				Sound(Skill_GetSound(Skill_GetActive()));
-
-			if ( !g_Cfg.IsSkillFlag(Skill_GetActive(), SKF_NOANIM) )
-				UpdateAnimate(Skill_GetAnim(Skill_GetActive()));
-		}
-
-		if ( IsSkillBase(skill) )
-		{
-			const CSkillDef *pSkillDef = g_Cfg.GetSkillDef(skill);
-			if ( pSkillDef )
-			{
-				int iWaitTime = pSkillDef->m_Delay.GetLinear(Skill_GetBase(skill));
-				if ( iWaitTime != 0 )
-					SetTimeout(iWaitTime);		// How long before complete skill.
-			}
-		}
-		else if ( m_pNPC )
-		{
-			if ( ((skillPrev != NPCACT_GUARD_TARG) && (Skill_GetActive() == NPCACT_GUARD_TARG)) || ((skillPrev == NPCACT_GUARD_TARG) && (Skill_GetActive() != NPCACT_GUARD_TARG)) )
-				UpdatePropertyFlag();
-		}
-
-		if ( IsTimerExpired() )
-			SetTimeout(1);		// the skill should have set it's own delay!?
-
-		if ( m_Act_Difficulty > 0 )
-		{
-			if ( !Skill_CheckSuccess(skill, m_Act_Difficulty, !g_Cfg.IsSkillFlag(skill, SKF_FIGHT)) )
-				m_Act_Difficulty = -m_Act_Difficulty;	// will result in failure
+			if (!Skill_CheckSuccess(skill, m_Act_Difficulty))
+				m_Act_Difficulty = -m_Act_Difficulty; // will result in Failure ?
 		}
 	}
 
-#ifdef _DEBUG
-	if ( IsStatFlag(STATF_EmoteAction) || (g_Cfg.m_wDebugFlags & DEBUGF_NPC_EMOTE) )
-		Emote(Skill_GetName(true));
-#else
-	if ( IsStatFlag(STATF_EmoteAction) )
-		Emote(Skill_GetName(true));
-#endif
-	return true;
+	return(true);
 }

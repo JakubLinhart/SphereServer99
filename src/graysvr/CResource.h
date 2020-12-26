@@ -502,7 +502,7 @@ enum STAT_TYPE
 #define STAT_Health STAT_STR
 #define STAT_Stam STAT_DEX
 #define STAT_Food STAT_FOOD
-
+#define STAT_Karma STAT_KARMA
 
 class CSkillClassDef : public CResourceLink // For skill def table
 {
@@ -581,10 +581,25 @@ enum SKF_TYPE
 	SKF_DISABLED = 0x800		// Disabled skill, can't be used.
 };
 
+#define CSkillDefPtr CSkillDef*
+
 struct CSkillDef : public CResourceLink
 {
 	// For skill def table
 	// RES_SKILL
+	enum T_TYPE_
+	{
+		// All skills may be scripted.
+		// XTRIG_UNKNOWN	= some named trigger not on this list.
+		T_Abort,		// Some odd thing went wrong.
+		T_Fail,			// We failed the skill check.
+		T_MakeItem,			// Called when there is a chance to gain skill
+		T_Select,		// Called before any hardcoded messages
+		T_Start,			// Just selecting params for the skill
+		T_Stroke,			// Params for skill are done. (stroke)
+		T_Success,			// Not really a trigger! Just a stage.
+		T_QTY
+	};
 
 public:
 	static LPCTSTR const sm_szTrigName[SKTRIG_QTY + 1];
