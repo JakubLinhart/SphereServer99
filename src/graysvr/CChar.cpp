@@ -3386,7 +3386,7 @@ bool CChar::r_Verb(CScript &s, CTextConsole *pSrc, CScriptTriggerArgs* pArgs)	//
 			if ( m_pClient )
 				m_Act_Targ = m_pClient->m_Targ_UID;
 
-			return Skill_MakeItem(static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, ppArgs[0])), m_Act_Targ, SKTRIG_START, false, wReplicationQty);
+			return Skill_MakeItem(CSkillDef::T_Start);
 		}
 		case CHV_MOUNT:
 		{
