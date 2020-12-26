@@ -603,6 +603,8 @@ struct CSkillDef : public CResourceLink
 
 public:
 	static LPCTSTR const sm_szTrigName[SKTRIG_QTY + 1];
+	static LPCTSTR const sm_Triggers[T_QTY + 1];
+
 	static LPCTSTR const sm_szLoadKeys[];
 
 	explicit CSkillDef(SKILL_TYPE iSkill);

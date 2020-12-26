@@ -164,7 +164,20 @@ int CValueCurveDef::GetChancePercent( int iSkillPercent ) const
 //*******************************************
 // -CSkillDef
 
-LPCTSTR const CSkillDef::sm_szTrigName[SKTRIG_QTY+1] = 
+LPCTSTR const sm_Triggers[CSkillDef::T_QTY + 1] =
+{
+	"@AAAUNUSED"
+	"@Abort",
+	"@Fail",
+	"@MakeItem",
+	"@Select",
+	"@Start",
+	"@Stroke",
+	"@Success",
+	NULL,
+};
+
+LPCTSTR const CSkillDef::sm_szTrigName[SKTRIG_QTY+1] =
 {
 	"@AAAUNUSED",
 	"@ABORT",

@@ -3771,7 +3771,7 @@ int CChar::Skill_Stage(CSkillDef::T_TYPE_ stage)
 	{
 		// RES_Skill
 		//CCharActState SaveState = m_Act;
-		iTrigRet = pSkillDef->OnTriggerScript(execArgs, stage, CSkillDef::sm_Triggers[stage].m_pszName);
+		iTrigRet = pSkillDef->OnTriggerScript(execArgs, stage, CSkillDef::sm_Triggers[stage]);
 		// m_Act = SaveState;
 		if (iTrigRet == TRIGRET_RET_VAL)
 		{
