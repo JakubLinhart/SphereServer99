@@ -3030,7 +3030,7 @@ bool CChar::OnSpellEffect(SPELL_TYPE spell, CChar *pCharSrc, int iSkillLevel, CI
 		return(false);
 
 	CSphereExpArgs Args((int)spell, iSkillLevel, pSourceItem);
-	if (OnTrigger(CCharDef::T_SpellEffect, (pCharSrc != NULL) ? ((CScriptConsole*)pCharSrc) : ((CScriptConsole*)&g_Serv), &Args) == TRIGRET_RET_VAL)
+	if (OnTrigger56(CCharDef::T_SpellEffect, (pCharSrc != NULL) ? ((CScriptConsole*)pCharSrc) : ((CScriptConsole*)&g_Serv), &Args) == TRIGRET_RET_VAL)
 		return(false);
 
 	CSpellDefPtr pSpellDef = g_Cfg.GetSpellDef(spell);

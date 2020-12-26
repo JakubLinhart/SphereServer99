@@ -910,7 +910,7 @@ public:
 
 	void r_WriteParity(CScript &s);
 
-	TRIGRET_TYPE OnTrigger(CCharDef::T_TYPE_ trigger, CTextConsole* pSrc, CScriptTriggerArgs* pArgs = NULL)
+	TRIGRET_TYPE OnTrigger56(CCharDef::T_TYPE_ trigger, CTextConsole* pSrc, CScriptTriggerArgs* pArgs = NULL)
 	{
 		ASSERT(trigger < CCharDef::T_QTY);
 		return OnTrigger(MAKEINTRESOURCE(trigger), pSrc, pArgs);

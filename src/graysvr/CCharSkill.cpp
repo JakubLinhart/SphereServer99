@@ -3760,7 +3760,7 @@ int CChar::Skill_Stage(CSkillDef::T_TYPE_ stage)
 
 	CSphereExpArgs execArgs(this, this, skill, 0, 0);
 
-	TRIGRET_TYPE iTrigRet = OnTrigger((CCharDef::T_TYPE_)(CCharDef::T_SkillAbort + (stage - CSkillDef::T_Abort)), execArgs);
+	TRIGRET_TYPE iTrigRet = OnTrigger56((CCharDef::T_TYPE_)(CCharDef::T_SkillAbort + (stage - CSkillDef::T_Abort)), execArgs);
 	if (iTrigRet == TRIGRET_RET_VAL)
 	{
 		return execArgs.m_vValRet;
