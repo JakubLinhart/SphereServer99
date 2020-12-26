@@ -33,7 +33,7 @@
 #define MAX(a, b)				(((a) > (b)) ? (a) : (b))
 #define maximum(a, b)			(((a) > (b)) ? (a) : (b))
 
-#define IMULDIV(a, b, c)		(((((LONGLONG)(a) * (LONGLONG)(b)) + ((c) / 2)) / (c)) - IsNegative((LONGLONG)(a) * (LONGLONG)(b)) )
+#define IMULDIV(a,b,c) (((a)*(b))/(c))	// windows MulDiv will round !
 
 #ifdef _WIN32
 	typedef void		THREAD_ENTRY_RET;
