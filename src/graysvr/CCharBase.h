@@ -258,6 +258,41 @@ public:
 	bool r_LoadVal(CScript &s, CScriptTriggerArgs* pArgs, CTextConsole* pSrc);
 	bool r_Load(CScript &s);
 
+	enum T_TYPE_
+	{
+		Create,
+		Death,
+		DeathCorpse,
+		Destroy,
+		EnvironChange,
+		GetHit,
+		Hit,
+		HitMiss,
+		HitTry,
+			//#include "citemevents.tbl"
+		LogIn,
+		LogOut,
+		NPCAcceptItem,
+		NPCHearGreeting,
+		NPCHearNeed,
+		NPCHearUnknown,
+		NPCRefuseItem,
+		NPCRestock,
+		NPCSeeAction,
+		NPCSeeNewPlayer,
+		NPCSeeWantItem,
+		PersonalSpace,
+		ReceiveItem,
+		//#include "cskilldefevents.tbl"	// SKTRIG_QTY
+		SpellCast,
+		SpellEffect,
+		Step,
+		UserButton,
+		UserClick,
+		UserDClick,
+		UserToolTip,
+	};
+
 private:
 	void CopyBasic(const CCharBase *pCharDef);
 	void SetFoodType(LPCTSTR pszFood);
