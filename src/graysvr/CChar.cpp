@@ -1735,14 +1735,14 @@ bool CChar::r_WriteVal(LPCTSTR pszKey, CGString &sVal, CTextConsole *pSrc, CScri
 		{
 			pszKey += 7;
 			ITEMID_TYPE id = static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, pszKey));
-			sVal.FormatVal(Skill_MakeItem(id, UID_CLEAR, SKTRIG_SELECT));
+			sVal.FormatVal(Skill_MakeItem(CSkillDef::T_Select));
 			return true;
 		}
 		case CHC_CANMAKESKILL:
 		{
 			pszKey += 12;
 			ITEMID_TYPE id = static_cast<ITEMID_TYPE>(g_Cfg.ResourceGetIndexType(RES_ITEMDEF, pszKey));
-			sVal.FormatVal(Skill_MakeItem(id, UID_CLEAR, SKTRIG_SELECT, true));
+			sVal.FormatVal(Skill_MakeItem(CSkillDef::T_Select));
 			return true;
 		}
 		case CHC_INCREASEDAM:
