@@ -875,7 +875,7 @@ bool CChar::Spell_Effect_Resurrection(int iSkillLossPercent, CItemCorpse* pCorps
 	SetID(m_prev_id);
 	StatFlag_Clear(STATF_DEAD | STATF_Insubstantial);
 	SetHue(m_prev_Hue);
-	Stat_Set(STAT_Health, IMULDIV(m_StatMaxHealth(), g_Cfg.m_iHitpointPercentOnRez, 100));
+	Stat_Set(STAT_Health, IMULDIV(m_StatMaxHealth, g_Cfg.m_iHitpointPercentOnRez, 100));
 
 	if (m_pPlayer->IsValidNewObj())
 	{
@@ -2674,7 +2674,7 @@ bool CChar::Spell_CastDone()
 				pChar = this;	// spell revereses !
 				iDiff = -iDiff;
 			}
-			int iMax = pChar->m_StatMaxHealth() / 4;
+			int iMax = pChar->m_StatMaxHealth / 4;
 			pChar->OnSpellEffect(spell, this, MIN(iDiff, iMax), NULL);
 		}
 		break;
@@ -3225,7 +3225,7 @@ bool CChar::OnSpellEffect(SPELL_TYPE spell, CChar *pCharSrc, int iSkillLevel, CI
 	case SPELL_Great_Heal:
 		if (iSkillLevel > 1000)
 		{
-			Stat_Change(STAT_Health, g_Cfg.GetSpellEffect(spell, iSkillLevel), m_StatMaxHealth() + 20);
+			Stat_Change(STAT_Health, g_Cfg.GetSpellEffect(spell, iSkillLevel), m_StatMaxHealth + 20);
 		}
 		else
 		{
